@@ -1,0 +1,41 @@
+{
+  "name": "dashboard-next-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@carbon/charts": "^1.23.6",
+    "@carbonplan/charts": "^3.1.1",
+    "@carbonplan/colormaps": "^4.0.0",
+    "@carbonplan/components": "^13.2.0",
+    "@carbonplan/icons": "^2.0.0",
+    "@carbonplan/layouts": "^5.1.0",
+    "@carbonplan/maps": "^3.4.1",
+    "@carbonplan/minimaps": "^2.6.0",
+    "@carbonplan/theme": "^8.1.0",
+    "@theme-ui/match-media": "^0.17.2",
+    "d3-array": "^3.2.4",
+    "d3-format": "^3.1.0",
+    "mapbox-gl": "^3.11.0",
+    "next": "15.3.0",
+    "react": "^19.0.0",
+    "react-animate-height": "^3.2.3",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.3",
+    "theme-ui": "^0.17.2",
+    "zarr": "^0.6.3",
+    "zarr-js": "^3.3.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.0",
+    "tailwindcss": "^4"
+  }
+}

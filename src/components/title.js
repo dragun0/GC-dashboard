@@ -19,6 +19,7 @@ const Title = ({ expanded, setExpanded }) => {
           'inherit',
           'inherit',
         ],
+        pointerEvents: 'none',
       }}
     >
       <Row>

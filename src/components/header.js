@@ -3,32 +3,34 @@ import { useRouter } from 'next/router'
 
 const Header = ({ showMenu, toggleMenu }) => {
 
-    const router = useRouter()
+  const router = useRouter()
 
-    const plotsHeaderLayout =
+  const plotsHeaderLayout =
     router.pathname === '/plotsPage'
-        ? {
-            borderStyle: 'solid',
-            borderWidth: '0px',
-            borderBottomWidth: '1px',
-            borderColor: 'muted',
-            bg: 'background'
-        }
-        : {}
-  
+      ? {
+        borderStyle: 'solid',
+        borderWidth: '0px',
+        borderBottomWidth: '1px',
+        borderColor: 'muted',
+        bg: 'background'
+      }
+      : {}
+
 
 
   return (
     <Box
-  sx={{
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    zIndex: 1100,
-  //  bg: 'background', // optional: ensure it has a background
-  }}
->
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '56px',
+        zIndex: 1100,
+        pointerEvents: 'none'
+        //  bg: 'background', // optional: ensure it has a background
+      }}
+    >
       <Flex
         sx={{
           margin: '0 auto',
@@ -37,13 +39,14 @@ const Header = ({ showMenu, toggleMenu }) => {
           pt: ['12px'],
           pb: ['9px'],
           height: '56px',
+          pointerEvents: 'auto',
           pl: [3, 4, 5, 6],
           pr: [3, 5, 5, 6],
           ...plotsHeaderLayout
         }}
       >
         <Box sx={{ display: 'block', width: 'fit-content' }}>
-          {/* optional: logo or title */}
+
         </Box>
         <Box>
           <IconButton

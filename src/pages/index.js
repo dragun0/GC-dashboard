@@ -29,7 +29,7 @@ const bucket_metrics = 'https://dashboard-app-zarr.s3.amazonaws.com/Pyramids/'
 
 
 const Index = () => {
-  
+
 
 
   //Get shared context state
@@ -43,21 +43,21 @@ const Index = () => {
     time, setTime,
     band, setBand,
     setRegionExtent,
-    forecastModel, 
+    forecastModel,
     evaluationMetric,
     year,
     month,
   } = useRegionContext()
 
   const rasterSource = useMemo(() => {
-  return `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`
+    return `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`
   }, [year, month, evaluationMetric, forecastModel])
 
   //console.log('source url:', `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`)
   //console.log('raster source:', rasterSource)
 
   useEffect(() => {
-  console.log('Updated raster source URL:', rasterSource)
+    console.log('Updated raster source URL:', rasterSource)
   }, [rasterSource])
 
   const colormap = useThemedColormap(colormapName)
@@ -84,9 +84,9 @@ const Index = () => {
 
   //const [showMenu, setShowMenu] = useState(false)
 
-//  useEffect(() => {
-//  setLoading(true)
-// }, [rasterSource])
+  //  useEffect(() => {
+  //  setLoading(true)
+  // }, [rasterSource])
 
   const sx = {
     heading: {
@@ -106,9 +106,9 @@ const Index = () => {
 
   return (
     <>
-          <Header showMenu={showMenu} toggleMenu={() => setShowMenu(!showMenu)} />
-          <Menu visible={showMenu} setExpanded={setExpanded} />
-      
+      <Header showMenu={showMenu} toggleMenu={() => setShowMenu(!showMenu)} />
+      <Menu visible={showMenu} setExpanded={setExpanded} />
+
       {/* Map + Layers */}
 
       <SidebarAttachment
@@ -132,12 +132,13 @@ const Index = () => {
 
       <Box sx={{ position: 'absolute', top: 0, bottom: 0, width: '100%' }}>
         {/* Load Spinner */}
-          {loading && (
+        {loading && (
           <Box
             sx={{
               position: 'absolute',
-              top: '8%',
-              left: '38%',
+              top: [5, 5, 6, 6],
+              left: expanded ? ['38%'] : [5, 5, 6, 6],
+              transition: 'left 0.3s ease',
               //width: '24px',
               //height: 'calc(100vh)',
               transform: 'translate(-50%, -50%)',
@@ -151,9 +152,9 @@ const Index = () => {
           </Box>
         )}
 
-        
 
-        
+
+
 
 
         <Map zoom={1} center={[0, 50]} debug={debug}>
@@ -177,24 +178,24 @@ const Index = () => {
             key={rasterSource}
             source={rasterSource}
             // source={`${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`}
-             // `${bucket_metrics}${timeFrame}_${evaluationMetric}_${forecastModel}.zarr`
-              // bucket_metrics + '20240401_AE_gc.zarr'
-              //'Pyramids/20240501_AE_marsai.zarr'
-              //'Pyramids/20240401_AE_gc.zarr' contains t2m and q
-              //'Pyramids/20240301_AE_gc.zarr' contains t2m and tp (but tp is empty)
-              //'Pyramids/20240301_flat_subset_AE_fc_timestep0.zarr' contains t2m and u10
-            
+            // `${bucket_metrics}${timeFrame}_${evaluationMetric}_${forecastModel}.zarr`
+            // bucket_metrics + '20240401_AE_gc.zarr'
+            //'Pyramids/20240501_AE_marsai.zarr'
+            //'Pyramids/20240401_AE_gc.zarr' contains t2m and q
+            //'Pyramids/20240301_AE_gc.zarr' contains t2m and tp (but tp is empty)
+            //'Pyramids/20240301_flat_subset_AE_fc_timestep0.zarr' contains t2m and u10
+
             variable={'climate'}
             version='v2'
             selector={{ band, time }}
             //dimensions={['time', 'y', 'x']}
             regionOptions={{ setData: setRegionData, selector }}
-          //regionOptions={{ setData: debugSetRegionData }} // Use the debug function
-          //regionOptions= {{ setData: setRegionData, time: [1, 2] }}
-          //regionOptions= {{ setData: setRegionData, selector: { time: [1, 2]} }}
-          //regionOptions= {{ setData: setRegionData, selector:{time: 1} }}
+            //regionOptions={{ setData: debugSetRegionData }} // Use the debug function
+            //regionOptions= {{ setData: setRegionData, time: [1, 2] }}
+            //regionOptions= {{ setData: setRegionData, selector: { time: [1, 2]} }}
+            //regionOptions= {{ setData: setRegionData, selector:{time: 1} }}
             setLoading={(val) => setLoading(val)} // <- handles loading complete
-            
+
 
           />
           {showRegionPicker && (
@@ -209,60 +210,60 @@ const Index = () => {
             />
           )}
 
-        <Box
-          sx={{
-            position: 'absolute',
-            zIndex: 20,
-            right: showMenu ?
-            [
-              0,
-              'calc(2 * 100vw / 8 + 18px - 1px)',
-              'calc(2 * 100vw / 12 + 24px - 1px)',
-              'calc(2 * 100vw / 12 + 35px)',
-            ] : [13],
-         //   right: showMenu ? ['300px'] : [13], // <-- menu width
-            bottom: [17, 17, 15, 15],
-            transition: 'right 0.3s ease',
-          }}
+          {/* Legend, Grid Controls, Dimmer - move position to the left when menu is shown */}
+          <Box
+            sx={{
+              position: 'absolute',
+              zIndex: 20,
+              right: showMenu ?
+                [
+                  0,
+                  'calc(2 * 100vw / 8 + 18px - 1px)',
+                  'calc(2 * 100vw / 12 + 24px - 1px)',
+                  'calc(2 * 100vw / 12 + 35px)',
+                ] : [13],
+              //   right: showMenu ? ['300px'] : [13], // <-- menu width
+              bottom: [17, 17, 15, 15],
+              transition: 'right 0.3s ease',
+            }}
           >
-          <Flex sx={{ gap: [3], alignItems: 'flex-end' }}>
-            {/* Date Time Display - show when control panel is expanded*/}
-            
-            <Legend />
-            <Ruler />
-            <Dimmer
-              sx={{
-                display: ['none', 'none', 'initial', 'initial'],
-                color: 'primary',
-              }}
-            />
-          </Flex>
-        </Box>
+            <Flex sx={{ gap: [3], alignItems: 'flex-end' }}>
+              <Legend />
+              <Ruler />
+              <Dimmer
+                sx={{
+                  display: ['none', 'none', 'initial', 'initial'],
+                  color: 'primary',
+                }}
+              />
+            </Flex>
+          </Box>
 
-        <Box
-          sx={{
-            position: 'absolute',
-            zIndex: 40,
-            left: 'calc(40vw)',
-            bottom: [17, 17, 15, 15],
-            transition: 'left 0.3s ease',
-          }}
+          {/* Date Time Display - show when control panel is expanded*/}
+          <Box
+            sx={{
+              position: 'absolute',
+              zIndex: 40,
+              left: 'calc(40vw)',
+              bottom: [17, 17, 15, 15],
+              transition: 'left 0.3s ease',
+            }}
           >
-          {expanded && (
-            <PlayButtonDateTime
-              time={time}
-              setTime={setTime}
-              max={40}
-              delay={200}
-              pause = 'max'
-            />
+            {expanded && (
+              <PlayButtonDateTime
+                time={time}
+                setTime={setTime}
+                max={40}
+                delay={200}
+                pause='max'
+              />
             )
-          }
-        </Box>
+            }
+          </Box>
 
 
 
-  
+
 
 
           {/* Control Panel */}
@@ -293,19 +294,21 @@ const Index = () => {
             </Group>
 
           </ControlPanel>
+
           {!expanded && (
             <Box
               sx={{
                 position: 'absolute',
                 top: 0,
                 right: showMenu ? [
-              0,
-              'calc(2 * 100vw / 8 + 18px - 1px)',
-              'calc(2 * 100vw / 12 + 24px - 1px)',
-              'calc(2 * 100vw / 12 + 35px)',
-            ] : 0, // same width as the menu
+                  0,
+                  'calc(2 * 100vw / 8 + 18px - 1px)',
+                  'calc(2 * 100vw / 12 + 24px - 1px)',
+                  'calc(2 * 100vw / 12 + 35px)',
+                ] : 0, // same width as the menu
                 transition: 'right 0.3s ease',
                 zIndex: 10,
+                pointerEvents: 'none',
               }}
             >
               <Title expanded={expanded} setExpanded={setExpanded} />

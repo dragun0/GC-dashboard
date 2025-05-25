@@ -11,7 +11,7 @@ import {
   Ticks,
   StackedBar,
 } from '@carbonplan/charts'
-import { Bar as CPBar } from '@carbonplan/charts'
+//import { Bar as CPBar } from '@carbonplan/charts'
 import { Box, Flex, Divider, useThemeUI } from 'theme-ui'
 import Header from '../components/header'
 import Menu from '../components/menu'
@@ -26,6 +26,7 @@ import {
   Dimmer,
   Filter,
   Select,
+  Slider,
 } from '@carbonplan/components'
 import { Left } from '@carbonplan/icons'
 import Metadata from '../components_plotsPage/metadata'
@@ -46,6 +47,8 @@ import {
   RadialBarChart,
   RadialBar,
 } from 'recharts'
+import { usePlotsContext } from '../components_plotsPage/PlotsContext'
+import MonthSlider from '../components_plotsPage/month-slider'
 //import { Article, Tool } from '@carbonplan/layouts'
 //import * as CarbonComponents from '@carbonplan/components'
 //console.log(CarbonComponents)
@@ -62,11 +65,20 @@ const sx = {
   },
   heading: {
     fontFamily: 'heading',
+    fontWeight: 'bold',
     letterSpacing: 'smallcaps',
-    textTransform: 'uppercase',
-    fontSize: [2, 2, 2, 3],
+    // textTransform: 'uppercase',
+    fontSize: [3, 3, 3, 4],
     mb: [2],
   },
+  subheading: {
+    fontFamily: 'mono',
+    letterSpacing: 'mono',
+    color: 'secondary',
+    fontSize: [1],
+    textTransform: 'uppercase',
+  },
+
   legend: {
     color: 'primary ',
     fontFamily: 'mono',
@@ -76,6 +88,8 @@ const sx = {
     mt: ['3px', '3px', '3px', '1px'],
   },
 }
+
+
 
 // recharts timesteps series plot (mock data)
 const newdata = Array.from({ length: 41 }, (_, x) => ({
@@ -148,6 +162,8 @@ const RadialBarData = [
 
 const plotsPage = () => {
 
+  const { month, setMonth } = usePlotsContext()
+
   const { theme } = useThemeUI()
 
   const [showMenu, setShowMenu] = useState(false)
@@ -192,6 +208,8 @@ const plotsPage = () => {
   const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
 
   const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
+
+  const [models, setModel] = useState({ GC: true, ECMWFIFS: false, ECMWFAIFS: false })
 
   const month_options = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -255,10 +273,13 @@ const plotsPage = () => {
                 </Box>
                 <Box sx={{ mb: [0, 0, 4], mt: [0, 0, 5, 6] }}>
                   <Box as='p' variant='styles.p'>
-                    Nulla gravida enim nec tellus semper dictum. Integer mi quam, commodo sit amet pretium at, consectetur eu ipsum. Phasellus eu tristique metus, sit amet elementum tellus. Nulla at cursus ipsum, eu varius turpis. Sed neque urna, egestas quis varius et, ullamcorper eget nulla. Donec eget sagittis justo. Morbi ac mauris sem.
+                    Nulla gravida enim nec tellus semper dictum. Integer mi quam, commodo sit amet pretium at,
+                    consectetur eu ipsum. Phasellus eu tristique metus, sit amet elementum tellus. Nulla at cursus ipsum,
+                    eu varius turpis. Sed neque urna, egestas quis varius et, ullamcorper eget nulla. Donec eget sagittis justo.
+                    Morbi ac mauris sem.
+                    Duis vel nisl eget ex accumsan scelerisque. Morbi enim dolor, aliquam eget sollicitudin id,
+                    dictum sit amet quam. Aenean quis nisi congue, elementum ligula at, rhoncus ligula. Ut massa quam
 
-                    Duis vel nisl eget ex accumsan scelerisque. Morbi enim dolor, aliquam eget sollicitudin id, dictum sit amet quam. Aenean quis nisi congue, elementum ligula at, rhoncus ligula. Ut massa quam
-                    Duis vel nisl eget ex accumsan scelerisque. Morbi enim dolor, aliquam eget sollicitudin id, dictum sit amet quam. Aenean quis nisi congue, elementum ligula at, rhoncus ligula. Ut massa quam, volutpat non mauris in, luctus condimentum turpis. Donec condimentum nulla augue, eget porta est commodo ac. Pellentesque vitae neque felis. Donec elementum, nunc eu pulvinar maximus, purus mi tristique odio, vitae tristique ligula ante eu enim. In ac nulla blandit ligula convallis rutrum. Aliquam gravida lectus non tortor suscipit, laoreet tempus magna consectetur. Proin facilisis semper nulla sit amet accumsan. Nullam metus felis, finibus sit amet ante ac, faucibus pellentesque nisi. Aliquam mattis nulla lorem, id interdum velit pretium id.
                   </Box>
                 </Box>
               </Box>
@@ -310,7 +331,9 @@ const plotsPage = () => {
                   <Box
                     sx={{ color: 'blue', fontFamily: 'faux', letterSpacing: 'faux' }}
                   >
-                    Duis vel nisl eget ex accumsan scelerisque. Morbi enim dolor, aliquam eget sollicitudin id, dictum sit amet quam. Aenean quis nisi congue, elementum ligula at, rhoncus ligula. Ut massa quam, volutpat non mauris in, luctus condimentum turpis. Donec condimentum nulla augue, eget porta est commodo ac. Pellentesque vitae neque felis.
+                    Duis vel nisl eget ex accumsan scelerisque. Morbi enim dolor, aliquam eget sollicitudin id,
+                    dictum sit amet quam. Aenean quis nisi congue, elementum ligula at, rhoncus ligula. Ut massa quam,
+                    volutpat non mauris in, luctus condimentum turpis.
                   </Box>
                 </Box>
               </Box>
@@ -319,7 +342,7 @@ const plotsPage = () => {
 
 
 
-          {/* Global Region Title  */}
+          {/* Title - Global Extent  */}
           <Row >
             <Column start={[1, 2]} width={[7]}>
               <Box sx={{
@@ -339,15 +362,33 @@ const plotsPage = () => {
                   >
                     <Box
                       sx={{
-                        ...sx.heading,
-                        fontFamily: 'faux',
-                        mb: 0,
-                        // letterSpacing: 'smallcaps',
-
-                        // pt: [0, 0, '42px', '55px'],  //  pt: tool ? [0, 0, '42px', '55px'] : [0, 0, '42px', '23px'],
+                        display: 'flex',
+                        alignItems: 'baseline', // aligns text on same baseline
+                        gap: [2, 3, 4],
+                        flexWrap: 'wrap',       // allows wrapping on small screens
                       }}
                     >
-                      Global Extent
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          fontFamily: 'faux',
+                          //   textTransform: 'uppercase',
+                          letterSpacing: 'smallcaps',
+                          mb: 0,
+                          display: 'inline',
+                        }}
+                      >
+                        Global Extent
+                      </Box>
+
+                      <Box
+                        sx={{
+                          ...sx.subheading,
+                          display: 'inline',
+                        }}
+                      >
+                        90°N – 90°S | 180°W – 180°E
+                      </Box>
                     </Box>
                   </TooltipWrapper>
                 </Box>
@@ -355,8 +396,117 @@ const plotsPage = () => {
               </Box>
 
 
+
               <Row>
                 <Column start={[1, 1]} width={[13]}>
+
+                  {/* Title Section - Lead Times Performance Title */}
+                  <Box sx={{
+                    pt: [3, 4, 5, 6],
+                    pb: [1, 2, 3, 4],
+
+                  }}>
+                    <TooltipWrapper
+                      tooltip=' Compares the performance of the forecast models at the different forecast lead times of the selected month, averaged over all spatial points in the region.'
+                    >
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          //  fontFamily: 'mono',
+                          textTransform: 'uppercase',
+                          color: 'blue',
+
+
+
+                        }}>
+                        Lead Times Performance
+
+
+                      </Box>
+                    </TooltipWrapper>
+                  </Box>
+
+
+                  {/* Filters - Lead Times plot */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',       // allows wrapping on small screens
+                      gap: 8,                  // adds spacing between filters
+                      // mt: 3,                   // margin above the filters
+                      // mb: 3,                   // margin below the filters
+
+                      alignItems: 'center',    // vertically align filters
+                    }}
+                  >
+                    <Box>
+                      <Filter
+                        values={variables}
+                        setValues={setVariables}
+                        multiSelect={false}
+                      />
+                    </Box>
+
+                    <Box>
+                      <Filter
+                        values={metrics}
+                        setValues={setMetrics}
+                        multiSelect={false}
+                      // labels={{ q: 'Specific humidity' }}
+                      />
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',       // allows wrapping on small screens
+                        gap: 3,                  // adds spacing between selects
+
+                        alignItems: 'center',    // vertically align selects
+                      }}
+                    >
+
+                      <Select size='xs'
+                        sxSelect={{
+                          textTransform: 'uppercase',
+                          fontFamily: 'mono',
+                          fontSize: [1, 1, 1, 2],
+                          width: '100%',
+                          //   pb: [1],
+                        }}>
+                        <option>2024</option>
+
+                      </Select>
+
+
+
+                      <Select
+                        size='xs'
+                        //  onChange={handleMonthChange}
+                        sxSelect={{
+                          textTransform: 'uppercase',
+                          fontFamily: 'mono',
+                          fontSize: [1, 1, 1, 2],
+                          width: '100%',
+                          //   pb: [1],
+                        }}>
+                        {month_options.map((month) => (
+                          <option
+                            key={month}
+                            value={month}
+                          >
+                            {month}
+                          </option>
+                        ))}
+                      </Select>
+
+
+                    </Box>
+
+                  </Box>
+
+
+
                   <Box sx={{
                     ...sx.label,
                     fontSize: [0, 0, 0, 1],
@@ -416,44 +566,185 @@ const plotsPage = () => {
 
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <Box
-                    sx={{
-                      pt: 30,
-                      //    pb: 30,
-                      //   borderRadius: 'xl',
-                      height: '500px',
-                      width: '100%',
-                      // make map less high (i.e. decreae height)
-                    }}
-                  >
+                  {/* Title Section - Spatial Performance */}
+                  <Box sx={{
+                    pt: [3, 4, 5, 6],
+                    pb: [1, 2, 3, 4],
 
-                    <Minimap projection={naturalEarth1}>
-                      <Path
-                        stroke={theme.colors.primary}
-                        source={'https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json'}
-                        feature={'land'}
-                      />
-                      <Graticule stroke={theme.colors.primary} />
-                      <Sphere fill={theme.colors.background} />
-                      <Raster
-                        clim={[0, 50000000]}
-                        mode='lut'
-                        nullValue={9.969209968386869e36}
-                        source={
-                          'https://carbonplan-climatetrace.s3.us-west-2.amazonaws.com/v0.4/blog/total_emissions.zarr'
-                        }
-                        variable={'emissions'}
-                        colormap={colormap}
+                  }}>
+                    <TooltipWrapper
+                      tooltip=' Visualises the performance of the selected forecast model in different parts of the regional extent averaged over all lead times of the selected month.'
+                    >
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          //   fontFamily: 'mono',
+                          textTransform: 'uppercase',
+                          color: 'blue',
 
-                      />
-                    </Minimap>
+
+
+                        }}>
+                        Spatial Performance
+
+
+                      </Box>
+                    </TooltipWrapper>
                   </Box>
+
+                  {/* Months slider */}
+                  <Box sx={{
+                    mt: 2,
+                    mb: 2,
+                  }}>
+                    <MonthSlider
+
+                      max={12}
+                      delay={400}
+                      pause='max'
+                    />
+                  </Box>
+
+
+                  <Row>
+                    {/* Left column: Mini Map filters */}
+                    <Column start={[1, 1]} width={[2]}>
+                      <Box
+                        sx={{
+                          pt: 3,
+                          pb: 3,
+
+                        }}
+                      >
+                        {/* Filters */}
+                        <Box
+                          sx={{
+                            pb: 3,
+                          }}
+                        >
+                          <Filter
+                            values={models}
+                            setValues={setModel}
+                            multiSelect={false}
+                          // labels={{ q: 'Specific humidity' }}
+                          />
+                        </Box>
+
+                        <Box
+                          sx={{
+                            pb: 3,
+                          }}
+                        >
+                          <Filter
+                            values={variables}
+                            setValues={setVariables}
+                            multiSelect={false}
+                          />
+                        </Box>
+                        <Filter
+                          values={metrics}
+                          setValues={setMetrics}
+                          multiSelect={false}
+                        // labels={{ q: 'Specific humidity' }}
+                        />
+
+                      </Box>
+                    </Column>
+
+                    {/* Right column: Minimap */}
+                    <Column start={[3]} width={[10]}>
+                      <Box
+                        sx={{
+
+                          //  color: 'primary',
+
+                          pb: 30
+                        }}
+                      >
+                        <Minimap projection={naturalEarth1}>
+                          <Path
+                            stroke={theme.colors.primary}
+                            source={'https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json'}
+                            feature={'land'}
+                          />
+                          <Graticule stroke={theme.colors.primary} />
+                          <Sphere fill={theme.colors.background} />
+                          <Raster
+                            clim={[0, 50000000]}
+                            mode='lut'
+                            nullValue={9.969209968386869e36}
+                            source={
+                              'https://carbonplan-climatetrace.s3.us-west-2.amazonaws.com/v0.4/blog/total_emissions.zarr'
+                            }
+                            variable={'emissions'}
+                            colormap={colormap}
+                          />
+                        </Minimap>
+                      </Box>
+                    </Column>
+                  </Row>
                 </Column>
               </Row>
 
 
+
               <Row>
                 <Column start={[1, 1]} width={[7, 7]}>
+                  {/* Title Section - Monthly Performance */}
+                  <Box sx={{
+                    pt: [3, 4, 5, 6],
+                    pb: [1, 2, 3, 4],
+
+                  }}>
+                    <TooltipWrapper
+                      tooltip=' Visualises the performance of the selected forecast model in different parts of the regional extent averaged over all lead times of the selected month.'
+                    >
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          //   fontFamily: 'mono',
+                          textTransform: 'uppercase',
+                          color: 'blue',
+
+                        }}>
+                        Monthly Performance
+
+
+                      </Box>
+                    </TooltipWrapper>
+                  </Box>
+
+
+                  {/* Filters - Monthly performances plot */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',       // allows wrapping on small screens
+                      gap: 6,                  // adds spacing between filters
+                      // mt: 3,                   // margin above the filters
+                      // mb: 3,                   // margin below the filters
+                      //  justifyContent: 'space-between', // Distributes filters evenly across the row
+                      alignItems: 'center',    // vertically align filters
+                    }}
+                  >
+                    <Box>
+                      <Filter
+                        values={variables}
+                        setValues={setVariables}
+                        multiSelect={false}
+                      />
+                    </Box>
+
+                    <Box>
+                      <Filter
+                        values={metrics}
+                        setValues={setMetrics}
+                        multiSelect={false}
+                      // labels={{ q: 'Specific humidity' }}
+                      />
+                    </Box>
+                  </Box>
+
                   <Box sx={{
                     ...sx.label,
                     fontSize: [0, 0, 0, 1],
@@ -507,6 +798,89 @@ const plotsPage = () => {
                 </Column>
 
                 <Column start={[1, 8]} width={[5, 5]}>
+                  {/* Title Section - Variables Performance */}
+                  <Box sx={{
+                    pt: [3, 4, 5, 6],
+                    pb: [1, 2, 3, 4],
+
+                  }}>
+                    <TooltipWrapper
+                      tooltip=' Visualises the performance of the selected forecast model in different parts of the regional extent averaged over all lead times of the selected month.'
+                    >
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          //    fontFamily: 'mono',
+                          textTransform: 'uppercase',
+                          color: 'blue',
+
+                        }}>
+                        Variables Performance
+
+                      </Box>
+                    </TooltipWrapper>
+                  </Box>
+
+
+                  {/* Filters - Variable performances plot */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexWrap: 'wrap',       // allows wrapping on small screens
+                      gap: 3,                  // adds spacing between filters
+                      // mt: 3,                   // margin above the filters
+                      // mb: 3,                   // margin below the filters
+                      justifyContent: 'space-between', // Distributes filters evenly across the row
+                      alignItems: 'center',    // vertically align filters
+                    }}
+                  >
+
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',       // allows wrapping on small screens
+                        gap: 3,                  // adds spacing between selects
+
+                        alignItems: 'center',    // vertically align selects
+                      }}
+                    >
+
+                      <Select size='xs'
+                        sxSelect={{
+                          textTransform: 'uppercase',
+                          fontFamily: 'mono',
+                          fontSize: [1, 1, 1, 2],
+                          width: '100%',
+                          //   pb: [1],
+                        }}>
+                        <option>2024</option>
+
+                      </Select>
+
+                      <Select
+                        size='xs'
+                        //  onChange={handleMonthChange}
+                        sxSelect={{
+                          textTransform: 'uppercase',
+                          fontFamily: 'mono',
+                          fontSize: [1, 1, 1, 2],
+                          width: '100%',
+                          //   pb: [1],
+                        }}>
+                        {month_options.map((month) => (
+                          <option
+                            key={month}
+                            value={month}
+                          >
+                            {month}
+                          </option>
+                        ))}
+                      </Select>
+                    </Box>
+                  </Box>
+
+
+
                   <Box sx={{
                     ...sx.label,
                     fontSize: [0, 0, 0, 1],
@@ -526,18 +900,31 @@ const plotsPage = () => {
                         margin={{
                           top: 5,
                           right: 5,
-                          left: 20,
+                          left: 5,
                           bottom: 5,
                         }}
                       >
                         <CartesianGrid stroke={theme.colors.secondary} vertical={false} strokeWidth={0.15} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
+                        <XAxis dataKey="name"
+                          label={{
+                            value: 'Variable',
+                            position: 'insideBottom',
+                            offset: 0,
+                            dy: 10,
+                          }} />
+                        <YAxis label={{
+                          value: 'Correlation Coefficient',
+                          angle: -90,
+                          position: 'insideLeft',
+                          dy: 80,
+                          dx: 0,
+                        }} />
                         <Tooltip />
-                        <Legend />
+                        <Legend wrapperStyle={{ paddingTop: 30 }} />
                         <Bar dataKey="GraphCast" stackId="a" fill="#8884d8" />
-                        <Bar dataKey="ecmwfAIFS" stackId="a" fill="#82ca9d" />
-                        <Bar dataKey="ecmwfIFS" stackId="a" fill="#FF746C" />
+                        <Bar dataKey="ecmwfIFS" stackId="a" fill="#82ca9d" />
+                        <Bar dataKey="ecmwfAIFS" stackId="a" fill="#FF746C" />
+
                       </BarChart>
                     </ResponsiveContainer>
 
@@ -600,8 +987,8 @@ const plotsPage = () => {
                   pb: [1, 2, 3, 4],
                 }}>
                   <TooltipWrapper
-                    tooltip=' Averaged evaluation metric across all spatial points in the region,
-                    and all time steps (lead times) within the selected time frame. '
+                    tooltip=' Evaluation metric averaged over all spatial points in the region,
+                    and all lead times within the selected time frame.'
                   >
                     <Box
                       sx={{
@@ -723,7 +1110,7 @@ const plotsPage = () => {
 
 
 
-        </Box>
+        </Box >
 
 
 
@@ -752,6 +1139,14 @@ const plotsPage = () => {
 
 
 export default plotsPage
+
+
+
+// Tropics: 23.5°N – 23.5°S | 180°W – 180°E
+
+// Extra-Tropics: >23.5°N & <23.5°S | 180°W – 180°E
+
+// Africa: 37°N – 35°S | 17°W – 51°E
 
 
 //  <Metadata mode= {'scroll'} />

@@ -30,7 +30,7 @@ const link = {
 }
 
 function Menu({ visible, setExpanded }) {
-    const router = useRouter()
+  const router = useRouter()
 
   const handleMapClick = () => {
     if (router.pathname === '/plotsPage') {
@@ -48,25 +48,23 @@ function Menu({ visible, setExpanded }) {
         position: 'fixed',
         right: 0,
         top: 55,
-        width: visible
-          ? [
-              0,
-              'calc(2 * 100vw / 8 + 18px - 1px)',
-              'calc(2 * 100vw / 12 + 24px - 1px)',
-              'calc(2 * 100vw / 12 + 35px)',
-            ]
+        width: visible ?
+          [
+            0,
+            'calc(2 * 100vw / 8 + 18px - 1px)',
+            'calc(2 * 100vw / 12 + 24px - 1px)',
+            'calc(2 * 100vw / 12 + 35px)',
+          ]
           : [
-              0,
-              'calc(2 * 100vw / 8 + 18px)',
-              'calc(2 * 100vw / 12 + 24px)',
-              'calc(2 * 100vw / 12 + 35px)',
-            ],
+            0,
+            0
+          ],
         height: '110%',
         backgroundColor: 'background',
         zIndex: 1000,
-      //  pr: [3, 5, 5, 6],
+        //  pr: [3, 5, 5, 6],
         pl: [3, 4, 5, 6],
-     //   pt: [5, 5, 5, 6],
+        //   pt: [5, 5, 5, 6],
         mt: -60,
         transition: '0.25s',
       }}
@@ -80,7 +78,7 @@ function Menu({ visible, setExpanded }) {
             }}
             onClick={handleMapClick}
           //  onClick={() => setExpanded(true)}
-            
+
           >
             Map
           </Link>
@@ -89,7 +87,7 @@ function Menu({ visible, setExpanded }) {
             href="/plotsPage"
             sx={{
               ...link,
-             
+
             }}
           >
             Explainer
@@ -99,13 +97,13 @@ function Menu({ visible, setExpanded }) {
             href='https://carbonplan.org/research'
             sx={{
               ...link,
-             
+
             }}
           >
             Paper
           </Link>
-          
-          
+
+
         </Column>
       </Row>
     </Box>

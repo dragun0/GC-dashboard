@@ -60,7 +60,7 @@ const PlayButtonDateTime = ({
       timeRef.current = next
       setTime(next)
 
-      // 🔥 Check ref instead of stale state
+      // Check ref instead of stale state
       if (playingRef.current) {
         tick()
       }
@@ -127,9 +127,9 @@ const PlayButtonDateTime = ({
       }}
       disabled={disabled}
     >
-     
-        {formattedDate}
-      
+
+      {formattedDate}
+
     </Button>
   )
 }

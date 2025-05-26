@@ -5,6 +5,7 @@ const PlotsContext = createContext(null)
 export const PlotsContextProvider = ({ children }) => {
     // for layer change
     const [month, setMonth] = useState(1)
+    const [time, setTime] = useState(0)
 
 
     return (
@@ -13,6 +14,8 @@ export const PlotsContextProvider = ({ children }) => {
             value={{
                 month,
                 setMonth,
+                time,
+                setTime,
             }}
 
         >
@@ -28,10 +31,14 @@ export const usePlotsContext = () => {
     const {
         month,
         setMonth,
+        time,
+        setTime,
     } = useContext(PlotsContext)
 
     return {
         month,
         setMonth,
+        time,
+        setTime,
     }
 }

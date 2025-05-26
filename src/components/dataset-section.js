@@ -85,14 +85,16 @@ const DatasetControls = () => {
   }, [setEvaluationMetric])
 
   const getMonthCode = (monthName) => {
-  const monthIndex = month_options.indexOf(monthName) + 1
-  const paddedMonth = monthIndex.toString().padStart(2, '0')
-  return paddedMonth
+    const monthIndex = month_options.indexOf(monthName) + 1
+    const paddedMonth = monthIndex.toString().padStart(2, '0')
+    return paddedMonth
   }
+
 
   const handleMonthChange = useCallback((e) => {
     console.log('handleMonthChange', e.target.value)
     const month = e.target.value
+    setSelectedMonth(month)
     const monthCode = getMonthCode(month)
     setMonth(monthCode)
   }, [setMonth])
@@ -117,6 +119,24 @@ const DatasetControls = () => {
   // at each time step?
 
 
+  // used to make ECMWF AIFS unavailable for January and February
+  const [selectedMonth, setSelectedMonth] = useState('January')
+
+  // used to conditionally show ECMWF AIFS option only when month is not January or February
+  const showAIFS = !['January', 'February'].includes(selectedMonth)
+
+  // conditional model labels based on showAIFS
+  const modelLabels = {
+    marsfc: 'ECMWF IFS',
+    gc: 'GraphCast',
+    ...(showAIFS && { marsai: 'ECMWF AIFS' }),
+  }
+  // conditional model values based on modelLabels
+  const modelValues = Object.fromEntries(
+    Object.entries(models).filter(([key]) => key in modelLabels)
+  )
+
+
   return (
     <>
       <Box sx={sx.heading}>Datasets</Box>
@@ -126,15 +146,14 @@ const DatasetControls = () => {
         </Column>
         <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]} sx={{ pb: [1] }}>
           <TooltipWrapper
-            tooltip='Select a forecasting model to show on the map. Chose between a physics-based deterministic model (ECMWF IFS) or a machine learning deterministic model (GraphCast or ECMWF AI)'
+            tooltip='Select a forecasting model to show on the map. Chose between a physics-based deterministic model (ECMWF IFS) or a 
+            machine learning deterministic model (GraphCast or ECMWF AI)'
           >
-    
+
             <Filter
-              values={models}
-              labels={{ marsfc: 'ECMWF IFS', gc: 'GraphCast', marsai: 'ECMWF AIFS' }}
-            //  disabled = {{ marsai: false}}
-             // setValues={setModels}
-            // add function that disables ECMWF AIFS option when month = jan, feb, or march
+              values={modelValues}
+
+              labels={modelLabels}
               setValues={(newModel) => {
                 setModels(newModel)
                 // Call handleModelChange when the filter changes
@@ -151,7 +170,7 @@ const DatasetControls = () => {
 
       <Row columns={[6, 8, 4, 4]}>
         <Column start={1} width={[2, 2, 1, 1]} sx={{ ...sx.label, pb: [1] }}>
-          Evaluation Metric 
+          Evaluation Metric
         </Column>
         <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]} sx={{ pb: [1] }}>
           <TooltipWrapper
@@ -208,7 +227,8 @@ const DatasetControls = () => {
         <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]} sx={{ pb: [1] }}>
 
           <TooltipWrapper
-            tooltip='Select a time frame for the forecast assessment. All models have a lead time of 10 days, forecasted in 6 hour increments. The ECMWF AIFS model has only been deployed from April 2024 onwards.'
+            tooltip='Select a time frame for the forecast assessment. All models have a lead time of 10 days, forecasted in 6 hour increments. 
+            The ECMWF AIFS model has only been running since March 2024, therefore no data is available for January and February.'
           >
 
 
@@ -236,18 +256,18 @@ const DatasetControls = () => {
                 pb: [1],
               }}>
               {month_options.map((month) => (
-              <option
-                key={month}
-                value={month}
-                disabled={
-                  forecastModel === 'marsai' &&
-                  ['January', 'February', 'March'].includes(month)
-                }
-              >
-                {month}
-              </option>
-            ))}
-          </Select>
+                <option
+                  key={month}
+                  value={month}
+                  disabled={
+                    forecastModel === 'marsai' &&
+                    ['January', 'February'].includes(month)
+                  }
+                >
+                  {month}
+                </option>
+              ))}
+            </Select>
 
           </TooltipWrapper>
 

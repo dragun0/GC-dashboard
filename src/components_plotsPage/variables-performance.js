@@ -11,6 +11,8 @@ import {
     BarChart,
     Bar,
 } from 'recharts'
+import { useState, useCallback, useEffect } from 'react'
+
 
 
 const sx = {
@@ -81,15 +83,71 @@ const StackedBarData = [
     },
 ]
 
-const month_options = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December', 'All months'
-]
-
 
 const VariablesPerformance = () => {
 
     const { theme } = useThemeUI()
+
+    // for the month select options
+    const month_options = [
+        'Annual', 'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+
+    // function to convert month name to month code
+    // (1 for January, 2 for February, ..., 12 for December, 13 for Annual)
+    const getMonthCode = (monthName) => {
+        if (monthName === 'Annual') return 13;
+
+        // Remove 'Annual' from the array temporarily for index mapping
+        const monthList = month_options.filter((m) => m !== 'Annual');
+        const monthindex = monthList.indexOf(monthName);
+        return monthindex >= 0 ? monthindex + 1 : null; // return 1–12 or null if not found
+    };
+
+    const [selectedMonth, setSelectedMonth] = useState(13)
+    const [globalRData, setGlobalRData] = useState([]);
+
+    // handle month change
+    const handleMonthChange = useCallback((e) => {
+        console.log('handleMonthChange', e.target.value)
+        const month = e.target.value
+        const monthCode = getMonthCode(month)
+        setSelectedMonth(monthCode)
+    }, [setSelectedMonth])
+
+    //  for structuring the json data
+    //const MODELS = ['gc', 'marsai', 'marsfc'];
+
+    useEffect(() => {
+        if (selectedMonth) {
+            fetch('/plotsPageData/Global/PearsonR_monthly_allmodels.json')
+                .then((res) => res.json())
+                .then((json) => {
+                    const filtered = json.filter((entry) => entry.month === selectedMonth);
+
+                    const variables = ['u10', 'v10', 't2m', 'msl', 'q'];
+
+                    console.log("Filtered data:", filtered);
+
+                    const formatted = variables.map((variable) => {
+                        const entry = { variable }; // x-axis key
+                        filtered.forEach((item) => {
+                            entry[item.model] = item[variable];
+                        });
+                        return entry;
+                    });
+                    console.log("Formatted data:", formatted);
+                    setGlobalRData(formatted);
+                })
+                .catch((error) => {
+                    console.error('Failed to load or process data.json:', error);
+                });
+        }
+    }, [selectedMonth]);
+
+
+
 
     return (
         <>
@@ -154,7 +212,7 @@ const VariablesPerformance = () => {
 
                     <Select
                         size='xs'
-                        //  onChange={handleMonthChange}
+                        onChange={handleMonthChange}
                         sxSelect={{
                             textTransform: 'uppercase',
                             fontFamily: 'mono',
@@ -191,7 +249,7 @@ const VariablesPerformance = () => {
                     <BarChart
                         width={500}
                         height={200}
-                        data={StackedBarData}
+                        data={globalRData}
                         margin={{
                             top: 5,
                             right: 5,
@@ -200,7 +258,7 @@ const VariablesPerformance = () => {
                         }}
                     >
                         <CartesianGrid stroke={theme.colors.secondary} vertical={false} strokeWidth={0.15} />
-                        <XAxis dataKey="name"
+                        <XAxis dataKey="variable"
                             label={{
                                 value: 'Variable',
                                 position: 'insideBottom',
@@ -216,9 +274,9 @@ const VariablesPerformance = () => {
                         }} />
                         <Tooltip />
                         <Legend wrapperStyle={{ paddingTop: 30 }} />
-                        <Bar dataKey="GraphCast" stackId="a" fill="#8884d8" />
-                        <Bar dataKey="ecmwfIFS" stackId="a" fill="#82ca9d" />
-                        <Bar dataKey="ecmwfAIFS" stackId="a" fill="#FF746C" />
+                        <Bar dataKey="gc" name="GRAPHCAST" stackId="a" fill="#8884d8" />
+                        <Bar dataKey="marsfc" name="ECMWF-IFS" stackId="a" fill="#82ca9d" />
+                        <Bar dataKey="marsai" name="ECMWF-AIFS" stackId="a" fill="#FF746C" />
 
                     </BarChart>
                 </ResponsiveContainer>

@@ -121,23 +121,28 @@ const VariablesPerformance = () => {
 
     useEffect(() => {
         if (selectedMonth) {
-            fetch('/plotsPageData/Global/PearsonR_monthly_allmodels.json')
+            fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
                 .then((res) => res.json())
                 .then((json) => {
-                    const filtered = json.filter((entry) => entry.month === selectedMonth);
-
                     const variables = ['u10', 'v10', 't2m', 'msl', 'q'];
+                    const filtered = json.filter(
+                        (entry) =>
+                            entry.month === selectedMonth &&
+                            entry.metric === 'r' &&
+                            variables.every((variable) => entry[variable] !== null)
+                    );
 
-                    console.log("Filtered data:", filtered);
+
+                    // console.log("Filtered data:", filtered);
 
                     const formatted = variables.map((variable) => {
                         const entry = { variable }; // x-axis key
                         filtered.forEach((item) => {
-                            entry[item.model] = item[variable];
+                            entry[item.model] = Number(item[variable]?.toFixed(4));
                         });
                         return entry;
                     });
-                    console.log("Formatted data:", formatted);
+                    //   console.log("Formatted data:", formatted);
                     setGlobalRData(formatted);
                 })
                 .catch((error) => {

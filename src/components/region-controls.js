@@ -13,39 +13,39 @@ import { SidebarFooter } from '@carbonplan/layouts'
 export const RegionControls = () => {
   const { showRegionControls, setShowRegionControls, showRegionPicker, regionData, band, time } = useRegionContext()
 
-return (
-  <SidebarFooter
+  return (
+    <SidebarFooter
+      sx={{
+        pt: [3],
+        pb: [3],
+
+      }}
+    >
+      <ExpandingSection
+        label='Regional Stats'
+        onClick={() => setShowRegionControls(!showRegionControls)}
+
+      >
+        <Box
           sx={{
-            pt: [3],
-            pb: [3],
-            
+            width: '100%',
+            height: ['200px', '200px', '132px', '200px'],
+            position: 'relative',
+
+
           }}
         >
-    <ExpandingSection
-      label='Regional Stats'
-      onClick={() => setShowRegionControls(!showRegionControls)}
-      
-    >
-      <Box
-        sx={{
-          width: '100%',
-          height: ['200px', '200px', '132px', '200px'],
-          position: 'relative',
-          
-          
-        }}
-      >
-        <DataDisplay />
+          <DataDisplay />
 
 
-    </Box>
-    </ExpandingSection>
+        </Box>
+      </ExpandingSection>
     </SidebarFooter>
 
   )
 }
-  export default RegionControls
-  
+export default RegionControls
+
 /*
 export const RegionControls = ({ sx }) => {
   const { showRegionPicker, regionData, setShowRegionPicker, band, time } = useRegionContext()
@@ -103,33 +103,33 @@ export const RegionControls = ({ sx }) => {
       </Box>
 
       */
-      
-      {/* Only render AnimateHeight when showRegionPicker is true */}
 
-      /*
+{/* Only render AnimateHeight when showRegionPicker is true */ }
 
-      {showRegionPicker && (
-        <AnimateHeight
-          duration={200}
-          height={showRegionPicker ? 'auto' : 0}
-          easing={'linear'}
-          style={{ pointerEvents: 'none' }}
-        >
-          {regionData && !regionData.loading ? ( // delay rendering of DataDisplay until regionData is ready
-            <Box sx={{ pt: [2], pb: [1], width: '100%', minHeight: '188px' }}>
-              <DataDisplay />
-            </Box>
-          ) : ( 
-            <Box sx={{ pt: [2], pb: [1], width: '100%', minHeight: '188px' }}>
-              Loading region data...
-            </Box>
-          )}
-          
-        </AnimateHeight>
-      )}
-    </SidebarFooter>
+/*
+
+{showRegionPicker && (
+  <AnimateHeight
+    duration={200}
+    height={showRegionPicker ? 'auto' : 0}
+    easing={'linear'}
+    style={{ pointerEvents: 'none' }}
+  >
+    {regionData && !regionData.loading ? ( // delay rendering of DataDisplay until regionData is ready
+      <Box sx={{ pt: [2], pb: [1], width: '100%', minHeight: '188px' }}>
+        <DataDisplay />
+      </Box>
+    ) : ( 
+      <Box sx={{ pt: [2], pb: [1], width: '100%', minHeight: '188px' }}>
+        Loading region data...
+      </Box>
+    )}
     
-  )
+  </AnimateHeight>
+)}
+</SidebarFooter>
+ 
+)
 }
 
 export default RegionControls

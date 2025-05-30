@@ -51,6 +51,7 @@ const sx = {
     },
 }
 
+/*
 const MonthsData = Array.from({ length: 12 }, (_, x) => ({
     x,
     GraphCast: 10 + Math.sin(x / 4) * 5 + x * 0.2,
@@ -58,11 +59,16 @@ const MonthsData = Array.from({ length: 12 }, (_, x) => ({
     ecmwfAIFS: 11 + Math.sin(x / 6) * 3 + x * 0.3,
 }));
 
-
+*/
 
 const MonthlyPerformance = () => {
 
+    // UI states
     const { theme } = useThemeUI()
+
+    // only necessary for highlighting the radio buttons
+    const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
+    const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
     /*
         const [allData, setAllData] = useState({})
         // const [selectedVariable, setSelectedVariable] = useState('t2m')
@@ -83,13 +89,14 @@ const MonthlyPerformance = () => {
 
     const [data, setData] = useState([]);
     const [selectedVariable, setSelectedVariable] = useState('t2m');
+    const [selectedMetric, setSelectedMetric] = useState('rmse')
 
     const VARIABLE_UNITS = {
         u10: 'm/s',
         v10: 'm/s',
         t2m: '°C',
         msl: 'hPa',
-        q: 'g/kg', // or whatever is correct for your data
+        q: 'g/kg',
     };
 
     // handle variable change
@@ -99,8 +106,15 @@ const MonthlyPerformance = () => {
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
+    // handle metric change
+    const handleMetricChange = useCallback((e) => {
+        console.log('handleMetricChange', e.target.value)
+        const selectedMetric = e.target.value.toLowerCase()
+        setSelectedMetric(selectedMetric)
+    }, [setSelectedMetric])
+
     useEffect(() => {
-        fetch('/plotsPageData/Global/RMSE_monthly_allmodels.json')
+        fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
@@ -108,6 +122,7 @@ const MonthlyPerformance = () => {
                         MODELS.includes(entry.model) &&
                         entry.month >= 1 &&
                         entry.month <= 12 &&
+                        entry.metric === selectedMetric &&
                         entry[selectedVariable] !== null
                 );
                 //  console.log("Filtered data:", filtered)
@@ -131,7 +146,7 @@ const MonthlyPerformance = () => {
                 //  console.log("Grouped data:", grouped)
                 setData(grouped);
             });
-    }, [selectedVariable]);
+    }, [selectedVariable, selectedMetric]);
 
 
 
@@ -154,9 +169,7 @@ const MonthlyPerformance = () => {
         setOpacity((op) => ({ ...op, [dataKey]: 1 }));
     };
 
-    // only necessary for highlighting the radio buttons
-    const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
-    const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
+
 
     return (
         <>
@@ -218,7 +231,15 @@ const MonthlyPerformance = () => {
                 <Box>
                     <Filter
                         values={metrics}
-                        setValues={setMetrics}
+                        setValues={(newMetric) => {
+                            // highlight the selected metric
+                            setMetrics(newMetric)
+                            // Call handleMetricChange when the filter changes
+                            const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
+                            if (selectedMetric) {
+                                handleMetricChange({ target: { value: selectedMetric } })
+                            }
+                        }}
                         multiSelect={false}
                     // labels={{ q: 'Specific humidity' }}
                     />
@@ -258,12 +279,17 @@ const MonthlyPerformance = () => {
                                 dy: 10,
                             }}
                         />
-                        <YAxis label={{
-                            value: VARIABLE_UNITS[selectedVariable] || '',
-                            angle: -90,
-                            position: 'insideLeft',
-                            dx: 0,
-                        }}
+                        <YAxis
+                            label={
+                                selectedMetric === 'rmse'
+                                    ? {
+                                        value: VARIABLE_UNITS[selectedVariable] || '',
+                                        angle: -90,
+                                        position: 'insideLeft',
+                                        dx: 0,
+                                    }
+                                    : undefined
+                            }
                         />
                         <Tooltip />
                         <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} wrapperStyle={{ paddingTop: 30 }} />

@@ -256,19 +256,18 @@ const plotsPage = () => {
 
 
 
-              {/* Lead Times Performance */}
-              <Row>
-                <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesPerformance />
-                </Column>
-              </Row>
-
-
               {/* Lead Times Spatial Performance */}
 
               <Row>
                 <Column start={[1, 1]} width={[13]}>
                   <LeadTimesMap />
+                </Column>
+              </Row>
+
+              {/* Lead Times Performance */}
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <LeadTimesPerformance />
                 </Column>
               </Row>
 

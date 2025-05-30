@@ -91,7 +91,7 @@ const RegionComparison = () => {
     };
 
     const [selectedVariable, setSelectedVariable] = useState('t2m')
-    const [selectedMetric, setSelectedMetric] = useState('RMSE')
+    const [selectedMetric, setSelectedMetric] = useState('rmse')
     const [selectedMonth, setSelectedMonth] = useState(13)
 
     const [globalData, setGlobalData] = useState([]);
@@ -110,6 +110,13 @@ const RegionComparison = () => {
         const selectedVariable = e.target.value
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
+
+    // handle metric change
+    const handleMetricChange = useCallback((e) => {
+        console.log('handleMetricChange', e.target.value)
+        const selectedMetric = e.target.value.toLowerCase()
+        setSelectedMetric(selectedMetric)
+    }, [setSelectedMetric])
 
 
     //  for structuring the json data
@@ -130,13 +137,14 @@ const RegionComparison = () => {
     };
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/RMSE_monthly_allmodels.json')
+        fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
                     (entry) =>
                         MODELS.includes(entry.model) &&
                         entry.month === selectedMonth &&
+                        entry.metric === selectedMetric &&
                         entry[selectedVariable] !== null
                 );
                 //  console.log("Filtered data:", filtered)
@@ -150,7 +158,7 @@ const RegionComparison = () => {
                 //   console.log("Transformed data:", transformed)
                 setGlobalData(transformed);
             });
-    }, [selectedVariable, selectedMonth]);
+    }, [selectedVariable, selectedMonth, selectedMetric]);
 
 
 
@@ -216,7 +224,15 @@ const RegionComparison = () => {
                 <Box>
                     <Filter
                         values={metrics}
-                        setValues={setMetrics}
+                        setValues={(newMetric) => {
+                            // highlight the selected metric
+                            setMetrics(newMetric)
+                            // Call handleMetricChange when the filter changes
+                            const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
+                            if (selectedMetric) {
+                                handleMetricChange({ target: { value: selectedMetric } })
+                            }
+                        }}
                         multiSelect={false}
                     // labels={{ q: 'Specific humidity' }}
                     />

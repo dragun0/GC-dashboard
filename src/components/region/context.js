@@ -17,7 +17,7 @@ export const RegionProvider = ({ children }) => {
   const [display, setDisplay] = useState(true)
   const [debug, setDebug] = useState(false)
   const [opacity, setOpacity] = useState(1)
-  const [clim, setClim] = useState([0, 24])
+  const [clim, setClim] = useState([0, 15])
   const [colormapName, setColormapName] = useState('warm')
   //console.log('regionData testing:', regionData)
 
@@ -88,7 +88,7 @@ export const useRegionContext = () => {
     setTime,
     forecastModel,
     setForecastModel,
-    evaluationMetric, 
+    evaluationMetric,
     setEvaluationMetric,
     year,
     setYear,
@@ -123,7 +123,7 @@ export const useRegionContext = () => {
     setTime,
     forecastModel,
     setForecastModel,
-    evaluationMetric, 
+    evaluationMetric,
     setEvaluationMetric,
     year,
     setYear,

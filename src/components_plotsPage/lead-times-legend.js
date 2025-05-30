@@ -1,6 +1,5 @@
-import { Box, Flex } from 'theme-ui'
-import { Group, Colorbar } from '@carbonplan/components'
-import { useRegionContext } from '../components/region'
+import { Box } from 'theme-ui'
+import { Colorbar } from '@carbonplan/components'
 import { useThemedColormap } from '@carbonplan/colormaps'
 
 const sx = {
@@ -10,19 +9,21 @@ const sx = {
   textTransform: 'uppercase',
 }
 
-const Legend = () => {
+const Legend = (props) => {
   const {
     clim,
     setClim,
-    colormapName,
-    band
-  } = useRegionContext()
+    //  colormapName,
+    colormap
+
+  } = props
 
 
   //    const colormap = useThemedColormap('warm')
 
-  const colormap = useThemedColormap(colormapName)
+  //const colormap = useThemedColormap(colormapName)
 
+  /*
   const getUnits = (band) => {
     if (band === 'u10') {
       return '(m/s)'
@@ -35,7 +36,8 @@ const Legend = () => {
       return band // Default to the band value if no match
     }
   }
-
+ 
+  */
 
 
   return (
@@ -43,8 +45,8 @@ const Legend = () => {
     <Box sx={{ ...sx, mb: 2 }}>
       <Colorbar
         colormap={colormap}
-        units={getUnits(band)}
-        label={'Absolute Error'}
+        //  units={getUnits(band)}
+        //  label={'Absolute Error'}
         clim={clim}
         setClim={setClim}
         horizontal
@@ -55,3 +57,7 @@ const Legend = () => {
 }
 
 export default Legend
+
+
+
+

@@ -24,15 +24,6 @@ const sx = {
     },
 }
 
-const CLIM_RANGES = {
-    t2m: { max: 35, min: 0 },
-    tp: { max: 35, min: 0 },
-}
-
-const DEFAULT_COLORMAPS = {
-    t2m: 'warm',
-    tp: 'cool',
-}
 
 
 

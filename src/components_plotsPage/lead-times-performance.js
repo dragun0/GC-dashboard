@@ -11,7 +11,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts'
-import { useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 
 const sx = {
     label: {
@@ -87,9 +87,93 @@ const LeadTimesPerformance = () => {
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
 
     const month_options = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December', 'Annual'
+        'Annual', 'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
     ]
+
+    // function to convert month name to month code
+    // (1 for January, 2 for February, ..., 12 for December, 13 for Annual)
+    const getMonthCode = (monthName) => {
+        if (monthName === 'Annual') return 13;
+
+        // Remove 'Annual' from the array temporarily for index mapping
+        const monthList = month_options.filter((m) => m !== 'Annual');
+        const monthindex = monthList.indexOf(monthName);
+        return monthindex >= 0 ? monthindex + 1 : null; // return 1–12 or null if not found
+    };
+
+    const MODELS = ['gc', 'marsai', 'marsfc'];
+
+    const [data, setData] = useState([]);
+    const [selectedVariable, setSelectedVariable] = useState('t2m');
+    const [selectedMetric, setSelectedMetric] = useState('rmse')
+    const [selectedMonth, setSelectedMonth] = useState(13)
+
+    const VARIABLE_UNITS = {
+        u10: 'm/s',
+        v10: 'm/s',
+        t2m: '°C',
+        msl: 'hPa',
+        q: 'g/kg',
+    };
+
+    // handle month change
+    const handleMonthChange = useCallback((e) => {
+        console.log('handleMonthChange', e.target.value)
+        const month = e.target.value
+        const monthCode = getMonthCode(month)
+        setSelectedMonth(monthCode)
+    }, [setSelectedMonth])
+
+    // handle variable change
+    const handleVariableChange = useCallback((e) => {
+        console.log('handleVariableChange', e.target.value)
+        const selectedVariable = e.target.value
+        setSelectedVariable(selectedVariable)
+    }, [setSelectedVariable])
+
+    // handle metric change
+    const handleMetricChange = useCallback((e) => {
+        console.log('handleMetricChange', e.target.value)
+        const selectedMetric = e.target.value.toLowerCase()
+        setSelectedMetric(selectedMetric)
+    }, [setSelectedMetric])
+
+    useEffect(() => {
+        fetch('/plotsPageData/Global/R_RMSE_leadtimes_allmodels.json')
+            .then((res) => res.json())
+            .then((json) => {
+                const filtered = json.filter(
+                    (entry) =>
+                        MODELS.includes(entry.model) &&
+                        entry.month === selectedMonth &&
+                        entry.metric === selectedMetric &&
+                        entry[selectedVariable] !== null &&
+                        typeof entry.time === 'number' // Ensure time is a number
+                );
+                //  console.log("Filtered data:", filtered)
+
+                // Group by 'time' (0–40)
+                const grouped = Array.from({ length: 41 }, (_, i) => {
+                    const time = i; // Rescale: 0 to 10 in 0.25 steps
+                    const timeData = { time };
+
+                    MODELS.forEach((model) => {
+                        const entry = filtered.find(
+                            (d) => d.model === model && d.time === time
+                        );
+                        if (entry) {
+                            timeData[model] = Number(entry[selectedVariable].toFixed(3)); // cap value to 3 decimal places
+                        }
+                    });
+                    //  console.log("Month data:", monthData)
+
+                    return timeData;
+                });
+                //  console.log("Grouped data:", grouped)
+                setData(grouped);
+            });
+    }, [selectedVariable, selectedMetric, selectedMonth]);
 
 
     return (
@@ -136,7 +220,15 @@ const LeadTimesPerformance = () => {
                 <Box>
                     <Filter
                         values={variables}
-                        setValues={setVariables}
+                        setValues={(newVariable) => {
+                            // highlight the selected variable
+                            setVariables(newVariable)
+                            //Call handleVariableChange when the filter changes
+                            const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
+                            if (selectedVariable) {
+                                handleVariableChange({ target: { value: selectedVariable } })
+                            }
+                        }}
                         multiSelect={false}
                     />
                 </Box>
@@ -144,7 +236,15 @@ const LeadTimesPerformance = () => {
                 <Box>
                     <Filter
                         values={metrics}
-                        setValues={setMetrics}
+                        setValues={(newMetric) => {
+                            // highlight the selected metric
+                            setMetrics(newMetric)
+                            // Call handleMetricChange when the filter changes
+                            const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
+                            if (selectedMetric) {
+                                handleMetricChange({ target: { value: selectedMetric } })
+                            }
+                        }}
                         multiSelect={false}
                     // labels={{ q: 'Specific humidity' }}
                     />
@@ -176,7 +276,7 @@ const LeadTimesPerformance = () => {
 
                     <Select
                         size='xs'
-                        //  onChange={handleMonthChange}
+                        onChange={handleMonthChange}
                         sxSelect={{
                             textTransform: 'uppercase',
                             fontFamily: 'mono',
@@ -213,7 +313,7 @@ const LeadTimesPerformance = () => {
                     <LineChart
                         width={500}
                         height={200}
-                        data={newdata}
+                        data={data}
                         margin={{
                             top: 5,
                             right: 30,
@@ -222,7 +322,10 @@ const LeadTimesPerformance = () => {
                         }}
                     >
                         <CartesianGrid stroke={theme.colors.secondary} strokeWidth={0.15} />
-                        <XAxis dataKey="x"
+                        <XAxis
+                            dataKey="time"
+                            tickFormatter={(tick) => (tick * 0.25).toFixed(1)} // Display as 0.0 – 10.0
+                            ticks={[...Array(21).keys()].map(i => i * 2)} // Show ticks at 0, 0.5, 1.0, ..., 10.0
                             label={{
 
                                 value: 'Lead Time (days)',
@@ -232,19 +335,25 @@ const LeadTimesPerformance = () => {
 
                             }}
                         />
-                        <YAxis label={{
-
-                            value: '°C',
-                            angle: -90,
-                            position: 'insideLeft',
-                            dx: 0,
-                        }}
+                        <YAxis
+                            label={
+                                selectedMetric === 'rmse'
+                                    ? {
+                                        value: VARIABLE_UNITS[selectedVariable] || '',
+                                        angle: -90,
+                                        position: 'insideLeft',
+                                        dx: 0,
+                                    }
+                                    : undefined
+                            }
                         />
-                        <Tooltip />
+                        <Tooltip
+                            labelFormatter={(label) => `Lead time: ${(label * 0.25).toFixed(2)}`}
+                        />
                         <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} wrapperStyle={{ paddingTop: 30 }} />
-                        <Line type="monotone" dataKey="GraphCast" strokeOpacity={opacity.GraphCast} stroke="#8884d8" />
-                        <Line type="monotone" dataKey="ecmwfIFS" strokeOpacity={opacity.ecmwfIFS} stroke="#82ca9d" />
-                        <Line type="monotone" dataKey="ecmwfAIFS" strokeOpacity={opacity.ecmwfAIFS} stroke="#FF746C" />
+                        <Line type="monotone" dataKey="marsai" name="ECMWF-AIFS" strokeOpacity={opacity.ecmwfAIFS} stroke="#FF746C" />
+                        <Line type="monotone" dataKey="gc" name="GRAPHCAST" strokeOpacity={opacity.GraphCast} stroke="#8884d8" />
+                        <Line type="monotone" dataKey="marsfc" name="ECMWF-IFS" strokeOpacity={opacity.ecmwfIFS} stroke="#82ca9d" />
                     </LineChart>
                 </ResponsiveContainer>
             </Box>

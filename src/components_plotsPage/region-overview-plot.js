@@ -90,7 +90,7 @@ const RegionOverview = () => {
     };
 
     const [selectedVariable, setSelectedVariable] = useState('t2m')
-    const [selectedMetric, setSelectedMetric] = useState('RMSE')
+    const [selectedMetric, setSelectedMetric] = useState('rmse')
     const [selectedMonth, setSelectedMonth] = useState(13)
 
     const [data, setData] = useState([]);
@@ -110,6 +110,12 @@ const RegionOverview = () => {
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
+    // handle metric change
+    const handleMetricChange = useCallback((e) => {
+        console.log('handleMetricChange', e.target.value)
+        const selectedMetric = e.target.value.toLowerCase()
+        setSelectedMetric(selectedMetric)
+    }, [setSelectedMetric])
 
     //  for structuring the json data
     const MODELS = ['gc', 'marsai', 'marsfc'];
@@ -129,16 +135,17 @@ const RegionOverview = () => {
     };
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/RMSE_monthly_allmodels.json')
+        fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
                     (entry) =>
                         MODELS.includes(entry.model) &&
                         entry.month === selectedMonth &&
+                        entry.metric === selectedMetric &&
                         entry[selectedVariable] !== null
                 );
-                console.log("Filtered data:", filtered)
+                //  console.log("Filtered data:", filtered)
 
                 const transformed = filtered.map((entry) => ({
                     model: entry.model,
@@ -146,10 +153,10 @@ const RegionOverview = () => {
                     value: Number(entry[selectedVariable].toFixed(3)),
                     fill: COLOR_MAP[entry.model] || '#ccc', // fallback color
                 }));
-                console.log("Transformed data:", transformed)
+                //  console.log("Transformed data:", transformed)
                 setData(transformed);
             });
-    }, [selectedVariable, selectedMonth]);
+    }, [selectedVariable, selectedMonth, selectedMetric]);
 
 
 
@@ -215,7 +222,16 @@ const RegionOverview = () => {
             <Box sx={{ mt: [0, 1, 2, 3] }}>
                 <Filter
                     values={metrics}
-                    setValues={setMetrics}
+                    setValues={(newMetric) => {
+                        // highlight the selected metric
+                        setMetrics(newMetric)
+                        // Call handleMetricChange when the filter changes
+                        const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
+                        if (selectedMetric) {
+                            handleMetricChange({ target: { value: selectedMetric } })
+                        }
+                    }}
+                    // setValues={setMetrics}
                     multiSelect={false}
                 // labels={{ q: 'Specific humidity' }}
                 />

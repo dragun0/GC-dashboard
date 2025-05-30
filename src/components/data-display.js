@@ -3,66 +3,77 @@ import { useRegionContext } from './region'
 import BinnedSummary from './binned-summary'
 import { color } from '@carbon/charts'
 import { useThemedColormap } from '@carbonplan/colormaps'
+import { useMemo } from 'react'
+
+const INVALID_VALUE = 9.969209968386869e36
 
 const DataDisplay = () => {
 
   const getUnits = (band) => {
-    if (band === 'u10') {
-      return 'm/s'
-    } else if (band === 't2m') {
-      return 'ºC'
-    } else if (band === 'q') {
-      return 'g/kg'
-    } else {
-      return band // Default to the band value if no match
-    }
+    if (band === 'u10') return 'm/s'
+    if (band === 't2m') return 'ºC'
+    if (band === 'q') return 'g/kg'
+    return band
   }
 
   const { band, time, regionData, colormapName, clim } = useRegionContext()
-
   const colormap = useThemedColormap(colormapName)
   const value = regionData?.value
 
-  if (!value || !value.climate || !value.climate[band] || !value.climate[band][time]) {
-    console.error('Region data is invalid or missing:', regionData)
+  // Memoize data extraction and filtering
+  const filteredData = useMemo(() => {
+    if (
+      !value ||
+      !value.climate ||
+      !value.climate[band] ||
+      !value.climate[band][time]
+    ) {
+      return null
+    }
+    return value.climate[band][time].filter((d) => d !== INVALID_VALUE)
+  }, [value, band, time])
+
+
+
+  if (!filteredData) {
+    // Only log once for missing data
+    // console.error('Region data is invalid or missing:', regionData)
     return 'Loading...'
   }
 
-  const area = value.climate[band][time]
-  //const area = value.climate
-  const data = value.climate[band][time]
-
-  if (!data || data.length === 0) {
-    console.error('Data is invalid or empty:', data)
+  if (filteredData.length === 0) {
+    // console.error('Data is invalid or empty:', filteredData)
     return 'No data available'
   }
 
-  const filteredData = data.filter((d) => d !== 9.969209968386869e36)
   //const area = filteredData.length // Example: count of valid grid cells
 
-  console.log('Data in display:', data)
-  console.log('value:', value)
-  console.log('value.climate:', value.climate)
+  //console.log('Data in display:', data)
+  //console.log('value:', value)
+  //console.log('value.climate:', value.climate)
   //console.log('Data in display:', )
 
-  return (
-    data && (
-      <Box
-        sx={{
-          transform: 'translateY(-22px)',
-        }}
-      >
-        <BinnedSummary
-          clim={clim}
-          colormap={colormap}
-          data={data}
-          area={area}
-          label={'Mean Absolute Error'}
-          units={getUnits(band)}
+  //const area = filteredData.length
+  const area = value.climate[band][time]
 
-        />
-      </Box>
-    )
+  return (
+
+    <Box
+      sx={{
+        transform: 'translateY(-22px)',
+      }}
+    >
+      <BinnedSummary
+        clim={clim}
+        colormap={colormap}
+        data={filteredData}
+        area={area}
+        label={'Mean Absolute Error'}
+        units={getUnits(band)}
+
+      />
+    </Box>
+
   )
 }
 

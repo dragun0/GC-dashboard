@@ -13,8 +13,8 @@ const LeadTimesSlider = (props) => {
 
     const {
         delay = 100,
-        min = 1,
-        max = 10,
+        min = 0,
+        max = 40,
         disabled,
         pause = 'max',
         autoPlay = false,
@@ -44,7 +44,7 @@ const LeadTimesSlider = (props) => {
 
     const tick = useCallback(() => {
         timeout.current = setTimeout(() => {
-            let next = timeRef.current + 0.25
+            let next = timeRef.current + 1
 
             if (next > max) {
                 if (pause === 'min') {
@@ -136,8 +136,8 @@ const LeadTimesSlider = (props) => {
             <Box sx={{ maxWidth: 250 }}>
                 <Slider
                     min={0}
-                    max={10}
-                    step={0.25}
+                    max={40}
+                    step={1}
                     value={time}
                     onChange={(e) => setTime(parseFloat(e.target.value))}
                 />

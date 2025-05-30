@@ -35,8 +35,8 @@ const sx = {
 }
 
 const CLIM_RANGES = {
-  t2m: { max: 24, min: 0 },
-  q: { max: 15, min: 0 },
+  t2m: { max: 15, min: 0 },
+  q: { max: 5, min: 0 },
 }
 
 const DEFAULT_COLORMAPS = {

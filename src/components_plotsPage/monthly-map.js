@@ -60,7 +60,9 @@ const MonthlyMap = () => {
 
             }}>
                 <TooltipWrapper
-                    tooltip=' Visualises the performance of the selected forecast model in different parts of the regional extent averaged over all lead times of the selected month.'
+                    tooltip=' Visualises the performance of the selected forecast model in different parts of the 
+                    regional extent at each month of the year 2024. The monthly values are computed over all lead times for that month.
+                    Each pixel in this map answers the question: "On average across the selected month, how wrong is the model at this location?"'
                 >
                     <Box
                         sx={{

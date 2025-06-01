@@ -163,7 +163,9 @@ const VariablesPerformance = () => {
 
             }}>
                 <TooltipWrapper
-                    tooltip=' Visualises the performance of the selected forecast model in different parts of the regional extent averaged over all lead times of the selected month.'
+                    tooltip=' Compares the correlation coefficient of each variable of the forecasting models
+                    for each selected month. The correlation coefficient value of each variable is calculated
+                    across all lead times and spatial points.'
                 >
                     <Box
                         sx={{

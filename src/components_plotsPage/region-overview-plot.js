@@ -135,7 +135,7 @@ const RegionOverview = () => {
     };
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
+        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(

@@ -169,7 +169,9 @@ const LeadTimesMap = () => {
 
             }}>
                 <TooltipWrapper
-                    tooltip=' Visualises the performance of the selected forecast model in different parts of the regional extent averaged over all lead times of the selected month.'
+                    tooltip=' Visualises the performance of the selected forecast model in different parts of the 
+                    regional extent at each lead time computed over all months of the year 2024.
+                    Each pixel in this map answers the question: "On average across the year, how wrong is the model at this location for this lead time?"'
                 >
                     <Box
                         sx={{

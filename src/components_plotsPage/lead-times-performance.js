@@ -140,7 +140,7 @@ const LeadTimesPerformance = () => {
     }, [setSelectedMetric])
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_leadtimes_allmodels.json')
+        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json')
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
@@ -186,7 +186,8 @@ const LeadTimesPerformance = () => {
             }
             }>
                 <TooltipWrapper
-                    tooltip=' Compares the performance of the forecast models at the different forecast lead times of the selected month, averaged over all spatial points in the region.'
+                    tooltip=' Compares the performance of the forecast models at the different forecast lead times
+                     of the selected month, averaged over all spatial points in the region.'
                 >
                     <Box
                         sx={{
@@ -337,7 +338,7 @@ const LeadTimesPerformance = () => {
                         />
                         <YAxis
                             label={
-                                selectedMetric === 'rmse'
+                                ['rmse', 'mae', 'mbe'].includes(selectedMetric)
                                     ? {
                                         value: VARIABLE_UNITS[selectedVariable] || '',
                                         angle: -90,

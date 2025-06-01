@@ -126,13 +126,28 @@ const plotsPage = () => {
                   {'Forecast Performance Analysis Explainer'}
                 </Box>
                 <Box sx={{ mb: [0, 0, 4], mt: [0, 0, 5, 6] }}>
-                  <Box as='p' variant='styles.p'>
-                    Nulla gravida enim nec tellus semper dictum. Integer mi quam, commodo sit amet pretium at,
-                    consectetur eu ipsum. Phasellus eu tristique metus, sit amet elementum tellus. Nulla at cursus ipsum,
-                    eu varius turpis. Sed neque urna, egestas quis varius et, ullamcorper eget nulla. Donec eget sagittis justo.
-                    Morbi ac mauris sem.
-                    Duis vel nisl eget ex accumsan scelerisque. Morbi enim dolor, aliquam eget sollicitudin id,
-                    dictum sit amet quam. Aenean quis nisi congue, elementum ligula at, rhoncus ligula. Ut massa quam
+                  <Box variant='styles.p'>
+                    Can AI outperform traditional physics-based models in forecasting complex atmospheric variables? This web-tool allows for a performance comparison of three weather forecast models:
+                    Google Deepmind's GraphCast (AI-based), ECMWF Integrated Forecasting System (IFS) (physics-based), and ECMWF AIFS (AI-based).
+
+                    The comparison is based on verification results between each forecasting model against the ERA5 reanalysis dataset, which combines on-ground measurements with satellite observations.
+                    Verification metrics include: RMSE (root mean square error), MAE (mean absolute error), MBE (mean bias error), and R (correlation coefficient).
+                    The units of the metrics are as follows: RMSE, MAE and MBE are expressed in °C (Degrees Celsius) for temperature,
+                    hPa (hectopascal) for pressure, m/s (meters per second) for wind speed, and g/kg (grams per kilogram) for specific humidity. R is unitless.
+
+                    The evaluation covers the first 10 days of each month in 2024, with a focus on the performance of the forecast models across the lead times (10 days in 6 hour increments).
+                    Since the ECMWF AIFS model has only been operational since March 2024, data for this model is only available from March onwards.
+                    The following weather variables have been assessed for their accuracy across the selected regions and lead times:
+                    <ul>
+                      <li>2-meter temperature (t2m)</li>
+                      <li>Mean sea level pressure (msl)</li>
+                      <li>10-meter u-component of wind (u10) </li>
+                      <li>10-meter v-component of wind (v10)</li>
+                      <li>Specific humidity (q) at 1000 hPa pressure (closest to earth's surface)</li>
+                    </ul>
+
+                    The main objective of this comparative analysis is to evaluate wether the forecasting models perform differently in different geographic regions.
+                    Four geographic regions are examined: Global, Tropics, Extra-tropics, and Africa.
 
                   </Box>
                 </Box>
@@ -190,9 +205,24 @@ const plotsPage = () => {
                   <Box
                     sx={{ color: 'blue', fontFamily: 'faux', letterSpacing: 'faux' }}
                   >
-                    Duis vel nisl eget ex accumsan scelerisque. Morbi enim dolor, aliquam eget sollicitudin id,
-                    dictum sit amet quam. Aenean quis nisi congue, elementum ligula at, rhoncus ligula. Ut massa quam,
-                    volutpat non mauris in, luctus condimentum turpis.
+                    Forecast Models Compared:<br />
+                    • <b>GraphCast</b> (AI-based, deterministic)<br />
+                    • <strong>ECMWF IFS</strong> (physics-based, operational standard, deterministic)<br />
+                    • <strong>ECMWF AIFS</strong> (AI-based, deterministic)<br /><br />
+                    Verification Dataset:<br />
+                    • <strong> ERA5 Reanalysis</strong> <br /><br />
+                    Key Geographic Regions:<br />
+                    • <strong>Global</strong> <br />
+                    • <strong>Tropics</strong> <br />
+                    • <strong>Extra-tropics </strong> <br />
+                    • <strong>Africa</strong> <br /><br />
+                    Metrics Evaluated:<br />
+                    • <strong>RMSE</strong> (Root Mean Square Error) <br />
+                    • <strong>MAE</strong> (Mean Absolute Error) <br />
+                    • <strong>MBE</strong> (Mean Bias Error) <br />
+                    • <strong>Correlation Coefficient</strong> (R) <br /> <br />
+                    Purpose:<br />
+                    • Explore whether AI can outperform traditional models in complex regions.
                   </Box>
                 </Box>
               </Box>
@@ -230,8 +260,8 @@ const plotsPage = () => {
                       <Box
                         sx={{
                           ...sx.heading,
-                          fontFamily: 'faux',
-                          //   textTransform: 'uppercase',
+                          //   fontFamily: 'faux',
+                          textTransform: 'uppercase',
                           letterSpacing: 'smallcaps',
                           mb: 0,
                           display: 'inline',
@@ -320,16 +350,16 @@ const plotsPage = () => {
                 }}>
                   <TooltipWrapper
                     tooltip=' Evaluation metric averaged over all spatial points in the region,
-                    and all lead times within the selected time frame.'
+                    and all lead times within the selected month.'
                   >
                     <Box
                       sx={{
                         ...sx.heading,
-                        fontFamily: 'faux',
+                        //   fontFamily: 'faux',
+                        textTransform: 'uppercase',
+                        letterSpacing: 'smallcaps',
                         mb: 0,
-                        // letterSpacing: 'smallcaps',
-
-                        // pt: [0, 0, '42px', '55px'],  //  pt: tool ? [0, 0, '42px', '55px'] : [0, 0, '42px', '23px'],
+                        display: 'inline',
                       }}
                     >
                       Region Overview

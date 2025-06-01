@@ -114,14 +114,14 @@ const MonthlyPerformance = () => {
     }, [setSelectedMetric])
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
+        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
                     (entry) =>
                         MODELS.includes(entry.model) &&
                         entry.month >= 1 &&
-                        entry.month <= 12 &&
+                        entry.month <= 12 && // do not include the "13th" month (average over the year)
                         entry.metric === selectedMetric &&
                         entry[selectedVariable] !== null
                 );
@@ -180,7 +180,8 @@ const MonthlyPerformance = () => {
 
             }}>
                 <TooltipWrapper
-                    tooltip=' Visualises the performance of the selected forecast model in different parts of the regional extent averaged over all lead times of the selected month.'
+                    tooltip=' Compares the performance of the different forecast models at each month of the year 2024. 
+                    The monthly values are computed across all spatial points and leadtimes of the month.'
                 >
                     <Box
                         sx={{
@@ -281,7 +282,7 @@ const MonthlyPerformance = () => {
                         />
                         <YAxis
                             label={
-                                selectedMetric === 'rmse'
+                                ['rmse', 'mae', 'mbe'].includes(selectedMetric)
                                     ? {
                                         value: VARIABLE_UNITS[selectedVariable] || '',
                                         angle: -90,

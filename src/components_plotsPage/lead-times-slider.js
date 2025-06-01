@@ -105,8 +105,8 @@ const LeadTimesSlider = (props) => {
     useEffect(() => clear, [])
 
     const formattedLeadTime = (() => {
-
-        return `${time} DAYS`
+        const leadTime = time * 0.25 // each unit of time is 6 hours
+        return `${leadTime} DAYS`
     }
     )()
 

@@ -137,7 +137,7 @@ const RegionComparison = () => {
     };
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
+        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
@@ -173,7 +173,9 @@ const RegionComparison = () => {
             }
             }>
                 <TooltipWrapper
-                    tooltip=' Compares the performance of the forecast models at the different forecast lead times of the selected month, averaged over all spatial points in the region.'
+                    tooltip=' An overview of how the different forecasting models are performing across four spatial extents. The selected verification metric is computed across
+                    all leadtimes and spatial points (within the geographic extent) for the selected month. "Annual" represents the average value of that metric across the whole year.
+                    '
                 >
                     <Box
                         sx={{

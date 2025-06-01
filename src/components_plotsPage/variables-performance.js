@@ -121,7 +121,7 @@ const VariablesPerformance = () => {
 
     useEffect(() => {
         if (selectedMonth) {
-            fetch('/plotsPageData/Global/R_RMSE_monthly_allmodels.json')
+            fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
                 .then((res) => res.json())
                 .then((json) => {
                     const variables = ['u10', 'v10', 't2m', 'msl', 'q'];

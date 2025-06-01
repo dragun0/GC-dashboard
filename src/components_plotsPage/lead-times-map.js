@@ -1,7 +1,7 @@
-import { Box, useThemeUI } from 'theme-ui'
+import { Box, useThemeUI, Spinner } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
 import { Row, Column, Filter } from '@carbonplan/components'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Minimap, Raster, Path, Sphere, Graticule } from '@carbonplan/minimaps'
 import { naturalEarth1, mercator, orthographic, equirectangular } from '@carbonplan/minimaps/projections'
 import { useThemedColormap, viridis } from '@carbonplan/colormaps'
@@ -18,8 +18,9 @@ import { get } from 'ol/proj'
 // has float32 data and is in equirectangular projection BUT y axis NEEDS TO BE FLIPPED (is going from + to - instead of - to +)
 
 
-const ZARR_SOURCE = 'https://dashboard-minimaps.s3.amazonaws.com/minimap_test_zlib_flipped_float32.zarr'
-const VARIABLE = 't2m'
+//const ZARR_SOURCE = 'https://dashboard-minimaps.s3.amazonaws.com/minimap_test_zlib_flipped_float32.zarr'
+const ZARR_SOURCE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_gc_RMSE_MAP_leadtimes.zarr'
+//const VARIABLE = 't2m'
 const FILL_VALUE = 9.969209968386869e36
 
 
@@ -98,66 +99,78 @@ const sx = {
 const LeadTimesMap = () => {
     const { theme } = useThemeUI()
     const colormap = useThemedColormap('warm')
-    const [time, setTime] = useState(0)
+    const [loading, setLoading] = useState(false)
+    const [time, setTime] = useState(4)
     const [chunks, setChunks] = useState(null)
-    const [clim, setClim] = useState([0, 40]) // default clim for the colormap
+    const [clim, setClim] = useState([0, 10]) // default clim for the colormap
 
     // for buttons UI only
-    const [models, setModel] = useState({ GC: true, ECMWFIFS: false, ECMWFAIFS: false })
+    const [models, setModel] = useState({ GraphCast: true, ECMWFIFS: false, ECMWFAIFS: false })
     const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
 
+    const [selectedVariable, setSelectedVariable] = useState('t2m');
+
+    const variableCache = useRef({}) // cache for loaded variables
+
+    // handle variable change
+    const handleVariableChange = useCallback((e) => {
+        console.log('handleVariableChange', e.target.value)
+        const selected = e.target.value
+        setSelectedVariable(selected)
+    }, [setSelectedVariable])
+    // change clim values depending on variable
+
     useEffect(() => {
-        try {
-            zarr().load(`${ZARR_SOURCE}/${VARIABLE}`, (err, arr) => {
+
+        console.log('useEffect - Selected variable changed:', selectedVariable)
+        // Load the selected variable only if not cached
+        if (!variableCache.current[selectedVariable]) {
+            setLoading(true) // <--- Set loading to true 
+            console.log('useEffect - load new var data:', selectedVariable)
+            zarr().load(`${ZARR_SOURCE}/${selectedVariable}`, (err, arr) => {
                 if (err) {
+                    setLoading(false)
                     console.error('Error loading array:', err)
+                    // add error message to the map as well
                     return
                 }
-                console.log('Loaded array:', arr)
+                variableCache.current[selectedVariable] = arr
                 setChunks(arr)
+                setLoading(false)
+                console.log('useEffect chunk updated with variable:', selectedVariable, 'with data:', arr)
             })
-        } catch (error) {
-            console.error('Error fetching group:', error)
+        } else {
+            console.log('useEffect - var:', selectedVariable, 'already cached, using cached data')
+            setChunks(variableCache.current[selectedVariable])
+            setLoading(false)
         }
-    }, [])
+    }, [selectedVariable])
 
     const data = useMemo(() => {
         if (chunks) {
-            return {
-                rmse: chunks.pick(time, null, null), // time, lat, lon
-
-            }
+            return chunks.pick(time, null, null) // time, lat, lon
         } else {
             return {}
         }
     }, [chunks, time])
 
+
+    // for debugging only
+    //  useEffect(() => {
+    //      console.log('Updated data:', data)
+
+
+    // }, [data])
+
+
+    // for debugging only
     useEffect(() => {
-        console.log('Updated data:', data.rmse)
-        if (data.rmse) {
-            // Calculate the min and max values for the clim based on the data
-            const arr = data.rmse
-            const len = arr.size
+        console.log('selected var changed:', selectedVariable)
+    }, [selectedVariable])
 
-            // Use ndarray-ops for min and max
-            const min = ops.inf(arr)
-            const max = ops.sup(arr)
 
-            // Compute mean manually
-            let sum = 0
-            for (let i = 0; i < len; i++) {
-                sum += arr.data[arr.index(i)]
-            }
-            const mean = sum / len
 
-            console.log('Reconstructed stats:')
-            console.log('Min:', min)
-            console.log('Max:', max)
-            console.log('Mean:', mean)
-        }
-
-    }, [data])
 
 
     return (
@@ -234,7 +247,15 @@ const LeadTimesMap = () => {
                         >
                             <Filter
                                 values={variables}
-                                setValues={setVariables}
+                                setValues={(newVariable) => {
+                                    // highlight the selected variable
+                                    setVariables(newVariable)
+                                    //Call handleVariableChange when the filter changes
+                                    const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
+                                    if (selectedVariable) {
+                                        handleVariableChange({ target: { value: selectedVariable } })
+                                    }
+                                }}
                                 multiSelect={false}
                             />
                         </Box>
@@ -247,10 +268,14 @@ const LeadTimesMap = () => {
 
                     </Box>
 
-                    {/* Legend */}
-                    <Box>
 
-                        <Legend
+                    {/* Legend 
+                    // align this with bottom of the minimap
+                    */}
+                    <Box sx={{ mt: 6, mb: 3 }}>
+
+                        <Legend // add unit label!
+                            selectedVariable={selectedVariable}
                             //clim={[vmin, vmax]}
                             clim={clim}
                             setClim={setClim}
@@ -266,12 +291,31 @@ const LeadTimesMap = () => {
                 <Column start={[3]} width={[10]}>
                     <Box
                         sx={{
+                            position: 'relative',
 
                             //  color: 'primary',
 
                             pb: 30
                         }}
                     >
+                        {/* Spinner overlay */}
+                        {loading && (
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    top: '45%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    zIndex: 1000,
+                                    backgroundColor: 'transparent',
+                                    borderRadius: 0,
+                                    p: 0,
+                                }}
+                            >
+                                <Spinner size={32} />
+                            </Box>
+                        )}
+
                         <Minimap projection={naturalEarth1}
                             translate={[0, 0]} scale={1}>
 
@@ -289,9 +333,9 @@ const LeadTimesMap = () => {
                                 clim={clim}
                                 mode={'lut'}
                                 nullValue={FILL_VALUE}
-                                source={data.rmse}
-
+                                source={data}
                                 colormap={colormap}
+                            //  setLoading={setLoading}
                             />
                         </Minimap>
                     </Box>
@@ -306,4 +350,3 @@ const LeadTimesMap = () => {
 }
 
 export default LeadTimesMap
-

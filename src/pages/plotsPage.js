@@ -375,6 +375,155 @@ const plotsPage = () => {
           </Row>
 
 
+
+
+          {/* Title - Tropics  */}
+          <Row >
+            <Column start={[1, 2]} width={[7]}>
+              <Box sx={{
+                position: 'sticky',
+                top: '55px', // header height
+                zIndex: 900,
+                bg: 'background',
+
+              }}>
+                <Divider />
+                <Box sx={{
+                  pt: [1, 2, 3, 4],
+                  pb: [1, 2, 3, 4],
+                }}>
+                  <TooltipWrapper
+                    tooltip=' All spatially averaged values are averaged across the globe '
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'baseline', // aligns text on same baseline
+                        gap: [2, 3, 4],
+                        flexWrap: 'wrap',       // allows wrapping on small screens
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          //   fontFamily: 'faux',
+                          textTransform: 'uppercase',
+                          letterSpacing: 'smallcaps',
+                          mb: 0,
+                          display: 'inline',
+                        }}
+                      >
+                        Tropics
+                      </Box>
+
+                      <Box
+                        sx={{
+                          ...sx.subheading,
+                          display: 'inline',
+                        }}
+                      >
+                        23.5°N – 23.5°S | 180°W – 180°E
+
+                      </Box>
+                    </Box>
+                  </TooltipWrapper>
+                </Box>
+                <Divider />
+              </Box>
+
+
+
+              {/* Lead Times Spatial Performance */}
+
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <LeadTimesMap />
+                </Column>
+              </Row>
+
+              {/* Lead Times Performance */}
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <LeadTimesPerformance />
+                </Column>
+              </Row>
+
+
+              {/* Monthly Performance */}
+              <Row>
+                <Column start={[1, 1]} width={[7, 7]}>
+                  <MonthlyPerformance />
+                </Column>
+
+                {/* Variables Performance */}
+                <Column start={[1, 8]} width={[5, 5]}>
+                  <VariablesPerformance />
+                </Column>
+              </Row>
+
+
+
+
+
+
+              {/* Monthly Spatial Performance - Mini map plot */}
+
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <MonthlyMap />
+                </Column>
+              </Row>
+
+
+            </Column>
+
+
+
+
+
+            {/* Region Overview */}
+            <Column start={[1, 10]} width={[1, 2]}>
+              <Box sx={{
+                position: 'sticky',
+                top: '55px', // header height
+                zIndex: 900,
+                bg: 'background',
+
+              }}>
+                <Divider />
+                <Box sx={{
+                  pt: [1, 2, 3, 4],
+                  pb: [1, 2, 3, 4],
+                }}>
+                  <TooltipWrapper
+                    tooltip=' Evaluation metric averaged over all spatial points in the region,
+                    and all lead times within the selected month.'
+                  >
+                    <Box
+                      sx={{
+                        ...sx.heading,
+                        //   fontFamily: 'faux',
+                        textTransform: 'uppercase',
+                        letterSpacing: 'smallcaps',
+                        mb: 0,
+                        display: 'inline',
+                      }}
+                    >
+                      Region Overview
+                    </Box>
+                  </TooltipWrapper>
+                </Box>
+                <Divider />
+                <RegionOverview />
+
+
+              </Box>
+            </Column>
+          </Row>
+
+
+
+
         </Box >
 
 

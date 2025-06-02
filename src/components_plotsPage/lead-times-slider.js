@@ -53,7 +53,7 @@ const LeadTimesSlider = (props) => {
                     setPlaying(false)
                     return
                 } else {
-                    next = max
+                    next = min
                 }
             }
 

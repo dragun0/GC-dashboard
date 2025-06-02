@@ -147,7 +147,7 @@ const plotsPage = () => {
                     </ul>
 
                     The main objective of this comparative analysis is to evaluate wether the forecasting models perform differently in different geographic regions.
-                    Four geographic regions are examined: Global, Tropics, Extra-tropics, and Africa.
+                    Four geographic regions are examined: Global, Tropics + Subtropics, Temperate Zones, and Africa.
 
                   </Box>
                 </Box>
@@ -213,8 +213,8 @@ const plotsPage = () => {
                     • <strong> ERA5 Reanalysis</strong> <br /><br />
                     Key Geographic Regions:<br />
                     • <strong>Global</strong> <br />
-                    • <strong>Tropics</strong> <br />
-                    • <strong>Extra-tropics </strong> <br />
+                    • <strong>Tropics + Subtropics</strong> <br />
+                    • <strong>Temperate Zones</strong> <br />
                     • <strong>Africa</strong> <br /><br />
                     Metrics Evaluated:<br />
                     • <strong>RMSE</strong> (Root Mean Square Error) <br />
@@ -290,7 +290,10 @@ const plotsPage = () => {
 
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesMap />
+                  <LeadTimesMap
+                    LAT_MIN={-90}
+                    LAT_MAX={90}
+                  />
                 </Column>
               </Row>
 
@@ -319,13 +322,15 @@ const plotsPage = () => {
 
 
 
-              {/* Monthly Spatial Performance - Mini map plot */}
+              {/* Monthly Spatial Performance - Mini map plot
 
               <Row>
                 <Column start={[1, 1]} width={[13]}>
                   <MonthlyMap />
                 </Column>
               </Row>
+
+               */}
 
 
             </Column>
@@ -413,7 +418,7 @@ const plotsPage = () => {
                           display: 'inline',
                         }}
                       >
-                        Tropics
+                        Tropics + Subtropics
                       </Box>
 
                       <Box
@@ -422,7 +427,7 @@ const plotsPage = () => {
                           display: 'inline',
                         }}
                       >
-                        23.5°N – 23.5°S | 180°W – 180°E
+                        35°N – 35°S | 180°W – 180°E
 
                       </Box>
                     </Box>
@@ -437,7 +442,9 @@ const plotsPage = () => {
 
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesMap />
+                  <LeadTimesMap
+                    LAT_MIN={-35}
+                    LAT_MAX={35} />
                 </Column>
               </Row>
 
@@ -466,14 +473,312 @@ const plotsPage = () => {
 
 
 
-              {/* Monthly Spatial Performance - Mini map plot */}
+              {/* Monthly Spatial Performance - Mini map plot 
 
               <Row>
                 <Column start={[1, 1]} width={[13]}>
                   <MonthlyMap />
                 </Column>
               </Row>
+            */}
 
+            </Column>
+
+
+
+
+
+            {/* Region Overview */}
+            <Column start={[1, 10]} width={[1, 2]}>
+              <Box sx={{
+                position: 'sticky',
+                top: '55px', // header height
+                zIndex: 900,
+                bg: 'background',
+
+              }}>
+                <Divider />
+                <Box sx={{
+                  pt: [1, 2, 3, 4],
+                  pb: [1, 2, 3, 4],
+                }}>
+                  <TooltipWrapper
+                    tooltip=' Evaluation metric averaged over all spatial points in the region,
+                    and all lead times within the selected month.'
+                  >
+                    <Box
+                      sx={{
+                        ...sx.heading,
+                        //   fontFamily: 'faux',
+                        textTransform: 'uppercase',
+                        letterSpacing: 'smallcaps',
+                        mb: 0,
+                        display: 'inline',
+                      }}
+                    >
+                      Region Overview
+                    </Box>
+                  </TooltipWrapper>
+                </Box>
+                <Divider />
+                <RegionOverview />
+
+
+              </Box>
+            </Column>
+          </Row>
+
+
+
+          {/* Title - Temperate Zones  */}
+          <Row >
+            <Column start={[1, 2]} width={[7]}>
+              <Box sx={{
+                position: 'sticky',
+                top: '55px', // header height
+                zIndex: 900,
+                bg: 'background',
+
+              }}>
+                <Divider />
+                <Box sx={{
+                  pt: [1, 2, 3, 4],
+                  pb: [1, 2, 3, 4],
+                }}>
+                  <TooltipWrapper
+                    tooltip=' All spatially averaged values are averaged across the globe '
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'baseline', // aligns text on same baseline
+                        gap: [2, 3, 4],
+                        flexWrap: 'wrap',       // allows wrapping on small screens
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          //   fontFamily: 'faux',
+                          textTransform: 'uppercase',
+                          letterSpacing: 'smallcaps',
+                          mb: 0,
+                          display: 'inline',
+                        }}
+                      >
+                        Temperate Zones
+                      </Box>
+
+                      <Box
+                        sx={{
+                          ...sx.subheading,
+                          display: 'inline',
+                        }}
+                      >
+                        35°N – 60°N & 35°S – 60°S | 180°W – 180°E
+
+                      </Box>
+                    </Box>
+                  </TooltipWrapper>
+                </Box>
+                <Divider />
+              </Box>
+
+
+
+              {/* Lead Times Spatial Performance */}
+
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <LeadTimesMap
+                    LAT_MIN={-60}
+                    LAT_MAX={60} />
+                </Column>
+              </Row>
+
+              {/* Lead Times Performance */}
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <LeadTimesPerformance />
+                </Column>
+              </Row>
+
+
+              {/* Monthly Performance */}
+              <Row>
+                <Column start={[1, 1]} width={[7, 7]}>
+                  <MonthlyPerformance />
+                </Column>
+
+                {/* Variables Performance */}
+                <Column start={[1, 8]} width={[5, 5]}>
+                  <VariablesPerformance />
+                </Column>
+              </Row>
+
+
+
+
+
+
+              {/* Monthly Spatial Performance - Mini map plot 
+
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <MonthlyMap />
+                </Column>
+              </Row>
+            */}
+
+            </Column>
+
+
+
+
+
+            {/* Region Overview */}
+            <Column start={[1, 10]} width={[1, 2]}>
+              <Box sx={{
+                position: 'sticky',
+                top: '55px', // header height
+                zIndex: 900,
+                bg: 'background',
+
+              }}>
+                <Divider />
+                <Box sx={{
+                  pt: [1, 2, 3, 4],
+                  pb: [1, 2, 3, 4],
+                }}>
+                  <TooltipWrapper
+                    tooltip=' Evaluation metric averaged over all spatial points in the region,
+                    and all lead times within the selected month.'
+                  >
+                    <Box
+                      sx={{
+                        ...sx.heading,
+                        //   fontFamily: 'faux',
+                        textTransform: 'uppercase',
+                        letterSpacing: 'smallcaps',
+                        mb: 0,
+                        display: 'inline',
+                      }}
+                    >
+                      Region Overview
+                    </Box>
+                  </TooltipWrapper>
+                </Box>
+                <Divider />
+                <RegionOverview />
+
+
+              </Box>
+            </Column>
+          </Row>
+
+
+
+
+          {/* Title - Africa  */}
+          <Row >
+            <Column start={[1, 2]} width={[7]}>
+              <Box sx={{
+                position: 'sticky',
+                top: '55px', // header height
+                zIndex: 900,
+                bg: 'background',
+
+              }}>
+                <Divider />
+                <Box sx={{
+                  pt: [1, 2, 3, 4],
+                  pb: [1, 2, 3, 4],
+                }}>
+                  <TooltipWrapper
+                    tooltip=' All spatially averaged values are averaged across the globe '
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'baseline', // aligns text on same baseline
+                        gap: [2, 3, 4],
+                        flexWrap: 'wrap',       // allows wrapping on small screens
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          ...sx.heading,
+                          //   fontFamily: 'faux',
+                          textTransform: 'uppercase',
+                          letterSpacing: 'smallcaps',
+                          mb: 0,
+                          display: 'inline',
+                        }}
+                      >
+                        Africa
+                      </Box>
+
+                      <Box
+                        sx={{
+                          ...sx.subheading,
+                          display: 'inline',
+                        }}
+                      >
+                        35°N – 35°S | 180°W – 180°E
+
+                      </Box>
+                    </Box>
+                  </TooltipWrapper>
+                </Box>
+                <Divider />
+              </Box>
+
+
+
+              {/* Lead Times Spatial Performance */}
+
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <LeadTimesMap
+                    LAT_MIN={-90}
+                    LAT_MAX={90}
+                    region='africa' />
+                </Column>
+              </Row>
+
+              {/* Lead Times Performance */}
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <LeadTimesPerformance />
+                </Column>
+              </Row>
+
+
+              {/* Monthly Performance */}
+              <Row>
+                <Column start={[1, 1]} width={[7, 7]}>
+                  <MonthlyPerformance />
+                </Column>
+
+                {/* Variables Performance */}
+                <Column start={[1, 8]} width={[5, 5]}>
+                  <VariablesPerformance />
+                </Column>
+              </Row>
+
+
+
+
+
+
+              {/* Monthly Spatial Performance - Mini map plot 
+
+              <Row>
+                <Column start={[1, 1]} width={[13]}>
+                  <MonthlyMap />
+                </Column>
+              </Row>
+            */}
 
             </Column>
 

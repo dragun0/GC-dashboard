@@ -14,7 +14,7 @@ const Legend = (props) => {
     clim,
     setClim,
     selectedVariable,
-    colormap
+    colormap,
 
   } = props
 
@@ -27,18 +27,19 @@ const Legend = (props) => {
   const getUnits = (selectedVariable) => {
     if (selectedVariable === 'u10') {
       return '(m/s)'
-
     } else if (selectedVariable === 'v10') {
       return '(m/s)'
     }
-
+    else if (selectedVariable === 'msl') {
+      return '(hPa)'
+    }
     else if (selectedVariable === 't2m') {
       return '(ºC)'
     } else if (selectedVariable === 'q') {
       return '(g/kg)'
     }
     else {
-      return selectedVariable // Default to the band value if no match
+      return selectedVariable // Default to the var value if no match
     }
   }
 
@@ -50,11 +51,12 @@ const Legend = (props) => {
     <Box sx={{ ...sx, mb: 2 }}>
       <Colorbar
         colormap={colormap}
-        units={getUnits(selectedVariable)}
-        //  label={'Absolute Error'}
+        // units={getUnits(selectedVariable)}
+        label={getUnits(selectedVariable)}
         clim={clim}
         setClim={setClim}
         horizontal
+      //  width={'100%'}
       />
     </Box>
 

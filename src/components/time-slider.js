@@ -29,6 +29,13 @@ const TimeSlider = () => {
     setSliding(true) // Start sliding when the user clicks on the slider
   }, [])
 
+  const formattedLeadTime = (() => {
+    const leadTime = time * 0.25 // each unit of time is 6 hours
+    return `${leadTime} DAYS`
+  }
+  )()
+
+
   return (
     <SidebarFooter
       sx={{
@@ -53,7 +60,7 @@ const TimeSlider = () => {
               transition: 'color 0.2s',
             }}
           >
-            {time.toFixed(0)}
+            {formattedLeadTime}
           </Box>
         </Flex>
 

@@ -147,7 +147,7 @@ const MonthlyMap = () => {
 
                             //  color: 'primary',
 
-                            pb: 30
+                            pb: 50
                         }}
                     >
                         <Minimap projection={naturalEarth1}>

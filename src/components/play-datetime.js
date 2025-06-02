@@ -11,7 +11,7 @@ const PlayButtonDateTime = ({
   min = 0,
   max,
   disabled,
-  pause = 'min',
+  pause = 'max',
   autoPlay = false,
   setAutoPlay,
 }) => {

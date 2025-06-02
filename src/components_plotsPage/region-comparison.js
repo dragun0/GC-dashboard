@@ -334,7 +334,7 @@ const RegionComparison = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center'
-                    }}>Tropics</Box>
+                    }}>(Sub-)Tropics</Box>
 
                     <Box sx={{
                         ...sx.label,
@@ -372,7 +372,7 @@ const RegionComparison = () => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center'
-                    }}>Extra-Tropics</Box>
+                    }}>Temperate </Box>
 
                     <Box sx={{
                         ...sx.label,

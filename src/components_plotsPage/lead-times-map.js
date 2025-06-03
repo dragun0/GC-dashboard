@@ -21,19 +21,36 @@ import { color } from '@carbon/charts'
 
 
 //const ZARR_SOURCE = 'https://dashboard-minimaps.s3.amazonaws.com/minimap_test_zlib_flipped_float32.zarr'
+
+//Global Extent sources
 const ZARR_SOURCE_gc_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_gc_RMSE_MAP_leadtimes.zarr'
-const ZARR_SOURCE_marsfc_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsfc_RMSE_MAP_leadtimes.zarr'
-const ZARR_SOURCE_marsai_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsai_RMSE_MAP_leadtimes.zarr'
-
 const ZARR_SOURCE_gc_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_gc_MBE_MAP_leadtimes.zarr'
-const ZARR_SOURCE_marsfc_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsfc_MBE_MAP_leadtimes.zarr'
-const ZARR_SOURCE_marsai_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsai_MBE_MAP_leadtimes.zarr'
-
 const ZARR_SOURCE_gc_MAE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_gc_MAE_MAP_leadtimes.zarr'
+
+const ZARR_SOURCE_marsfc_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsfc_RMSE_MAP_leadtimes.zarr'
+const ZARR_SOURCE_marsfc_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsfc_MBE_MAP_leadtimes.zarr'
 const ZARR_SOURCE_marsfc_MAE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsfc_MAE_MAP_leadtimes.zarr'
+
+const ZARR_SOURCE_marsai_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsai_RMSE_MAP_leadtimes.zarr'
+const ZARR_SOURCE_marsai_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsai_MBE_MAP_leadtimes.zarr'
 const ZARR_SOURCE_marsai_MAE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_marsai_MAE_MAP_leadtimes.zarr'
 
+
+// Africa sources
+const AFRICA_ZARR_SOURCE_gc_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_gc_RMSE_MAP_leadtimes.zarr'
+const AFRICA_ZARR_SOURCE_gc_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_gc_MBE_MAP_leadtimes.zarr'
+const AFRICA_ZARR_SOURCE_gc_MAE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_gc_MAE_MAP_leadtimes.zarr'
+
+const AFRICA_ZARR_SOURCE_marsfc_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_marsfc_RMSE_MAP_leadtimes.zarr'
+const AFRICA_ZARR_SOURCE_marsfc_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_marsfc_MBE_MAP_leadtimes.zarr'
+const AFRICA_ZARR_SOURCE_marsfc_MAE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_marsfc_MAE_MAP_leadtimes.zarr'
+
+const AFRICA_ZARR_SOURCE_marsai_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_marsai_RMSE_MAP_leadtimes.zarr'
+const AFRICA_ZARR_SOURCE_marsai_MBE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_marsai_MBE_MAP_leadtimes.zarr'
 const AFRICA_ZARR_SOURCE_marsai_MAE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_marsai_MAE_MAP_leadtimes.zarr'
+
+
+
 
 //const VARIABLE = 't2m'
 const FILL_VALUE = 9.969209968386869e36
@@ -128,10 +145,24 @@ const COLORMAPS = {
 const LeadTimesMap = (props) => {
 
     const {
-        LAT_MIN,
-        LAT_MAX,
+        //   LAT_MIN,
+        //  LAT_MAX,
         region
     } = props
+
+    let LAT_MIN = '';
+    if (region === 'global' || region === 'africa') LAT_MIN = -90;
+    else if (region === 'tropics') LAT_MIN = -23.5;
+    else if (region === 'temperate') LAT_MIN = -60;
+    else if (region === 'polar') LAT_MIN = -90;
+
+
+    let LAT_MAX = '';
+    if (region === 'global' || region === 'africa') LAT_MAX = 90;
+    else if (region === 'tropics') LAT_MAX = 23.5;
+    else if (region === 'temperate') LAT_MAX = 60;
+    else if (region === 'polar') LAT_MAX = 90;
+
 
     // const africaGeoJSON = await fetch('/geo/africa.geojson').then(res => res.json());
 
@@ -154,8 +185,8 @@ const LeadTimesMap = (props) => {
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
 
     const [selectedVariable, setSelectedVariable] = useState('t2m');
-    const [selectedModel, setSelectedModel] = useState('ECMWFAIFS')
-    const [selectedMetric, setSelectedMetric] = useState('MAE')
+    const [selectedModel, setSelectedModel] = useState('GraphCast')
+    const [selectedMetric, setSelectedMetric] = useState('RMSE')
 
     const variableCache = useRef({}) // cache for loaded variables
 
@@ -173,14 +204,14 @@ const LeadTimesMap = (props) => {
     // choose ZARR_SOURCE based on model
     let ZARR_SOURCE = ''
     if (region == 'africa') {
-        if (selectedModel === 'GraphCast' && selectedMetric === 'RMSE') ZARR_SOURCE = ZARR_SOURCE_gc_RMSE
-        else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'RMSE') ZARR_SOURCE = ZARR_SOURCE_marsfc_RMSE
-        else if (selectedModel === 'ECMWFAIFS' && selectedMetric === 'RMSE') ZARR_SOURCE = ZARR_SOURCE_marsai_RMSE
-        else if (selectedModel === 'GraphCast' && selectedMetric === 'MBE') ZARR_SOURCE = ZARR_SOURCE_gc_MBE
-        else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'MBE') ZARR_SOURCE = ZARR_SOURCE_marsfc_MBE
-        else if (selectedModel === 'ECMWFAIFS' && selectedMetric === 'MBE') ZARR_SOURCE = ZARR_SOURCE_marsai_MBE
-        else if (selectedModel === 'GraphCast' && selectedMetric === 'MAE') ZARR_SOURCE = ZARR_SOURCE_gc_MAE
-        else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'MAE') ZARR_SOURCE = ZARR_SOURCE_marsfc_MAE
+        if (selectedModel === 'GraphCast' && selectedMetric === 'RMSE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_gc_RMSE
+        else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'RMSE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_marsfc_RMSE
+        else if (selectedModel === 'ECMWFAIFS' && selectedMetric === 'RMSE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_marsai_RMSE
+        else if (selectedModel === 'GraphCast' && selectedMetric === 'MBE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_gc_MBE
+        else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'MBE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_marsfc_MBE
+        else if (selectedModel === 'ECMWFAIFS' && selectedMetric === 'MBE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_marsai_MBE
+        else if (selectedModel === 'GraphCast' && selectedMetric === 'MAE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_gc_MAE
+        else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'MAE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_marsfc_MAE
         else if (selectedModel === 'ECMWFAIFS' && selectedMetric === 'MAE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_marsai_MAE
 
     } else {
@@ -203,8 +234,9 @@ const LeadTimesMap = (props) => {
     // State to hold the latitude values
     const [latitudes, setLatitudes] = useState(null)
 
-    // Generate latitude array manually in JS on first render
+    // Generate whole latitude array manually in JS on first render
     // could not access /y from Zarr, so generating it since compressor used for coordinates was blosc instead of zlib (blosc is not supported by zarr-js)
+    // needed to cut the dataset to the tropics+subtropics and temperate regions
     useEffect(() => {
         if (!latitudes) {
             const nLat = 721 // 
@@ -279,21 +311,21 @@ const LeadTimesMap = (props) => {
         if (chunks && latitudes) {
 
             // Temperate zones: 35 to 60 and -60 to -35
-            if (LAT_MIN === -60 && LAT_MAX === 60) {
+            if (region == 'temperate' || region == 'polar') {
                 // Find indices for the -60 to 60 latitude window
-                const latStartAll = latitudes.findIndex(lat => lat >= -60)
-                let latEndAll = latitudes.findIndex(lat => lat > 60)
+                const latStartAll = latitudes.findIndex(lat => lat >= LAT_MIN)
+                let latEndAll = latitudes.findIndex(lat => lat > LAT_MAX)
                 if (latEndAll === -1) latEndAll = latitudes.length
                 const nLatSubset = latEndAll - latStartAll
                 const nLon = chunks.shape[2]
 
                 // Indices for north and south temperate bands within the subset
-                const northStart = latitudes.findIndex(lat => lat >= 35)
-                let northEnd = latitudes.findIndex(lat => lat > 60)
+                const northStart = latitudes.findIndex(lat => lat >= (region === 'temperate' ? 35 : 60)) // 35 if 'temperate' and 60 if 'polar'
+                let northEnd = latitudes.findIndex(lat => lat > LAT_MAX)
                 if (northEnd === -1) northEnd = latitudes.length
 
-                const southStart = latitudes.findIndex(lat => lat >= -60)
-                let southEnd = latitudes.findIndex(lat => lat > -35)
+                const southStart = latitudes.findIndex(lat => lat >= LAT_MIN)
+                let southEnd = latitudes.findIndex(lat => lat > (region === 'temperate' ? -35 : -60)) // -35 if 'temperate' and -60 if 'polar'
                 if (southEnd === -1) southEnd = latitudes.length
 
                 // Adjust indices to be relative to the subset
@@ -309,6 +341,7 @@ const LeadTimesMap = (props) => {
                 const southBand = picked.lo(southStart, 0).hi(southEnd - southStart, nLon)
 
                 // Create a subset array filled with FILL_VALUE
+                // needed to fill the space between north and south temperate zone with fill values
                 const subset = ndarray(
                     new picked.data.constructor(nLatSubset * nLon),
                     [nLatSubset, nLon]
@@ -327,6 +360,7 @@ const LeadTimesMap = (props) => {
                 return subset
             } else {
                 // Default: single band
+                // used for the tropics and global extent
                 const latStart = latitudes.findIndex(lat => lat >= LAT_MIN)
                 let latEnd = latitudes.findIndex(lat => lat > LAT_MAX)
                 if (latEnd === -1) latEnd = latitudes.length
@@ -536,7 +570,7 @@ const LeadTimesMap = (props) => {
                                     top: '45%',
                                     left: '50%',
                                     transform: 'translate(-50%, -50%)',
-                                    zIndex: 1000,
+                                    zIndex: 100,
                                     backgroundColor: 'transparent',
                                     borderRadius: 0,
                                     p: 0,
@@ -575,12 +609,10 @@ const LeadTimesMap = (props) => {
                                 nullValue={FILL_VALUE}
                                 source={data}
                                 colormap={finalColormap}
-                                {...(region !== 'africa' ? {
-                                    bounds: {
-                                        lat: [LAT_MIN, LAT_MAX],
-                                        lon: [-180, 180]
-                                    }
-                                } : {})}
+                                bounds={{
+                                    lat: [LAT_MIN, LAT_MAX],
+                                    lon: [-180, 180]
+                                }}
 
                             />
 

@@ -1,7 +1,7 @@
 
 import { Box, useThemeUI } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Filter } from '@carbonplan/components'
+import { Row, Filter } from '@carbonplan/components'
 import { useCallback } from 'react'
 import {
     LineChart,
@@ -61,7 +61,21 @@ const MonthsData = Array.from({ length: 12 }, (_, x) => ({
 
 */
 
-const MonthlyPerformance = () => {
+const MonthlyPerformance = (props) => {
+
+    const {
+        region
+    } = props
+
+    // keep track of the actual extent selected (for the tropics section)
+    const [selectedExtent, setSelectedExtent] = useState('tropics');
+
+    let JSON_PATH = '';
+    if (region === 'global') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'tropics') JSON_PATH = '/plotsPageData/Tropics/Tropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'subtropics') JSON_PATH = '/plotsPageData/Subtropics/Subtropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json';
 
     // UI states
     const { theme } = useThemeUI()
@@ -69,6 +83,8 @@ const MonthlyPerformance = () => {
     // only necessary for highlighting the radio buttons
     const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
+    const [extent, setExtent] = useState({ tropics: true, subtropics: false })
+
     /*
         const [allData, setAllData] = useState({})
         // const [selectedVariable, setSelectedVariable] = useState('t2m')
@@ -99,6 +115,12 @@ const MonthlyPerformance = () => {
         q: 'g/kg',
     };
 
+    // handle extent change
+    const handleExtentChange = useCallback((e) => {
+        const newExtent = e.target.value
+        setSelectedExtent(newExtent)
+    }, [setSelectedExtent])
+
     // handle variable change
     const handleVariableChange = useCallback((e) => {
         console.log('handleVariableChange', e.target.value)
@@ -114,7 +136,7 @@ const MonthlyPerformance = () => {
     }, [setSelectedMetric])
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
+        fetch(JSON_PATH)
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
@@ -146,7 +168,7 @@ const MonthlyPerformance = () => {
                 //  console.log("Grouped data:", grouped)
                 setData(grouped);
             });
-    }, [selectedVariable, selectedMetric]);
+    }, [selectedVariable, selectedMetric, selectedExtent]);
 
 
 
@@ -183,18 +205,57 @@ const MonthlyPerformance = () => {
                     tooltip=' Compares the performance of the different forecast models at each month of the year 2024. 
                     The monthly values are computed across all spatial points and leadtimes of the month.'
                 >
-                    <Box
-                        sx={{
-                            ...sx.heading,
-                            //   fontFamily: 'mono',
-                            textTransform: 'uppercase',
-                            color: 'blue',
+                    {region === 'tropics' ? (
+                        <Row
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                //alignItems: 'center', // optional: aligns them vertically
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    ...sx.heading,
+                                    textTransform: 'uppercase',
+                                    color: 'blue',
+                                }}
+                            >
+                                Monthly Performance
+                            </Box>
 
-                        }}>
-                        Monthly Performance
 
+                            <Filter
+                                sx={{
+                                    pr: 1,
 
-                    </Box>
+                                }}
+                                values={extent}
+                                setValues={(newExtent) => {
+                                    // highlight the selected extent
+                                    setExtent(newExtent)
+                                    //Call handleVariableChange when the filter changes
+                                    const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
+                                    if (selExtent) {
+                                        handleExtentChange({ target: { value: selExtent } })
+                                    }
+                                }}
+                                multiSelect={false}
+
+                            />
+
+                        </Row>
+                    ) : (
+                        <Box
+                            sx={{
+                                ...sx.heading,
+                                textTransform: 'uppercase',
+                                color: 'blue',
+                            }}
+                        >
+                            Monthly Performance
+                        </Box>
+                    )}
                 </TooltipWrapper>
             </Box>
 

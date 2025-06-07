@@ -64,13 +64,62 @@ const RadialBarData = [
 ];
 */
 
-const RegionOverview = () => {
+const RegionOverview = (props) => {
+
+    const {
+        region
+    } = props
+
+    // keep track of the actual extent selected (for the tropics section)
+    const [selectedExtent, setSelectedExtent] = useState('tropics');
+
+    let JSON_PATH = '';
+    if (region === 'global') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'tropics') JSON_PATH = '/plotsPageData/Tropics/Tropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'subtropics') JSON_PATH = '/plotsPageData/Subtropics/Subtropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'temperate') JSON_PATH = '/plotsPageData/NTemperate/NTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json';
+
+
+    // adjust these values after having produced all the regions data
+    const MAX_VALUES = {
+        rmse: {
+            t2m: 7,
+            msl: 10,
+            u10: 5,
+            v10: 5,
+            q: 2,
+        },
+        mae: {
+            t2m: 6,
+            msl: 9,
+            u10: 4,
+            v10: 4,
+            q: 1.8,
+        },
+        mbe: {
+            t2m: 1,
+            msl: 8,
+            u10: 3.5,
+            v10: 3.5,
+            q: 1.5,
+        },
+        r: {
+            t2m: 1,
+            msl: 1,
+            u10: 1,
+            v10: 1,
+            q: 1,
+        },
+    }
 
     // UI states
     const { theme } = useThemeUI()
     // only necessary for highlighting the radio buttons
     const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
+    const [extent, setExtent] = useState({ tropics: true, subtropics: false })
 
     // for the year and month select options
     const month_options = [
@@ -95,9 +144,22 @@ const RegionOverview = () => {
 
     const [data, setData] = useState([]);
 
+    const maxChartValue = MAX_VALUES[selectedMetric]?.[selectedVariable] ?? 7;
+
+
+
+
+
+
+    // handle extent change
+    const handleExtentChange = useCallback((e) => {
+        const newExtent = e.target.value
+        setSelectedExtent(newExtent)
+    }, [setSelectedExtent])
+
     // handle month change
     const handleMonthChange = useCallback((e) => {
-        console.log('handleMonthChange', e.target.value)
+        //  console.log('handleMonthChange', e.target.value)
         const month = e.target.value
         const monthCode = getMonthCode(month)
         setSelectedMonth(monthCode)
@@ -105,14 +167,14 @@ const RegionOverview = () => {
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        console.log('handleVariableChange', e.target.value)
+        //   console.log('handleVariableChange', e.target.value)
         const selectedVariable = e.target.value
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
     // handle metric change
     const handleMetricChange = useCallback((e) => {
-        console.log('handleMetricChange', e.target.value)
+        //   console.log('handleMetricChange', e.target.value)
         const selectedMetric = e.target.value.toLowerCase()
         setSelectedMetric(selectedMetric)
     }, [setSelectedMetric])
@@ -135,7 +197,8 @@ const RegionOverview = () => {
     };
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
+
+        fetch(JSON_PATH)
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(
@@ -145,18 +208,31 @@ const RegionOverview = () => {
                         entry.metric === selectedMetric &&
                         entry[selectedVariable] !== null
                 );
-                //  console.log("Filtered data:", filtered)
 
-                const transformed = filtered.map((entry) => ({
-                    model: entry.model,
-                    name: LEGEND_LABELS[entry.model] || entry.model, // will show in the legend: use the label from LEGEND_LABELS or fallback to the model name, 
-                    value: Number(entry[selectedVariable].toFixed(3)),
-                    fill: COLOR_MAP[entry.model] || '#ccc', // fallback color
-                }));
-                //  console.log("Transformed data:", transformed)
+                const transformed = [
+                    ...filtered.map((entry) => ({
+                        model: entry.model,
+                        name: LEGEND_LABELS[entry.model] || entry.model,
+                        value: Number(entry[selectedVariable].toFixed(3)),
+                        fill: COLOR_MAP[entry.model] || '#ccc',
+                        invisible: false,
+                    })),
+                    {
+                        model: 'max-scaler',
+                        name: '',
+                        value: maxChartValue,
+                        fill: theme.colors.background,
+                        invisible: true,
+                    },
+                ];
+
                 setData(transformed);
+            })
+            .catch((err) => {
+                console.error('Failed to fetch JSON_PATH data:', err);
+                setData([]); // fallback empty
             });
-    }, [selectedVariable, selectedMonth, selectedMetric]);
+    }, [selectedVariable, selectedMonth, selectedMetric, selectedExtent]);
 
 
 
@@ -171,12 +247,33 @@ const RegionOverview = () => {
                 width: '100%',
                 height: 280
             }}>
+                {region === 'tropics' ? (
+
+                    <Filter
+                        sx={{
+                            pt: 2,
+                        }}
+                        values={extent}
+                        setValues={(newExtent) => {
+                            // highlight the selected extent
+                            setExtent(newExtent)
+                            //Call handleVariableChange when the filter changes
+                            const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
+                            if (selExtent) {
+                                handleExtentChange({ target: { value: selExtent } })
+                            }
+                        }}
+
+
+
+                    />
+                ) : (null)}
 
                 <ResponsiveContainer width="100%" height="100%">
                     <RadialBarChart
                         cx="50%"
-                        cy="43%"
-                        innerRadius="40%"
+                        cy="40%"
+                        innerRadius="30%"
                         outerRadius="90%"
                         barSize={20}
                         data={data}
@@ -186,7 +283,7 @@ const RegionOverview = () => {
                             background={{ fill: theme.colors.secondary }}
                             clockWise
                             dataKey='value'
-                            label={{ position: 'insideStart', fill: theme.colors.primary }}
+                            label={{ position: 'insideStart', fill: theme.colors.background }}
                         />
                         <Legend
                             iconSize={3}
@@ -194,7 +291,7 @@ const RegionOverview = () => {
                             verticalAlign="bottom"
                             align="center"
                             wrapperStyle={{
-                                paddingTop: 10,
+                                paddingTop: 5,
 
                             }}
 
@@ -203,7 +300,10 @@ const RegionOverview = () => {
                 </ResponsiveContainer>
             </Box>
 
-            <Box sx={{ mt: [0, 1, 2, 3] }}>
+            <Box sx={{
+                mt: [0, 1, 2, 3],
+                pt: 2
+            }}>
                 <Filter
                     values={variables}
                     setValues={(newVariable) => {
@@ -236,7 +336,10 @@ const RegionOverview = () => {
                 // labels={{ q: 'Specific humidity' }}
                 />
             </Box>
-            <Row sx={{ mt: [0, 1, 2, 3] }}>
+            <Row sx={{
+                mt: [0, 1, 2, 3],
+                pb: 30
+            }}>
                 <Column start={[1]} width={[3, 3, 3, 3]}>
                     <Select size='xs'
                         sxSelect={{

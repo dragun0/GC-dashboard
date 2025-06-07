@@ -67,6 +67,59 @@ const RadialBarData = [
 
 const RegionComparison = () => {
 
+    const REGION_CONFIGS = [
+        { title: 'Global', key: 'globalData', file: '/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json' },
+        { title: 'Tropics', key: 'tropicsData', file: '/plotsPageData/Tropics/Tropics_R_RMSE_MAE_MBE_monthly_allmodels.json' },
+        { title: 'Subtropics', key: 'subtropicsData', file: '/plotsPageData/Subtropics/Subtropics_R_RMSE_MAE_MBE_monthly_allmodels.json' },
+        { title: 'N. Temperate', key: 'temperateData', file: '/plotsPageData/NTemperate/NTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json' },
+        { title: '(Sub-)Polar', key: 'polarData', file: '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_monthly_allmodels.json' },
+        { title: 'Africa', key: 'africaData', file: '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json' },
+    ]
+
+    const [regionData, setRegionData] = useState({
+        globalData: [],
+        tropicsData: [],
+        subtropicsData: [],
+        temperateData: [],
+        polarData: [],
+        africaData: [],
+    });
+
+    // adjust these values after having produced all the regions data
+    // done is without africa
+    const MAX_VALUES = {
+        rmse: {
+            t2m: 5, //done
+            msl: 9, //done
+            u10: 4.5, //done
+            v10: 4.5, //done
+            q: 2, //done
+        },
+        mae: {
+            t2m: 5, //done
+            msl: 9, // done or do 6
+            u10: 4.5, //done
+            v10: 4.5, //done
+            q: 2, //done
+        },
+        mbe: {
+            t2m: 0.5, //done
+            msl: 2.7, //done
+            u10: 0.5, //done
+            v10: 0.5, //done
+            q: 1.5,
+        },
+        r: {
+            t2m: 1, //done
+            msl: 1,  //done
+            u10: 1, //done
+            v10: 1, //done
+            q: 1, //done
+        },
+    }
+
+    // const MAX_CHART_VALUE = 7;
+
     // UI states
     const { theme } = useThemeUI()
     // only necessary for highlighting the radio buttons
@@ -94,7 +147,10 @@ const RegionComparison = () => {
     const [selectedMetric, setSelectedMetric] = useState('rmse')
     const [selectedMonth, setSelectedMonth] = useState(13)
 
+    // for the invisible bar chart that is only used as a legend
     const [globalData, setGlobalData] = useState([]);
+
+    const maxChartValue = MAX_VALUES[selectedMetric]?.[selectedVariable] ?? 7;
 
     // handle month change
     const handleMonthChange = useCallback((e) => {
@@ -137,27 +193,52 @@ const RegionComparison = () => {
     };
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
-            .then((res) => res.json())
-            .then((json) => {
-                const filtered = json.filter(
-                    (entry) =>
-                        MODELS.includes(entry.model) &&
-                        entry.month === selectedMonth &&
-                        entry.metric === selectedMetric &&
-                        entry[selectedVariable] !== null
-                );
-                //  console.log("Filtered data:", filtered)
+        const fetchAllRegionData = async () => {
+            const updatedData = {};
 
-                const transformed = filtered.map((entry) => ({
-                    model: entry.model,
-                    name: LEGEND_LABELS[entry.model] || entry.model, // will show in the legend: use the label from LEGEND_LABELS or fallback to the model name, 
-                    value: Number(entry[selectedVariable].toFixed(3)),
-                    fill: COLOR_MAP[entry.model] || '#ccc', // fallback color
-                }));
-                //   console.log("Transformed data:", transformed)
-                setGlobalData(transformed);
-            });
+            for (const { key, file } of REGION_CONFIGS) {
+                try {
+                    const res = await fetch(file);
+                    const json = await res.json();
+
+                    const filtered = json.filter(
+                        (entry) =>
+                            MODELS.includes(entry.model) &&
+                            entry.month === selectedMonth &&
+                            entry.metric === selectedMetric &&
+                            entry[selectedVariable] !== null
+                    );
+
+                    const transformed = [
+                        ...filtered.map((entry) => ({
+                            model: entry.model,
+                            name: LEGEND_LABELS[entry.model] || entry.model,
+                            value: Number(entry[selectedVariable].toFixed(3)),
+                            fill: COLOR_MAP[entry.model] || '#ccc',
+                            invisible: false,
+                        })),
+                        {
+                            model: 'max-scaler',
+                            name: '',
+                            value: maxChartValue,
+                            fill: theme.colors.background,
+                            //background: { fill: 'none' },
+
+                            invisible: true, // custom flag to identify and filter later
+                        }
+                    ];
+
+                    updatedData[key] = transformed;
+                } catch (error) {
+                    console.error(`Failed to fetch data for ${key}:`, error);
+                    updatedData[key] = []; // fallback empty
+                }
+            }
+
+            setRegionData(updatedData);
+        };
+
+        fetchAllRegionData();
     }, [selectedVariable, selectedMonth, selectedMetric]);
 
 
@@ -289,165 +370,65 @@ const RegionComparison = () => {
 
 
 
-            <Row>
-                <Column start={[1]} width={[3]}>
-                    <Box sx={{
-                        ...sx.subheading,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center'
-                    }}>Global</Box>
-                    <Box sx={{
-                        ...sx.label,
-                        fontSize: [0, 0, 0, 1],
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    flexWrap: 'nowrap', // prevents wrapping
+                    width: '100%',
+                }}
+            >
+                {REGION_CONFIGS.map(({ title, key }) => (
+                    <Box
+                        key={key}
+                        sx={{
+                            flex: '1 1 0',
+                            maxWidth: `${100 / REGION_CONFIGS.length}%`, // = ~16.666% for 6 charts
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Box sx={{ ...sx.subheading, display: 'flex', justifyContent: 'center', mb: 2 }}>
+                            {title}
+                        </Box>
+                        <Box
+                            sx={{
+                                ...sx.label,
+                                fontSize: [0, 0, 0, 1],
+                                width: '100%',
+                                height: 170,
+                            }}
+                        >
+                            <ResponsiveContainer width="100%" height="100%">
+                                <RadialBarChart
+                                    cx="50%"
+                                    cy="43%"
+                                    innerRadius="30%"
+                                    outerRadius="100%"
+                                    barSize={20}
+                                    data={regionData[key]} // includes real values + max-scaler
+                                >
+                                    {/* Main bars: exclude max-scaler using invisible flag */}
 
-                        pt: 20,
-                        width: '100%',
-                        height: 170
-                    }}>
+                                    <RadialBar
+                                        minAngle={15}
 
-                        <ResponsiveContainer width="100%" >
-                            <RadialBarChart
-                                cx="50%"
-                                cy="43%"
-                                innerRadius="30%"
-                                outerRadius="100%"
-                                barSize={20}
-                                data={globalData}
-                            >
-                                <RadialBar
-                                    minAngle={15}
-                                    background={{ fill: theme.colors.secondary }}
-                                    clockWise
-                                    dataKey="value"
-                                    label={{ position: 'insideStart', fill: theme.colors.primary }}
-                                />
-
-                            </RadialBarChart>
-                        </ResponsiveContainer>
+                                        background={{ fill: theme.colors.secondary }}
+                                        clockWise
+                                        dataKey="value"
+                                        label={{
+                                            position: 'insideStart',
+                                            fill: theme.colors.background,
+                                        }}
+                                    />
+                                </RadialBarChart>
+                            </ResponsiveContainer>
+                        </Box>
                     </Box>
+                ))}
 
-                </Column>
-                <Column start={[4]} width={[3]}>
-                    <Box sx={{
-                        ...sx.subheading,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center'
-                    }}>(Sub-)Tropics</Box>
-
-                    <Box sx={{
-                        ...sx.label,
-                        fontSize: [0, 0, 0, 1],
-
-                        pt: 20,
-                        width: '100%',
-                        height: 170
-                    }}>
-                        <ResponsiveContainer width="100%" >
-                            <RadialBarChart
-                                cx="50%"
-                                cy="43%"
-                                innerRadius="30%"
-                                outerRadius="100%"
-                                barSize={20}
-                                data={RadialBarData}
-                            >
-                                <RadialBar
-                                    minAngle={15}
-                                    background={{ fill: theme.colors.secondary }}
-                                    clockWise
-                                    dataKey="AE"
-                                    label={{ position: 'insideStart', fill: theme.colors.primary }}
-                                />
-
-                            </RadialBarChart>
-                        </ResponsiveContainer>
-                    </Box>
-
-                </Column>
-                <Column start={[7]} width={[3]}>
-                    <Box sx={{
-                        ...sx.subheading,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center'
-                    }}>Temperate </Box>
-
-                    <Box sx={{
-                        ...sx.label,
-                        fontSize: [0, 0, 0, 1],
-
-                        pt: 20,
-                        width: '100%',
-                        height: 170
-                    }}>
-
-                        <ResponsiveContainer width="100%" >
-                            <RadialBarChart
-                                cx="50%"
-                                cy="43%"
-                                innerRadius="30%"
-                                outerRadius="100%"
-                                barSize={20}
-                                data={RadialBarData}
-                            >
-                                <RadialBar
-                                    minAngle={15}
-                                    background={{ fill: theme.colors.secondary }}
-                                    clockWise
-                                    dataKey="AE"
-                                    label={{ position: 'insideStart', fill: theme.colors.primary }}
-                                />
-
-                            </RadialBarChart>
-                        </ResponsiveContainer>
-                    </Box>
-
-                </Column>
-
-                <Column start={[10]} width={[3]}>
-                    <Box sx={{
-                        ...sx.subheading,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center'
-                    }}>Africa</Box>
-
-                    <Box sx={{
-                        ...sx.label,
-                        fontSize: [0, 0, 0, 1],
-
-                        pt: 20,
-                        width: '100%',
-                        height: 170
-                    }}>
-
-                        <ResponsiveContainer width="100%" >
-                            <RadialBarChart
-                                cx="50%"
-                                cy="43%"
-                                innerRadius="30%"
-                                outerRadius="100%"
-                                barSize={20}
-                                data={RadialBarData}
-                            >
-                                <RadialBar
-                                    minAngle={15}
-                                    background={{ fill: theme.colors.secondary }}
-                                    clockWise
-                                    dataKey="AE"
-                                    label={{ position: 'insideStart', fill: theme.colors.primary }}
-                                />
-
-
-                            </RadialBarChart>
-                        </ResponsiveContainer>
-                    </Box>
-
-                </Column>
-
-            </Row>
+            </Box>
 
 
             {/* Invisible Radial Bar Chart for Legend */}
@@ -459,7 +440,7 @@ const RegionComparison = () => {
                     }}>
                         <ResponsiveContainer width={300} height={20}>
                             <RadialBarChart
-                                data={globalData}
+                                data={regionData.globalData}
                                 cx="50%"
                                 cy="50%"
                                 innerRadius="0%"
@@ -479,7 +460,7 @@ const RegionComparison = () => {
                                     verticalAlign="middle"
                                     align="center"
                                     wrapperStyle={{
-                                        paddingTop: 10,
+                                        paddingTop: 0,
                                     }}
                                 />
                             </RadialBarChart>

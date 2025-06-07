@@ -146,7 +146,7 @@ const plotsPage = () => {
                       <li>Specific humidity (q) at 1000 hPa pressure (closest to earth's surface)</li>
                     </ul>
 
-                    The main objective of this comparative analysis is to evaluate wether the forecasting models perform differently in different geographic regions.
+                    The main objective of this comparative analysis is to evaluate whether the forecasting models perform differently in different geographic regions.
                     Four geographic regions are examined: Global, Tropics + Subtropics, Temperate Zones, and Africa.
 
                   </Box>
@@ -223,6 +223,9 @@ const plotsPage = () => {
                     • <strong>Correlation Coefficient</strong> (R) <br /> <br />
                     Purpose:<br />
                     • Explore performance differences between AI and physics based models in different climate zones
+
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla feugiat ac augue a vulputate. Aenean id tortor urna. Nunc et volutpat orci, at suscipit diam. Morbi consectetur dignissim elementum. Quisque vitae hendrerit nunc. Nullam nunc nunc, semper interdum aliquam quis, volutpat eleifend tortor. Maecenas sit amet mattis neque
+
                   </Box>
                 </Box>
               </Box>
@@ -301,7 +304,8 @@ const plotsPage = () => {
               {/* Lead Times Performance */}
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesPerformance />
+                  <LeadTimesPerformance
+                    region='global' />
                 </Column>
               </Row>
 
@@ -309,12 +313,14 @@ const plotsPage = () => {
               {/* Monthly Performance */}
               <Row>
                 <Column start={[1, 1]} width={[7, 7]}>
-                  <MonthlyPerformance />
+                  <MonthlyPerformance
+                    region='global' />
                 </Column>
 
                 {/* Variables Performance */}
                 <Column start={[1, 8]} width={[5, 5]}>
-                  <VariablesPerformance />
+                  <VariablesPerformance
+                    region='global' />
                 </Column>
               </Row>
 
@@ -373,7 +379,8 @@ const plotsPage = () => {
                   </TooltipWrapper>
                 </Box>
                 <Divider />
-                <RegionOverview />
+                <RegionOverview
+                  region='global' />
 
 
               </Box>
@@ -419,7 +426,7 @@ const plotsPage = () => {
                           display: 'inline',
                         }}
                       >
-                        Tropics + Subtropics
+                        Tropics
                       </Box>
 
                       <Box
@@ -428,7 +435,7 @@ const plotsPage = () => {
                           display: 'inline',
                         }}
                       >
-                        35°N – 35°S | 180°W – 180°E
+                        23.5°N – 23.5°S | 180°W – 180°E
 
                       </Box>
                     </Box>
@@ -454,7 +461,8 @@ const plotsPage = () => {
               {/* Lead Times Performance */}
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesPerformance />
+                  <LeadTimesPerformance
+                    region='tropics' />
                 </Column>
               </Row>
 
@@ -462,12 +470,14 @@ const plotsPage = () => {
               {/* Monthly Performance */}
               <Row>
                 <Column start={[1, 1]} width={[7, 7]}>
-                  <MonthlyPerformance />
+                  <MonthlyPerformance
+                    region='tropics' />
                 </Column>
 
                 {/* Variables Performance */}
                 <Column start={[1, 8]} width={[5, 5]}>
-                  <VariablesPerformance />
+                  <VariablesPerformance
+                    region='tropics' />
                 </Column>
               </Row>
 
@@ -524,7 +534,8 @@ const plotsPage = () => {
                   </TooltipWrapper>
                 </Box>
                 <Divider />
-                <RegionOverview />
+                <RegionOverview
+                  region='tropics' />
 
 
               </Box>
@@ -569,7 +580,7 @@ const plotsPage = () => {
                           display: 'inline',
                         }}
                       >
-                        Temperate Zones
+                        Northern Temperate Zone
                       </Box>
 
                       <Box
@@ -578,7 +589,7 @@ const plotsPage = () => {
                           display: 'inline',
                         }}
                       >
-                        35°N – 60°N & 35°S – 60°S | 180°W – 180°E
+                        35°N – 60°N | 180°W – 180°E
 
                       </Box>
                     </Box>
@@ -604,7 +615,8 @@ const plotsPage = () => {
               {/* Lead Times Performance */}
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesPerformance />
+                  <LeadTimesPerformance
+                    region='temperate' />
                 </Column>
               </Row>
 
@@ -612,12 +624,14 @@ const plotsPage = () => {
               {/* Monthly Performance */}
               <Row>
                 <Column start={[1, 1]} width={[7, 7]}>
-                  <MonthlyPerformance />
+                  <MonthlyPerformance
+                    region='temperate' />
                 </Column>
 
                 {/* Variables Performance */}
                 <Column start={[1, 8]} width={[5, 5]}>
-                  <VariablesPerformance />
+                  <VariablesPerformance
+                    region='temperate' />
                 </Column>
               </Row>
 
@@ -674,7 +688,8 @@ const plotsPage = () => {
                   </TooltipWrapper>
                 </Box>
                 <Divider />
-                <RegionOverview />
+                <RegionOverview
+                  region='temperate' />
 
 
               </Box>
@@ -753,7 +768,8 @@ const plotsPage = () => {
               {/* Lead Times Performance */}
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesPerformance />
+                  <LeadTimesPerformance
+                    region='polar' />
                 </Column>
               </Row>
 
@@ -761,12 +777,14 @@ const plotsPage = () => {
               {/* Monthly Performance */}
               <Row>
                 <Column start={[1, 1]} width={[7, 7]}>
-                  <MonthlyPerformance />
+                  <MonthlyPerformance
+                    region='polar' />
                 </Column>
 
                 {/* Variables Performance */}
                 <Column start={[1, 8]} width={[5, 5]}>
-                  <VariablesPerformance />
+                  <VariablesPerformance
+                    region='polar' />
                 </Column>
               </Row>
 
@@ -823,7 +841,8 @@ const plotsPage = () => {
                   </TooltipWrapper>
                 </Box>
                 <Divider />
-                <RegionOverview />
+                <RegionOverview
+                  region='polar' />
 
 
               </Box>
@@ -904,7 +923,8 @@ const plotsPage = () => {
               {/* Lead Times Performance */}
               <Row>
                 <Column start={[1, 1]} width={[13]}>
-                  <LeadTimesPerformance />
+                  <LeadTimesPerformance
+                    region='africa' />
                 </Column>
               </Row>
 
@@ -912,12 +932,15 @@ const plotsPage = () => {
               {/* Monthly Performance */}
               <Row>
                 <Column start={[1, 1]} width={[7, 7]}>
-                  <MonthlyPerformance />
+                  <MonthlyPerformance
+                    region='africa' />
                 </Column>
 
                 {/* Variables Performance */}
                 <Column start={[1, 8]} width={[5, 5]}>
-                  <VariablesPerformance />
+                  <VariablesPerformance
+                    region='africa'
+                  />
                 </Column>
               </Row>
 
@@ -974,7 +997,8 @@ const plotsPage = () => {
                   </TooltipWrapper>
                 </Box>
                 <Divider />
-                <RegionOverview />
+                <RegionOverview
+                  region='africa' />
 
 
               </Box>

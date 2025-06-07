@@ -84,7 +84,18 @@ const StackedBarData = [
 ]
 
 
-const VariablesPerformance = () => {
+const VariablesPerformance = (props) => {
+
+    const {
+        region
+    } = props
+
+    let JSON_PATH = '';
+    if (region === 'global') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'tropics') JSON_PATH = '/plotsPageData/Tropics/Tropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'temperate') JSON_PATH = '/plotsPageData/NTemperate/NTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json';
 
     const { theme } = useThemeUI()
 
@@ -121,7 +132,7 @@ const VariablesPerformance = () => {
 
     useEffect(() => {
         if (selectedMonth) {
-            fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json')
+            fetch(JSON_PATH)
                 .then((res) => res.json())
                 .then((json) => {
                     const variables = ['u10', 'v10', 't2m', 'msl', 'q'];

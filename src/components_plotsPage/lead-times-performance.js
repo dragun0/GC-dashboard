@@ -60,7 +60,19 @@ const newdata = Array.from({ length: 41 }, (_, i) => {
 });
 
 
-const LeadTimesPerformance = () => {
+const LeadTimesPerformance = (props) => {
+
+    const {
+        region
+    } = props
+
+    let JSON_PATH = '';
+    if (region === 'global') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+    else if (region === 'tropics') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+    else if (region === 'temperate') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+    else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+    else if (region === 'africa') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+
 
     const { theme } = useThemeUI()
 
@@ -140,7 +152,7 @@ const LeadTimesPerformance = () => {
     }, [setSelectedMetric])
 
     useEffect(() => {
-        fetch('/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json')
+        fetch(JSON_PATH)
             .then((res) => res.json())
             .then((json) => {
                 const filtered = json.filter(

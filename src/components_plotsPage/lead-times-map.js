@@ -179,20 +179,40 @@ const LeadTimesMap = (props) => {
     const finalColormap = colormapReverse ? [...colormap].reverse() : colormap
 
 
-    // for buttons UI only
+    // for UI buttons only
     const [models, setModel] = useState({ GraphCast: true, ECMWFIFS: false, ECMWFAIFS: false })
     const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
+    const [extent, setExtent] = useState({ tropics: true, subtropics: false })
 
+    // to keep track of the actually selected variable, model, metric
     const [selectedVariable, setSelectedVariable] = useState('t2m');
     const [selectedModel, setSelectedModel] = useState('GraphCast')
     const [selectedMetric, setSelectedMetric] = useState('RMSE')
 
     const variableCache = useRef({}) // cache for loaded variables
 
+    // keep track of the actual extent selected (for the tropics section)
+    const [selectedExtent, setSelectedExtent] = useState(['tropics']);
+
+    // make sure one button of the tropic extents is always selected
+    const handleSetExtent = (newExtent) => {
+        const activeKeys = Object.keys(newExtent).filter(key => newExtent[key]);
+        if (activeKeys.length === 0) return; // prevent none selected
+
+        setExtent(newExtent);
+        setSelectedExtent(activeKeys);
+    };
+
+    // for debugging only
+    useEffect(() => {
+        console.log('Selected extent changed:', selectedExtent)
+    }, [selectedExtent])
+
+
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        console.log('handleVariableChange', e.target.value)
+        //  console.log('handleVariableChange', e.target.value)
         const selected = e.target.value
         setSelectedVariable(selected)
         //  setClim([CLIM_RANGES[selected].min, CLIM_RANGES[selected].max])
@@ -248,6 +268,8 @@ const LeadTimesMap = (props) => {
 
 
 
+
+
     // Load latitude values from Zarr on first load
     /*
     useEffect(() => {
@@ -275,12 +297,12 @@ const LeadTimesMap = (props) => {
         // Load the selected variable only if not cached
         if (!variableCache.current[cacheKey]) {
             setLoading(true) // <--- Set loading to true 
-            console.log('useEffect - load new data:', selectedVariable)
-            console.log('URL:', `${ZARR_SOURCE}/${selectedVariable}`)
+            //  console.log('useEffect - load new data:', selectedVariable)
+            //  console.log('URL:', `${ZARR_SOURCE}/${selectedVariable}`)
             zarr().load(`${ZARR_SOURCE}/${selectedVariable}`, (err, arr) => {
                 if (err) {
                     setLoading(false)
-                    console.error('Error loading array:', err)
+                    //  console.error('Error loading array:', err)
                     // add error message to the map as well
                     return
                 }
@@ -292,10 +314,10 @@ const LeadTimesMap = (props) => {
                 const colormapConfig = COLORMAPS[selectedMetric]?.[selectedVariable] || { name: 'warm', reverse: false }
                 setColormapName(colormapConfig.name)
                 setColormapReverse(colormapConfig.reverse)
-                console.log('useEffect chunk updated with variable:', selectedVariable, 'with data:', arr)
+                //    console.log('useEffect chunk updated with variable:', selectedVariable, 'with data:', arr)
             })
         } else {
-            console.log('useEffect - var:', selectedVariable, 'already cached, using cached data')
+            //  console.log('useEffect - var:', selectedVariable, 'already cached, using cached data')
             setChunks(variableCache.current[cacheKey])
             setLoading(false)
             const climRange = CLIM_RANGES[selectedMetric]?.[selectedVariable] || { min: 0, max: 1 }
@@ -307,19 +329,22 @@ const LeadTimesMap = (props) => {
     }, [selectedModel, selectedMetric, selectedVariable])
 
 
+
     const data = useMemo(() => {
         if (chunks && latitudes) {
 
-            // Temperate zones: 35 to 60 and -60 to -35
+            // Temperate zones: 35 to 60 and -35 to -60
+            // polar+subpolar zones: 60 to 90 and -60 to -90
             if (region == 'temperate' || region == 'polar') {
-                // Find indices for the -60 to 60 latitude window
+                // for temperate case: Find indices for the -60 to 60 latitude window 
+                // for polar case: find indeces for the -90 to 90 latitude window
                 const latStartAll = latitudes.findIndex(lat => lat >= LAT_MIN)
                 let latEndAll = latitudes.findIndex(lat => lat > LAT_MAX)
                 if (latEndAll === -1) latEndAll = latitudes.length
                 const nLatSubset = latEndAll - latStartAll
                 const nLon = chunks.shape[2]
 
-                // Indices for north and south temperate bands within the subset
+                // Indices for north and south temperate (polar) bands within the subset
                 const northStart = latitudes.findIndex(lat => lat >= (region === 'temperate' ? 35 : 60)) // 35 if 'temperate' and 60 if 'polar'
                 let northEnd = latitudes.findIndex(lat => lat > LAT_MAX)
                 if (northEnd === -1) northEnd = latitudes.length
@@ -358,7 +383,85 @@ const LeadTimesMap = (props) => {
                         subset.set(i + southStartSub, j, southBand.get(i, j))
 
                 return subset
-            } else {
+            } if (region === 'tropics') {
+                const bothSelected = selectedExtent.includes('tropics') && selectedExtent.includes('subtropics');
+                const subtropicsOnly = selectedExtent.length === 1 && selectedExtent[0] === 'subtropics';
+
+                // If both selected → show full -35 to 35 band
+                if (bothSelected) {
+                    const latStart = latitudes.findIndex(lat => lat >= -35);
+                    let latEnd = latitudes.findIndex(lat => lat > 35);
+                    if (latEnd === -1) latEnd = latitudes.length;
+
+                    const picked = chunks.pick(time, null, null);
+                    const cropped = picked.lo(latStart, 0).hi(latEnd - latStart, picked.shape[1]);
+                    return cropped;
+                }
+
+                // If only Subtropics selected → do subtropics banding
+                if (subtropicsOnly) {
+                    // Find indeces for the -35 to 35 latitude window
+                    const latStartAll = latitudes.findIndex(lat => lat >= -35)
+                    let latEndAll = latitudes.findIndex(lat => lat > 35)
+                    if (latEndAll === -1) latEndAll = latitudes.length
+                    const nLatSubset = latEndAll - latStartAll
+                    const nLon = chunks.shape[2]
+
+                    // Indices for north and south subtropic bands within the subset
+                    const northStart = latitudes.findIndex(lat => lat >= 23.5)
+                    let northEnd = latitudes.findIndex(lat => lat > 35)
+                    if (northEnd === -1) northEnd = latitudes.length
+
+                    const southStart = latitudes.findIndex(lat => lat >= -35)
+                    let southEnd = latitudes.findIndex(lat => lat > -23.5)
+                    if (southEnd === -1) southEnd = latitudes.length
+
+                    // Adjust indices to be relative to the subset
+                    const northStartSub = northStart - latStartAll
+                    const northEndSub = northEnd - latStartAll
+                    const southStartSub = southStart - latStartAll
+                    const southEndSub = southEnd - latStartAll
+
+                    const picked = chunks.pick(time, null, null)
+
+                    // Bands (relative to full picked)
+                    const northBand = picked.lo(northStart, 0).hi(northEnd - northStart, nLon)
+                    const southBand = picked.lo(southStart, 0).hi(southEnd - southStart, nLon)
+
+                    // Create a subset array filled with FILL_VALUE
+                    // needed to fill the space between north and south temperate zone with fill values
+                    const subset = ndarray(
+                        new picked.data.constructor(nLatSubset * nLon),
+                        [nLatSubset, nLon]
+                    )
+                    ops.assigns(subset, FILL_VALUE)
+
+                    // Copy northBand into subset
+                    for (let i = 0; i < northBand.shape[0]; ++i)
+                        for (let j = 0; j < nLon; ++j)
+                            subset.set(i + northStartSub, j, northBand.get(i, j))
+                    // Copy southBand into subset
+                    for (let i = 0; i < southBand.shape[0]; ++i)
+                        for (let j = 0; j < nLon; ++j)
+                            subset.set(i + southStartSub, j, southBand.get(i, j))
+
+                    return subset
+                }
+            }
+
+            // If only Tropics selected → default lat min/max
+            if (selectedExtent.length === 1 && selectedExtent[0] === 'Tropics') {
+                const latStart = latitudes.findIndex(lat => lat >= LAT_MIN);
+                let latEnd = latitudes.findIndex(lat => lat > LAT_MAX);
+                if (latEnd === -1) latEnd = latitudes.length;
+
+                const picked = chunks.pick(time, null, null);
+                const cropped = picked.lo(latStart, 0).hi(latEnd - latStart, picked.shape[1]);
+                return cropped;
+            }
+
+
+            else {
                 // Default: single band
                 // used for the tropics and global extent
                 const latStart = latitudes.findIndex(lat => lat >= LAT_MIN)
@@ -371,7 +474,7 @@ const LeadTimesMap = (props) => {
         } else {
             return null
         }
-    }, [chunks, time, latitudes, LAT_MIN, LAT_MAX])
+    }, [chunks, time, latitudes, LAT_MIN, LAT_MAX, selectedExtent])
 
 
     /*
@@ -439,18 +542,49 @@ const LeadTimesMap = (props) => {
                     regional extent at each lead time computed over all months of the year 2024.
                     Each pixel in this map answers the question: "On average across the year, how wrong is the model at this location for this lead time?"'
                 >
-                    <Box
-                        sx={{
-                            ...sx.heading,
-                            //   fontFamily: 'mono',
-                            textTransform: 'uppercase',
-                            color: 'blue',
 
-                        }}>
-                        Lead Times Spatial Performance
+                    {region === 'tropics' ? (
+                        <Row
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                //alignItems: 'center', // optional: aligns them vertically
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    ...sx.heading,
+                                    textTransform: 'uppercase',
+                                    color: 'blue',
+                                }}
+                            >
+                                Lead Times Spatial Performance
+                            </Box>
 
 
-                    </Box>
+                            <Filter
+                                sx={{
+                                    pr: 4,
+                                }}
+                                values={extent}
+                                setValues={handleSetExtent}
+                                multiSelect={true}
+
+                            />
+
+                        </Row>
+                    ) : (
+                        <Box
+                            sx={{
+                                ...sx.heading,
+                                textTransform: 'uppercase',
+                                color: 'blue',
+                            }}
+                        >
+                            Lead Times Spatial Performance
+                        </Box>
+                    )}
                 </TooltipWrapper>
             </Box>
 
@@ -600,20 +734,19 @@ const LeadTimesMap = (props) => {
 
 
                             <Raster
-
-                                // clim={[vmin, vmax]}
-                                //   bounds={[-35, 35, -180, 180]}
-
                                 clim={clim}
                                 mode={'lut'}
                                 nullValue={FILL_VALUE}
                                 source={data}
                                 colormap={finalColormap}
                                 bounds={{
-                                    lat: [LAT_MIN, LAT_MAX],
-                                    lon: [-180, 180]
+                                    lat:
+                                        region === 'tropics' && selectedExtent.includes('subtropics') &&
+                                            (selectedExtent.length === 1 || selectedExtent.includes('tropics'))
+                                            ? [-35, 35]
+                                            : [LAT_MIN, LAT_MAX],
+                                    lon: [-180, 180],
                                 }}
-
                             />
 
 
@@ -709,5 +842,43 @@ if (props.region === 'africa') {
 
                 return full
             }
+
+
+
+
+
+
+
+
+            <Row sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        gap: 3, // optional spacing between boxes
+                    }}
+                    >
+                     <Box
+                            sx={{
+                                ...sx.heading,
+                                //   fontFamily: 'mono',
+                                textTransform: 'uppercase',
+                                color: 'blue',
+
+                            }}>
+                            Lead Times Spatial Performance
+
+                        </Box>
+
+                        <Box
+                            sx={{
+                                ...sx.heading,
+                                //   fontFamily: 'mono',
+                                textTransform: 'uppercase',
+                                color: 'blue',
+
+                            }}>
+                            Lead Times Spatial Performance
+
+                        </Box>
+                    </Row>
 
             */

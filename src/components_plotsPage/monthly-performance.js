@@ -76,6 +76,8 @@ const MonthlyPerformance = (props) => {
     else if (region === 'tropics' && selectedExtent == 'subtropics') JSON_PATH = '/plotsPageData/Subtropics/Subtropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'temperate') JSON_PATH = '/plotsPageData/NTemperate/NTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json';
+
 
     // UI states
     const { theme } = useThemeUI()

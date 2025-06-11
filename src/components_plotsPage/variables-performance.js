@@ -1,6 +1,6 @@
 import { Box, useThemeUI } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Select } from '@carbonplan/components'
+import { Select, Filter } from '@carbonplan/components'
 import {
     XAxis,
     YAxis,
@@ -90,9 +90,13 @@ const VariablesPerformance = (props) => {
         region
     } = props
 
+    // keep track of the actual extent selected (for the tropics section)
+    const [selectedExtent, setSelectedExtent] = useState('tropics');
+
     let JSON_PATH = '';
     if (region === 'global') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json';
-    else if (region === 'tropics') JSON_PATH = '/plotsPageData/Tropics/Tropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'tropics') JSON_PATH = '/plotsPageData/Tropics/Tropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'subtropics') JSON_PATH = '/plotsPageData/Subtropics/Subtropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'temperate') JSON_PATH = '/plotsPageData/NTemperate/NTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json';
@@ -104,6 +108,18 @@ const VariablesPerformance = (props) => {
         'Annual', 'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     ]
+
+
+    // UI radio buttons
+    const [extent, setExtent] = useState({ tropics: true, subtropics: false })
+
+    // handle extent change
+    const handleExtentChange = useCallback((e) => {
+        const newExtent = e.target.value
+        setSelectedExtent(newExtent)
+    }, [setSelectedExtent])
+
+
 
     // function to convert month name to month code
     // (1 for January, 2 for February, ..., 12 for December, 13 for Annual)
@@ -160,7 +176,7 @@ const VariablesPerformance = (props) => {
                     console.error('Failed to load or process data.json:', error);
                 });
         }
-    }, [selectedMonth]);
+    }, [selectedMonth, selectedExtent]);
 
 
 
@@ -206,6 +222,34 @@ const VariablesPerformance = (props) => {
                 }}
             >
 
+                {region == 'tropics' &&
+                    <Filter
+                        sx={{
+                            pr: 1,
+
+
+                        }}
+                        values={extent}
+                        setValues={(newExtent) => {
+                            // highlight the selected extent
+                            setExtent(newExtent)
+                            //Call handleVariableChange when the filter changes
+                            const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
+                            if (selExtent) {
+                                handleExtentChange({ target: { value: selExtent } })
+                            }
+                        }}
+                        multiSelect={false}
+
+                    />
+                }
+
+
+
+
+
+
+
                 <Box
                     sx={{
                         display: 'flex',
@@ -227,6 +271,8 @@ const VariablesPerformance = (props) => {
                         <option>2024</option>
 
                     </Select>
+
+
 
                     <Select
                         size='xs'

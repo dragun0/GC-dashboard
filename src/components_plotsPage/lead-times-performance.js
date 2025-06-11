@@ -71,7 +71,7 @@ const LeadTimesPerformance = (props) => {
     else if (region === 'tropics') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
     else if (region === 'temperate') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
     else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_leadtimes_allmodels.json';
-    else if (region === 'africa') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+    else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_leadtimes_allmodels.json';
 
 
     const { theme } = useThemeUI()

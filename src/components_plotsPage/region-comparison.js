@@ -1,4 +1,4 @@
-import { Box, useThemeUI } from 'theme-ui'
+import { Box, useThemeUI, Divider } from 'theme-ui'
 import { Filter, Select, Row, Column } from '@carbonplan/components'
 import TooltipWrapper from '../components/tooltip-wrapper'
 import {
@@ -247,12 +247,14 @@ const RegionComparison = () => {
         <>
 
             {/* Region Comparison - Title */}
+            <Divider />
             < Box sx={{
-                pt: [2, 3, 4, 5],
+                pt: [1, 2, 3, 4],
                 pb: [1, 2, 3, 4],
 
             }
             }>
+
                 <TooltipWrapper
                     tooltip=' An overview of how the different forecasting models are performing across four spatial extents. The selected verification metric is computed across
                     all leadtimes and spatial points (within the geographic extent) for the selected month. "Annual" represents the average value of that metric across the whole year.
@@ -466,7 +468,9 @@ const RegionComparison = () => {
                             </RadialBarChart>
                         </ResponsiveContainer>
                     </Box>
+
                 </Column>
+
             </Row>
 
 

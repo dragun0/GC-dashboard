@@ -1,7 +1,7 @@
 
 import { Box, useThemeUI } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Row, Filter } from '@carbonplan/components'
+import { Row, Filter, Column } from '@carbonplan/components'
 import { useCallback } from 'react'
 import {
     LineChart,
@@ -170,7 +170,7 @@ const MonthlyPerformance = (props) => {
                 //  console.log("Grouped data:", grouped)
                 setData(grouped);
             });
-    }, [selectedVariable, selectedMetric, selectedExtent]);
+    }, [selectedVariable, selectedMetric, selectedExtent, region]);
 
 
 
@@ -197,34 +197,20 @@ const MonthlyPerformance = (props) => {
 
     return (
         <>
-            {/* Title Section - Monthly Performance */}
+
             <Box sx={{
-                pt: [3, 4, 5, 6],
-                pb: [1, 2, 3, 4],
+                pt: [0],
+                pb: [0],
 
             }}>
                 <TooltipWrapper
                     tooltip=' Compares the performance of the different forecast models at each month of the year 2024. 
                     The monthly values are computed across all spatial points and leadtimes of the month.'
+
                 >
-                    {region === 'tropics' ? (
-                        <Row
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                width: '100%',
-                                //alignItems: 'center', // optional: aligns them vertically
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    ...sx.heading,
-                                    textTransform: 'uppercase',
-                                    color: 'blue',
-                                }}
-                            >
-                                Monthly Performance
-                            </Box>
+                    <Column>
+                        {/* tropics or subtropics filter if overall region is = tropics */}
+                        {region === 'tropics' && (
 
 
                             <Filter
@@ -246,69 +232,63 @@ const MonthlyPerformance = (props) => {
 
                             />
 
-                        </Row>
-                    ) : (
-                        <Box
-                            sx={{
-                                ...sx.heading,
-                                textTransform: 'uppercase',
-                                color: 'blue',
-                            }}
+
+                        )}
+
+                        {/* Variables and Metrics Filters */}
+
+                        <Box sx={{
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            gap: 3,
+
+
+                        }}
                         >
-                            Monthly Performance
+                            <Box>
+                                <Filter
+                                    values={variables}
+                                    setValues={(newVariable) => {
+                                        // highlight the selected variable
+                                        setVariables(newVariable)
+                                        //Call handleVariableChange when the filter changes
+                                        const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
+                                        if (selectedVariable) {
+                                            handleVariableChange({ target: { value: selectedVariable } })
+                                        }
+                                    }}
+
+                                    multiSelect={false}
+                                />
+                            </Box>
+
+
+                            <Box >
+                                <Filter
+                                    values={metrics}
+                                    setValues={(newMetric) => {
+                                        // highlight the selected metric
+                                        setMetrics(newMetric)
+                                        // Call handleMetricChange when the filter changes
+                                        const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
+                                        if (selectedMetric) {
+                                            handleMetricChange({ target: { value: selectedMetric } })
+                                        }
+                                    }}
+                                    multiSelect={false}
+                                // labels={{ q: 'Specific humidity' }}
+                                />
+                            </Box>
+
                         </Box>
-                    )}
+                    </Column>
                 </TooltipWrapper>
-            </Box>
+            </Box >
 
 
-            {/* Filters - Monthly performances plot */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',       // allows wrapping on small screens
-                    gap: 6,                  // adds spacing between filters
-                    // mt: 3,                   // margin above the filters
-                    // mb: 3,                   // margin below the filters
-                    //  justifyContent: 'space-between', // Distributes filters evenly across the row
-                    alignItems: 'center',    // vertically align filters
 
-                }}
-            >
-                <Box>
-                    <Filter
-                        values={variables}
-                        setValues={(newVariable) => {
-                            // highlight the selected variable
-                            setVariables(newVariable)
-                            //Call handleVariableChange when the filter changes
-                            const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
-                            if (selectedVariable) {
-                                handleVariableChange({ target: { value: selectedVariable } })
-                            }
-                        }}
-
-                        multiSelect={false}
-                    />
-                </Box>
-
-                <Box>
-                    <Filter
-                        values={metrics}
-                        setValues={(newMetric) => {
-                            // highlight the selected metric
-                            setMetrics(newMetric)
-                            // Call handleMetricChange when the filter changes
-                            const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
-                            if (selectedMetric) {
-                                handleMetricChange({ target: { value: selectedMetric } })
-                            }
-                        }}
-                        multiSelect={false}
-                    // labels={{ q: 'Specific humidity' }}
-                    />
-                </Box>
-            </Box>
 
             <Box sx={{
                 ...sx.label,

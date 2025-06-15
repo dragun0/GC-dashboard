@@ -1,6 +1,6 @@
-import { Box, useThemeUI } from 'theme-ui'
+import { Box, useThemeUI, Divider } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Filter, Select } from '@carbonplan/components'
+import { Filter, Select, Row } from '@carbonplan/components'
 import {
     LineChart,
     Line,
@@ -12,6 +12,7 @@ import {
     ResponsiveContainer,
 } from 'recharts'
 import { useCallback, useState, useEffect } from 'react'
+import MonthlyPerformance from './monthly-performance'
 
 const sx = {
     label: {
@@ -66,9 +67,13 @@ const LeadTimesPerformance = (props) => {
         region
     } = props
 
+    // keep track of the actual extent selected (for the tropics section)
+    const [selectedExtent, setSelectedExtent] = useState('tropics');
+
     let JSON_PATH = '';
     if (region === 'global') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
-    else if (region === 'tropics') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'tropics') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
+    else if (region === 'tropics' && selectedExtent == 'subtropics') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
     else if (region === 'temperate') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_leadtimes_allmodels.json';
     else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_leadtimes_allmodels.json';
     else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_leadtimes_allmodels.json';
@@ -95,8 +100,12 @@ const LeadTimesPerformance = (props) => {
         setOpacity((op) => ({ ...op, [dataKey]: 1 }));
     };
 
+    // for UI buttons only
     const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
+
+    const [extent, setExtent] = useState({ tropics: true, subtropics: false })
+
 
     const month_options = [
         'Annual', 'January', 'February', 'March', 'April', 'May', 'June',
@@ -128,6 +137,12 @@ const LeadTimesPerformance = (props) => {
         msl: 'hPa',
         q: 'g/kg',
     };
+
+    // handle extent change
+    const handleExtentChange = useCallback((e) => {
+        const newExtent = e.target.value
+        setSelectedExtent(newExtent)
+    }, [setSelectedExtent])
 
     // handle month change
     const handleMonthChange = useCallback((e) => {
@@ -185,51 +200,54 @@ const LeadTimesPerformance = (props) => {
                 //  console.log("Grouped data:", grouped)
                 setData(grouped);
             });
-    }, [selectedVariable, selectedMetric, selectedMonth]);
+    }, [selectedVariable, selectedMetric, selectedMonth, region]);
 
 
     return (
         <>
-            {/* Title Section - Lead Times Performance Title */}
-            < Box sx={{
-                pt: [3, 4, 5, 6],
-                pb: [1, 2, 3, 4],
 
-            }
-            }>
-                <TooltipWrapper
-                    tooltip=' Compares the performance of the forecast models at the different forecast lead times
-                     of the selected month, averaged over all spatial points in the region.'
-                >
-                    <Box
-                        sx={{
-                            ...sx.heading,
-                            //  fontFamily: 'mono',
-                            textTransform: 'uppercase',
-                            color: 'blue',
+            {/* tropics or subtropics filter if overall region is = tropics */}
+            {region === 'tropics' && (
 
 
+                <Filter
+                    sx={{
+                        pr: 1,
 
-                        }}>
-                        Lead Times Performance
+                    }}
+                    values={extent}
+                    setValues={(newExtent) => {
+                        // highlight the selected extent
+                        setExtent(newExtent)
+                        //Call handleVariableChange when the filter changes
+                        const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
+                        if (selExtent) {
+                            handleExtentChange({ target: { value: selExtent } })
+                        }
+                    }}
+                    multiSelect={false}
+
+                />
 
 
-                    </Box>
-                </TooltipWrapper>
-            </Box >
+            )}
 
-            {/* Filters - Lead Times plot */}
-            <Box
+
+            {/* Variables filters */}
+            < Box
                 sx={{
                     display: 'flex',
                     flexWrap: 'wrap',       // allows wrapping on small screens
-                    gap: 8,                  // adds spacing between filters
-                    // mt: 3,                   // margin above the filters
-                    // mb: 3,                   // margin below the filters
+                    //gap: 8, 
+                    gap: 4,                 // adds spacing between filters
+                    //mt: 3,                   // margin above the filters
+                    //mb: 3,                   // margin below the filters
 
                     alignItems: 'center',    // vertically align filters
                 }}
             >
+
+
                 <Box>
                     <Filter
                         values={variables}
@@ -245,7 +263,7 @@ const LeadTimesPerformance = (props) => {
                         multiSelect={false}
                     />
                 </Box>
-
+                {/* Metrics filters */}
                 <Box>
                     <Filter
                         values={metrics}
@@ -272,7 +290,7 @@ const LeadTimesPerformance = (props) => {
                         alignItems: 'center',    // vertically align selects
                     }}
                 >
-
+                    {/* Year and Month filters */}
                     <Select size='xs'
                         sxSelect={{
                             textTransform: 'uppercase',
@@ -307,10 +325,10 @@ const LeadTimesPerformance = (props) => {
                         ))}
                     </Select>
                 </Box>
-            </Box>
+            </Box >
 
             {/* Lead times plot */}
-            <Box sx={{
+            < Box sx={{
                 ...sx.label,
                 fontSize: [0, 0, 0, 1],
                 //  color: 'primary',
@@ -320,9 +338,9 @@ const LeadTimesPerformance = (props) => {
             }}
 
             >
-                {/* Lead times plot */}
 
-                <ResponsiveContainer width="100%" height={300}>
+
+                < ResponsiveContainer width="100%" height={300} >
                     <LineChart
                         width={500}
                         height={200}
@@ -368,8 +386,8 @@ const LeadTimesPerformance = (props) => {
                         <Line type="monotone" dataKey="gc" name="GRAPHCAST" strokeOpacity={opacity.GraphCast} stroke="#8884d8" />
                         <Line type="monotone" dataKey="marsfc" name="ECMWF-IFS" strokeOpacity={opacity.ecmwfIFS} stroke="#82ca9d" />
                     </LineChart>
-                </ResponsiveContainer>
-            </Box>
+                </ResponsiveContainer >
+            </Box >
 
         </>
     )

@@ -4,18 +4,18 @@ const PlotsContext = createContext(null)
 
 export const PlotsContextProvider = ({ children }) => {
     // for layer change
-    const [month, setMonth] = useState(1)
-    const [time, setTime] = useState(0)
+    const [Column1Region, setColumn1Region] = useState('global')
+    const [Column2Region, setColumn2Region] = useState('tropics')
 
 
     return (
         <PlotsContext.Provider
 
             value={{
-                month,
-                setMonth,
-                time,
-                setTime,
+                Column1Region,
+                setColumn1Region,
+                Column2Region,
+                setColumn2Region,
             }}
 
         >
@@ -29,16 +29,16 @@ export const usePlotsContext = () => {
     const context = useContext(PlotsContext)
 
     const {
-        month,
-        setMonth,
-        time,
-        setTime,
+        Column1Region,
+        setColumn1Region,
+        Column2Region,
+        setColumn2Region,
     } = useContext(PlotsContext)
 
     return {
-        month,
-        setMonth,
-        time,
-        setTime,
+        Column1Region,
+        setColumn1Region,
+        Column2Region,
+        setColumn2Region,
     }
 }

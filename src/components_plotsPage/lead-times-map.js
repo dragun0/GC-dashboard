@@ -1,10 +1,11 @@
-import { Box, useThemeUI, Spinner } from 'theme-ui'
+import { Box, useThemeUI, Spinner, Divider } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
 import { Row, Column, Filter } from '@carbonplan/components'
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Minimap, Raster, Path, Sphere, Graticule } from '@carbonplan/minimaps'
 import { naturalEarth1, mercator, orthographic, equirectangular } from '@carbonplan/minimaps/projections'
 import { useThemedColormap, viridis } from '@carbonplan/colormaps'
+import { usePlotsContext } from '../components_plotsPage/PlotsContext'
 import MonthSlider from '../components_plotsPage/month-slider'
 import LeadTimesSlider from '../components_plotsPage/lead-times-slider'
 import zarr from 'zarr-js'
@@ -72,7 +73,7 @@ const sx = {
         fontWeight: 'bold',
         letterSpacing: 'smallcaps',
         // textTransform: 'uppercase',
-        fontSize: [3, 3, 3, 4],
+        fontSize: [3, 3, 3, 3],
         mb: [2],
     },
     subheading: {
@@ -150,6 +151,12 @@ const LeadTimesMap = (props) => {
         region
     } = props
 
+    //Get shared context state
+    const {
+        Column1Region, setColumn1Region,
+
+    } = usePlotsContext()
+
     let LAT_MIN = '';
     if (region === 'global' || region === 'africa') LAT_MIN = -90;
     else if (region === 'tropics') LAT_MIN = -23.5;
@@ -181,12 +188,16 @@ const LeadTimesMap = (props) => {
 
     // for UI buttons only
     const [models, setModel] = useState({ GraphCast: true, ECMWFIFS: false, ECMWFAIFS: false })
-    const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
-    const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
+    const [variables, setVariables] = useState({ t2m: false, msl: false, u10: false, v10: false, q: true })
+    const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false })
     const [extent, setExtent] = useState({ tropics: true, subtropics: false })
 
+    // for the UI button of the region filter only
+    //const [regions, setRegion] = useState({ global: true, tropics: false, temperate: false, polar: false, africa: false })
+
+
     // to keep track of the actually selected variable, model, metric
-    const [selectedVariable, setSelectedVariable] = useState('t2m');
+    const [selectedVariable, setSelectedVariable] = useState('q');
     const [selectedModel, setSelectedModel] = useState('GraphCast')
     const [selectedMetric, setSelectedMetric] = useState('RMSE')
 
@@ -219,10 +230,12 @@ const LeadTimesMap = (props) => {
     }, [setSelectedVariable])
     // change clim values depending on variable
 
-    const cacheKey = `${selectedModel}_${selectedMetric}_${selectedVariable}`
+    const cacheKey = `${region}_${selectedModel}_${selectedMetric}_${selectedVariable}`
 
     // choose ZARR_SOURCE based on model
+
     let ZARR_SOURCE = ''
+
     if (region == 'africa') {
         if (selectedModel === 'GraphCast' && selectedMetric === 'RMSE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_gc_RMSE
         else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'RMSE') ZARR_SOURCE = AFRICA_ZARR_SOURCE_marsfc_RMSE
@@ -244,8 +257,12 @@ const LeadTimesMap = (props) => {
         else if (selectedModel === 'GraphCast' && selectedMetric === 'MAE') ZARR_SOURCE = ZARR_SOURCE_gc_MAE
         else if (selectedModel === 'ECMWFIFS' && selectedMetric === 'MAE') ZARR_SOURCE = ZARR_SOURCE_marsfc_MAE
         else if (selectedModel === 'ECMWFAIFS' && selectedMetric === 'MAE') ZARR_SOURCE = ZARR_SOURCE_marsai_MAE
-
     }
+
+
+    //const [ZARR_SOURCE, setZarrSource] = useState('')
+
+
 
     // Define the latitude range for the tropics/subtropics
     // const LAT_MIN = -35
@@ -326,7 +343,7 @@ const LeadTimesMap = (props) => {
             setColormapName(colormapConfig.name)
             setColormapReverse(colormapConfig.reverse)
         }
-    }, [selectedModel, selectedMetric, selectedVariable])
+    }, [selectedModel, selectedMetric, selectedVariable, region])
 
 
 
@@ -474,7 +491,7 @@ const LeadTimesMap = (props) => {
         } else {
             return null
         }
-    }, [chunks, time, latitudes, LAT_MIN, LAT_MAX, selectedExtent])
+    }, [chunks, time, latitudes, LAT_MIN, LAT_MAX, selectedExtent, region])
 
 
     /*
@@ -531,10 +548,13 @@ const LeadTimesMap = (props) => {
 
     return (
         <>
+
             {/* Title Section - Lead Times Spatial Performance */}
+
+
             <Box sx={{
-                pt: [3, 4, 5, 6],
-                pb: [1, 2, 3, 4],
+                pt: [4],
+                pb: [2],
 
             }}>
                 <TooltipWrapper
@@ -556,7 +576,8 @@ const LeadTimesMap = (props) => {
                                 sx={{
                                     ...sx.heading,
                                     textTransform: 'uppercase',
-                                    color: 'blue',
+                                    fontSize: [2],
+                                    color: '#45DFB1',
                                 }}
                             >
                                 Lead Times Spatial Performance
@@ -579,7 +600,8 @@ const LeadTimesMap = (props) => {
                             sx={{
                                 ...sx.heading,
                                 textTransform: 'uppercase',
-                                color: 'blue',
+                                fontSize: [2],
+                                color: '#45DFB1', // color: 'blue'
                             }}
                         >
                             Lead Times Spatial Performance
@@ -622,12 +644,13 @@ const LeadTimesMap = (props) => {
 
 
             <Row>
+
                 {/* Left column: Mini Map filters */}
                 <Column start={[1, 1]} width={[2]}>
                     <Box
                         sx={{
-                            pt: 3,
-                            pb: 3,
+                            pt: 0,
+                            pb: 0,
 
                         }}
                     >
@@ -680,10 +703,9 @@ const LeadTimesMap = (props) => {
                         />
 
                     </Box>
-
-
-
                 </Column>
+
+
 
                 {/* Right column: Minimap */}
                 <Column start={[3]} width={[10]}>
@@ -713,7 +735,7 @@ const LeadTimesMap = (props) => {
                                 <Spinner size={32} />
                             </Box>
                         )}
-
+                        {/* <Box sx={{ width: '85%', mx: 'auto' }}> */}
                         <Minimap projection={naturalEarth1}
                             {...(region !== 'africa' ? {
                                 scale:
@@ -751,9 +773,10 @@ const LeadTimesMap = (props) => {
 
 
                         </Minimap>
+                        {/*  </Box> */}
                     </Box>
-                </Column>
-            </Row>
+                </Column >
+            </Row >
         </>
 
 

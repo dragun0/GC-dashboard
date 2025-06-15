@@ -176,17 +176,17 @@ const VariablesPerformance = (props) => {
                     console.error('Failed to load or process data.json:', error);
                 });
         }
-    }, [selectedMonth, selectedExtent]);
+    }, [selectedMonth, selectedExtent, region]);
 
 
 
 
     return (
         <>
-            {/* Title Section - Variables Performance */}
+
             <Box sx={{
-                pt: [3, 4, 5, 6],
-                pb: [1, 2, 3, 4],
+                pt: [1],
+                pb: [1],
 
             }}>
                 <TooltipWrapper
@@ -194,107 +194,99 @@ const VariablesPerformance = (props) => {
                     for each selected month. The correlation coefficient value of each variable is calculated
                     across all lead times and spatial points.'
                 >
+
                     <Box
                         sx={{
-                            ...sx.heading,
-                            //    fontFamily: 'mono',
-                            textTransform: 'uppercase',
-                            color: 'blue',
+                            display: 'flex',
+                            flexWrap: 'wrap',       // allows wrapping on small screens
+                            gap: 3,                  // adds spacing between filters
+                            // mt: 3,                   // margin above the filters
+                            // mb: 3,                   // margin below the filters
+                            justifyContent: 'space-between', // Distributes filters evenly across the row
+                            alignItems: 'center',    // vertically align filters
+                        }}
+                    >
+                        {/* tropics or subtropics filter if region = tropics */}
 
-                        }}>
-                        Variables Performance
+                        {region == 'tropics' &&
+                            <Filter
+                                sx={{
+                                    pr: 1,
 
+
+                                }}
+                                values={extent}
+                                setValues={(newExtent) => {
+                                    // highlight the selected extent
+                                    setExtent(newExtent)
+                                    //Call handleVariableChange when the filter changes
+                                    const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
+                                    if (selExtent) {
+                                        handleExtentChange({ target: { value: selExtent } })
+                                    }
+                                }}
+                                multiSelect={false}
+
+                            />
+                        }
+
+
+
+
+
+
+                        {/* year and month filters */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',       // allows wrapping on small screens
+                                gap: 3,                  // adds spacing between selects
+
+                                alignItems: 'center',    // vertically align selects
+                            }}
+                        >
+
+                            <Select size='xs'
+                                sxSelect={{
+                                    textTransform: 'uppercase',
+                                    fontFamily: 'mono',
+                                    fontSize: [1],
+                                    width: '100%',
+                                    //   pb: [1],
+                                }}>
+                                <option>2024</option>
+
+                            </Select>
+
+
+
+                            <Select
+                                size='xs'
+                                onChange={handleMonthChange}
+                                sxSelect={{
+                                    textTransform: 'uppercase',
+                                    fontFamily: 'mono',
+                                    fontSize: [1, 1, 1, 2],
+                                    width: '100%',
+                                    //   pb: [1],
+                                }}>
+                                {month_options.map((month) => (
+                                    <option
+                                        key={month}
+                                        value={month}
+                                    >
+                                        {month}
+                                    </option>
+                                ))}
+                            </Select>
+                        </Box>
                     </Box>
+
                 </TooltipWrapper>
             </Box>
 
 
-            {/* Filters - Variable performances plot */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',       // allows wrapping on small screens
-                    gap: 3,                  // adds spacing between filters
-                    // mt: 3,                   // margin above the filters
-                    // mb: 3,                   // margin below the filters
-                    justifyContent: 'space-between', // Distributes filters evenly across the row
-                    alignItems: 'center',    // vertically align filters
-                }}
-            >
 
-                {region == 'tropics' &&
-                    <Filter
-                        sx={{
-                            pr: 1,
-
-
-                        }}
-                        values={extent}
-                        setValues={(newExtent) => {
-                            // highlight the selected extent
-                            setExtent(newExtent)
-                            //Call handleVariableChange when the filter changes
-                            const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
-                            if (selExtent) {
-                                handleExtentChange({ target: { value: selExtent } })
-                            }
-                        }}
-                        multiSelect={false}
-
-                    />
-                }
-
-
-
-
-
-
-
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',       // allows wrapping on small screens
-                        gap: 3,                  // adds spacing between selects
-
-                        alignItems: 'center',    // vertically align selects
-                    }}
-                >
-
-                    <Select size='xs'
-                        sxSelect={{
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            fontSize: [1, 1, 1, 2],
-                            width: '100%',
-                            //   pb: [1],
-                        }}>
-                        <option>2024</option>
-
-                    </Select>
-
-
-
-                    <Select
-                        size='xs'
-                        onChange={handleMonthChange}
-                        sxSelect={{
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            fontSize: [1, 1, 1, 2],
-                            width: '100%',
-                            //   pb: [1],
-                        }}>
-                        {month_options.map((month) => (
-                            <option
-                                key={month}
-                                value={month}
-                            >
-                                {month}
-                            </option>
-                        ))}
-                    </Select>
-                </Box>
-            </Box>
 
 
 

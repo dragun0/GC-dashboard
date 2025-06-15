@@ -347,7 +347,7 @@ const LeadTimesPerformance = (props) => {
                         data={data}
                         margin={{
                             top: 5,
-                            right: 30,
+                            right: 5,
                             left: 0,
                             bottom: 5,
                         }}

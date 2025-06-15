@@ -262,112 +262,122 @@ const RegionComparison = () => {
                 >
                     <Box
                         sx={{
-                            ...sx.heading,
-                            //  fontFamily: 'mono',
-                            textTransform: 'uppercase',
-                            color: 'primary',
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: 7,
+                            width: '100%',
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                ...sx.heading,
+                                //  fontFamily: 'mono',
+                                textTransform: 'uppercase',
+                                color: 'primary',
+
+                            }}>
+                            Region Comparison
+
+
+                        </Box>
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',       // allows wrapping on small screens
+                                gap: 6,                  // adds spacing between filters
+                                // mt: 3,                   // margin above the filters
+                                mb: 2,                   // margin below the filters
+                                //    justifyContent: 'space-between', // distributes filters evenly along row
+                                alignItems: 'center',    // vertically align filters
+                            }}
+                        >
+
+
+                            <Box>
+                                <Filter
+                                    values={variables}
+                                    setValues={(newVariable) => {
+                                        // highlight the selected variable
+                                        setVariables(newVariable)
+                                        //Call handleVariableChange when the filter changes
+                                        const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
+                                        if (selectedVariable) {
+                                            handleVariableChange({ target: { value: selectedVariable } })
+                                        }
+                                    }}
+                                    multiSelect={false}
+                                />
+                            </Box>
+
+                            <Box>
+                                <Filter
+                                    values={metrics}
+                                    setValues={(newMetric) => {
+                                        // highlight the selected metric
+                                        setMetrics(newMetric)
+                                        // Call handleMetricChange when the filter changes
+                                        const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
+                                        if (selectedMetric) {
+                                            handleMetricChange({ target: { value: selectedMetric } })
+                                        }
+                                    }}
+                                    multiSelect={false}
+                                // labels={{ q: 'Specific humidity' }}
+                                />
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',       // allows wrapping on small screens
+                                    gap: 3,                  // adds spacing between selects
+
+                                    alignItems: 'center',    // vertically align selects
+                                }}
+                            >
+
+                                <Select size='xs'
+                                    sxSelect={{
+                                        textTransform: 'uppercase',
+                                        fontFamily: 'mono',
+                                        fontSize: [1, 1, 1, 2],
+                                        width: '100%',
+                                        //   pb: [1],
+                                    }}>
+                                    <option>2024</option>
+
+                                </Select>
 
 
 
-                        }}>
-                        Region Comparison
-
-
+                                <Select
+                                    size='xs'
+                                    onChange={handleMonthChange}
+                                    sxSelect={{
+                                        textTransform: 'uppercase',
+                                        fontFamily: 'mono',
+                                        fontSize: [1, 1, 1, 2],
+                                        width: '100%',
+                                        //   pb: [1],
+                                    }}>
+                                    {month_options.map((month) => (
+                                        <option
+                                            key={month}
+                                            value={month}
+                                        >
+                                            {month}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </Box>
+                        </Box>
                     </Box>
+
                 </TooltipWrapper>
             </Box >
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',       // allows wrapping on small screens
-                    gap: 6,                  // adds spacing between filters
-                    // mt: 3,                   // margin above the filters
-                    mb: 5,                   // margin below the filters
-                    //  justifyContent: 'space-between', // distributes filters evenly along row
-                    alignItems: 'center',    // vertically align filters
-                }}
-            >
-
-
-                <Box>
-                    <Filter
-                        values={variables}
-                        setValues={(newVariable) => {
-                            // highlight the selected variable
-                            setVariables(newVariable)
-                            //Call handleVariableChange when the filter changes
-                            const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
-                            if (selectedVariable) {
-                                handleVariableChange({ target: { value: selectedVariable } })
-                            }
-                        }}
-                        multiSelect={false}
-                    />
-                </Box>
-
-                <Box>
-                    <Filter
-                        values={metrics}
-                        setValues={(newMetric) => {
-                            // highlight the selected metric
-                            setMetrics(newMetric)
-                            // Call handleMetricChange when the filter changes
-                            const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
-                            if (selectedMetric) {
-                                handleMetricChange({ target: { value: selectedMetric } })
-                            }
-                        }}
-                        multiSelect={false}
-                    // labels={{ q: 'Specific humidity' }}
-                    />
-                </Box>
-
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',       // allows wrapping on small screens
-                        gap: 3,                  // adds spacing between selects
-
-                        alignItems: 'center',    // vertically align selects
-                    }}
-                >
-
-                    <Select size='xs'
-                        sxSelect={{
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            fontSize: [1, 1, 1, 2],
-                            width: '100%',
-                            //   pb: [1],
-                        }}>
-                        <option>2024</option>
-
-                    </Select>
-
-
-
-                    <Select
-                        size='xs'
-                        onChange={handleMonthChange}
-                        sxSelect={{
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            fontSize: [1, 1, 1, 2],
-                            width: '100%',
-                            //   pb: [1],
-                        }}>
-                        {month_options.map((month) => (
-                            <option
-                                key={month}
-                                value={month}
-                            >
-                                {month}
-                            </option>
-                        ))}
-                    </Select>
-                </Box>
-            </Box>
 
 
 

@@ -550,98 +550,98 @@ const LeadTimesMap = (props) => {
         <>
 
             {/* Title Section - Lead Times Spatial Performance */}
+            <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
 
+                <Box sx={{
+                    pt: [2],
+                    pb: [2],
 
-            <Box sx={{
-                pt: [4],
-                pb: [2],
-
-            }}>
-                <TooltipWrapper
-                    tooltip=' Visualises the performance of the selected forecast model in different parts of the 
+                }}>
+                    <TooltipWrapper
+                        tooltip=' Visualises the performance of the selected forecast model in different parts of the 
                     regional extent at each lead time computed over all months of the year 2024.
                     Each pixel in this map answers the question: "On average across the year, how wrong is the model at this location for this lead time?"'
-                >
+                    >
 
-                    {region === 'tropics' ? (
-                        <Row
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                width: '100%',
-                                //alignItems: 'center', // optional: aligns them vertically
-                            }}
-                        >
+                        {region === 'tropics' ? (
+                            <Row
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    width: '100%',
+                                    //alignItems: 'center', // optional: aligns them vertically
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        ...sx.heading,
+                                        textTransform: 'uppercase',
+                                        fontSize: [2],
+                                        color: '#45DFB1',
+                                    }}
+                                >
+                                    Lead Times Spatial Performance
+                                </Box>
+
+
+                                <Filter
+                                    sx={{
+                                        pr: 4,
+                                    }}
+                                    values={extent}
+                                    setValues={handleSetExtent}
+                                    multiSelect={true}
+
+                                />
+
+                            </Row>
+                        ) : (
                             <Box
                                 sx={{
                                     ...sx.heading,
                                     textTransform: 'uppercase',
                                     fontSize: [2],
-                                    color: '#45DFB1',
+                                    color: '#45DFB1', // color: 'blue'
                                 }}
                             >
                                 Lead Times Spatial Performance
                             </Box>
-
-
-                            <Filter
-                                sx={{
-                                    pr: 4,
-                                }}
-                                values={extent}
-                                setValues={handleSetExtent}
-                                multiSelect={true}
-
-                            />
-
-                        </Row>
-                    ) : (
-                        <Box
-                            sx={{
-                                ...sx.heading,
-                                textTransform: 'uppercase',
-                                fontSize: [2],
-                                color: '#45DFB1', // color: 'blue'
-                            }}
-                        >
-                            Lead Times Spatial Performance
-                        </Box>
-                    )}
-                </TooltipWrapper>
-            </Box>
-
-
-            {/* Lead Time slider and Legend side by side */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between', // push children to opposite sides
-                    width: '100%',
-                    mt: 2,
-                    mb: 2,
-                    gap: 4,
-                }}
-            >
-                <Box sx={{ flex: 1, minWidth: 0, mr: 4 }}>
-                    <LeadTimesSlider
-                        time={time}
-                        setTime={setTime}
-                        max={40}
-                        delay={250}
-                        pause='max'
-                    />
+                        )}
+                    </TooltipWrapper>
                 </Box>
-                <Box sx={{ minWidth: 180, mr: 1 }}>
-                    <Legend
-                        selectedVariable={selectedVariable}
-                        clim={clim}
-                        setClim={setClim}
-                        colormap={finalColormap}
-                    />
+
+
+                {/* Lead Time slider and Legend side by side */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between', // push children to opposite sides
+                        width: '100%',
+                        mt: 2,
+                        mb: 2,
+                        gap: 4,
+                    }}
+                >
+                    <Box sx={{ flex: 1, minWidth: 0, mr: 4 }}>
+                        <LeadTimesSlider
+                            time={time}
+                            setTime={setTime}
+                            max={40}
+                            delay={250}
+                            pause='max'
+                        />
+                    </Box>
+                    <Box sx={{ minWidth: 180, mr: 1 }}>
+                        <Legend
+                            selectedVariable={selectedVariable}
+                            clim={clim}
+                            setClim={setClim}
+                            colormap={finalColormap}
+                        />
+                    </Box>
                 </Box>
             </Box>
-
 
             <Row>
 
@@ -649,58 +649,66 @@ const LeadTimesMap = (props) => {
                 <Column start={[1, 1]} width={[2]}>
                     <Box
                         sx={{
-                            pt: 0,
-                            pb: 0,
+                            pt: 1,
+                            pb: 1,
 
                         }}
                     >
                         {/* Filters */}
+
                         <Box
                             sx={{
-                                pb: 3,
+                                pb: 1,
                             }}
                         >
+                            <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
+                                <Filter
+                                    values={models}
+                                    // labels={{ q: 'Specific humidity' }}
+                                    setValues={(newModels) => {
+                                        setModel(newModels)
+                                        const selected = Object.keys(newModels).find(key => newModels[key])
+                                        if (selected) setSelectedModel(selected)
+                                    }}
+                                    multiSelect={false}
+                                />
+                            </Box>
+                        </Box>
+
+
+
+                        <Box
+                            sx={{
+                                pb: 1,
+                            }}
+                        >
+                            <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
+                                <Filter
+                                    values={variables}
+                                    setValues={(newVariable) => {
+                                        // highlight the selected variable
+                                        setVariables(newVariable)
+                                        //Call handleVariableChange when the filter changes
+                                        const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
+                                        if (selectedVariable) {
+                                            handleVariableChange({ target: { value: selectedVariable } })
+                                        }
+                                    }}
+                                    multiSelect={false}
+                                />
+                            </Box>
+                        </Box>
+                        <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
                             <Filter
-                                values={models}
-                                // labels={{ q: 'Specific humidity' }}
-                                setValues={(newModels) => {
-                                    setModel(newModels)
-                                    const selected = Object.keys(newModels).find(key => newModels[key])
-                                    if (selected) setSelectedModel(selected)
+                                values={metrics}
+                                setValues={(newMetrics) => {
+                                    setMetrics(newMetrics)
+                                    const selected = Object.keys(newMetrics).find(key => newMetrics[key])
+                                    if (selected) setSelectedMetric(selected)
                                 }}
                                 multiSelect={false}
                             />
                         </Box>
-
-
-                        <Box
-                            sx={{
-                                pb: 3,
-                            }}
-                        >
-                            <Filter
-                                values={variables}
-                                setValues={(newVariable) => {
-                                    // highlight the selected variable
-                                    setVariables(newVariable)
-                                    //Call handleVariableChange when the filter changes
-                                    const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
-                                    if (selectedVariable) {
-                                        handleVariableChange({ target: { value: selectedVariable } })
-                                    }
-                                }}
-                                multiSelect={false}
-                            />
-                        </Box>
-                        <Filter
-                            values={metrics}
-                            setValues={(newMetrics) => {
-                                setMetrics(newMetrics)
-                                const selected = Object.keys(newMetrics).find(key => newMetrics[key])
-                                if (selected) setSelectedMetric(selected)
-                            }}
-                            multiSelect={false}
-                        />
 
                     </Box>
                 </Column>

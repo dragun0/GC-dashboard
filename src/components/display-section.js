@@ -39,7 +39,14 @@ const DisplaySection = () => {
         setDisplay,
         colormapName,
         setColormapName,
+        basemap,
+        setBasemap,
     } = useRegionContext()
+
+    // for UI buttons only:
+    // value of basemap is stored in context state
+    const [uiBasemap, setUiBasemap] = useState({ oceanMask: true, landMask: false })
+
 
     return (
         <Box>
@@ -96,12 +103,33 @@ const DisplaySection = () => {
 
                                 </Box>
                             </Column>
-
-
-
-
-
                         </Row>
+
+                        <Row columns={[6, 8, 4, 4]}>
+                            <Column start={1} width={[6, 4, 2, 2]}>
+                                <Box sx={{ ...sx.label, mb: 2, mt: 2 }}>
+                                    BASEMAPS
+
+                                </Box>
+
+                            </Column>
+
+                            <Column start={[1, 1, 3, 3]} width={[3]}>
+
+                                <Flex sx={{ gap: 2, mb: 2, mt: 2, fontSize: [2, 2, 2, 3] }}>
+                                    Ocean mask
+                                    <Toggle value={uiBasemap.oceanMask} onClick={() => setBasemap(uiBasemap.oceanMask)} />
+                                </Flex>
+                                <Flex sx={{ gap: 2, mb: 2, fontSize: [2, 2, 2, 3] }}>
+                                    Land mask
+                                    <Toggle value={uiBasemap.landMask} onClick={() => setBasemap(uiBasemap.oceanMask)} />
+                                </Flex>
+
+
+                            </Column>
+                        </Row>
+
+
                     </>
 
                 </Box>

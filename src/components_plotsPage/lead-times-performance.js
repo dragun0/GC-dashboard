@@ -1,6 +1,7 @@
 import { Box, useThemeUI, Divider } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Filter, Select, Row } from '@carbonplan/components'
+import { Filter, Select, Row, Button } from '@carbonplan/components'
+import { Down } from '@carbonplan/icons'
 import {
     LineChart,
     Line,
@@ -105,7 +106,7 @@ const LeadTimesPerformance = (props) => {
     };
 
     // for UI buttons only
-    const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
+    const [variables, setVariables] = useState({ t2m: false, msl: false, u10: false, v10: false, q: true })
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
 
     const [extent, setExtent] = useState({ tropics: true, subtropics: false })
@@ -129,10 +130,23 @@ const LeadTimesPerformance = (props) => {
         return monthindex >= 0 ? monthindex + 1 : null; // return 1–12 or null if not found
     };
 
+    // For CSV file name
+    const getMonthName = (monthCode) => {
+        if (monthCode === 13) return 'Annual';
+
+        // Remove 'Annual' from the month list to align indices
+        const monthList = month_options.filter((m) => m !== 'Annual');
+
+        // Valid monthCode is from 1 to 12
+        return (monthCode >= 1 && monthCode <= 12) ? monthList[monthCode - 1] : null;
+    };
+
+
+
     const MODELS = ['gc', 'marsai', 'marsfc'];
 
     const [data, setData] = useState([]);
-    const [selectedVariable, setSelectedVariable] = useState('t2m');
+    const [selectedVariable, setSelectedVariable] = useState('q');
     const [selectedMetric, setSelectedMetric] = useState('rmse')
     const [selectedMonth, setSelectedMonth] = useState(13)
 
@@ -213,6 +227,57 @@ const LeadTimesPerformance = (props) => {
                 setData(grouped);
             });
     }, [selectedVariable, selectedMetric, selectedMonth, region, selectedExtent, selectedTemperateExtent]);
+
+    // download the graph data as a CSV file
+    const handleDownloadCSV = () => {
+
+        const headerMap = {
+            time: 'Time(hours)',
+            gc: 'GraphCast',
+            marsai: 'ECMWF-AIFS',
+            marsfc: 'ECMWF-IFS',
+        }
+
+        if (!data || data.length === 0) return
+
+        const headers = Object.keys(headerMap)
+        const headerLabels = headers.map(key => headerMap[key])
+
+        const csvRows = [
+            headerLabels.join(','), // custom header row
+            ...data.map(row =>
+                headers.map(field => {
+                    if (field === 'time') {
+                        // Convert time step to hours
+                        return row.time * 6
+                    }
+                    return JSON.stringify(row[field] ?? '')
+                }).join(',')
+            )
+        ]
+
+        const csvContent = csvRows.join('\n')
+        const blob = new Blob([csvContent], { type: 'text/csv' })
+        const url = URL.createObjectURL(blob)
+
+        let regionString = ''
+        if (region === 'tropics') {
+            regionString = selectedExtent
+        } else if (region === 'temperate') {
+            regionString = selectedTemperateExtent
+        } else {
+            regionString = region
+        }
+
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${regionString}_${getMonthName(selectedMonth)}_2024_${selectedMetric}_${selectedVariable}.csv`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+    }
+
 
 
     return (
@@ -361,6 +426,28 @@ const LeadTimesPerformance = (props) => {
                             </option>
                         ))}
                     </Select>
+
+                    <Button
+                        inverted
+                        onClick={handleDownloadCSV}
+                        size='xs'
+                        sx={{
+                            fontSize: [1, 1, 1, 2],
+                            textTransform: 'uppercase',
+                            fontFamily: 'mono',
+                            letterSpacing: 'mono',
+                            minWidth: '120px',
+                            textAlign: 'right',
+                            whiteSpace: 'nowrap',
+                            '&:disabled': {
+                                color: 'muted',
+                                pointerEvents: 'none',
+                            },
+                        }}
+                        prefix={<Down />}
+                    >
+                        Download CSV
+                    </Button>
                 </Box>
             </Box >
 
@@ -424,6 +511,7 @@ const LeadTimesPerformance = (props) => {
                         <Line type="monotone" dataKey="marsfc" name="ECMWF-IFS" strokeOpacity={opacity.ecmwfIFS} stroke="#82ca9d" />
                     </LineChart>
                 </ResponsiveContainer >
+
             </Box >
 
         </>
@@ -431,3 +519,37 @@ const LeadTimesPerformance = (props) => {
 }
 
 export default LeadTimesPerformance
+
+/*
+<Row
+                    sx={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        my: 3,
+                    }}
+                >
+                    <Button
+                        inverted
+                        onClick={handleDownloadCSV}
+                        size='xs'
+                        sx={{
+                            fontSize: [1, 1, 1, 2],
+                            textTransform: 'uppercase',
+                            fontFamily: 'mono',
+                            letterSpacing: 'mono',
+                            minWidth: '120px',
+                            textAlign: 'right',
+                            whiteSpace: 'nowrap',
+                            '&:disabled': {
+                                color: 'muted',
+                                pointerEvents: 'none',
+                            },
+                        }}
+                        prefix={<Down />}
+                    >
+                        Download CSV
+                    </Button>
+                </Row>
+*/

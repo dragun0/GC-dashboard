@@ -1,7 +1,8 @@
 
 import { Box, useThemeUI } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Row, Filter, Column } from '@carbonplan/components'
+import { Row, Filter, Column, Button } from '@carbonplan/components'
+import { Down } from '@carbonplan/icons'
 import { useCallback } from 'react'
 import {
     LineChart,
@@ -85,7 +86,7 @@ const MonthlyPerformance = (props) => {
     const { theme } = useThemeUI()
 
     // only necessary for highlighting the radio buttons
-    const [variables, setVariables] = useState({ t2m: true, msl: false, u10: false, v10: false, q: false })
+    const [variables, setVariables] = useState({ t2m: false, msl: false, u10: false, v10: false, q: true })
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false, R: false })
     const [extent, setExtent] = useState({ tropics: true, subtropics: false })
 
@@ -110,7 +111,7 @@ const MonthlyPerformance = (props) => {
     const MODELS = ['gc', 'marsai', 'marsfc'];
 
     const [data, setData] = useState([]);
-    const [selectedVariable, setSelectedVariable] = useState('t2m');
+    const [selectedVariable, setSelectedVariable] = useState('q');
     const [selectedMetric, setSelectedMetric] = useState('rmse')
 
     const VARIABLE_UNITS = {
@@ -182,6 +183,52 @@ const MonthlyPerformance = (props) => {
             });
     }, [selectedVariable, selectedMetric, selectedExtent, selectedTemperateExtent, region]);
 
+
+    // download the graph data as a CSV file
+    const handleDownloadCSV = () => {
+
+        const headerMap = {
+            month: 'Month',
+            gc: 'GraphCast',
+            marsai: 'ECMWF-AIFS',
+            marsfc: 'ECMWF-IFS',
+        }
+
+        if (!data || data.length === 0) return
+
+        const headers = Object.keys(headerMap)
+        const headerLabels = headers.map(key => headerMap[key])
+
+        const csvRows = [
+            headerLabels.join(','), // custom header row
+            ...data.map(row =>
+                headers.map(field => {
+                    return JSON.stringify(row[field] ?? '')
+                }).join(',')
+            )
+        ]
+
+        const csvContent = csvRows.join('\n')
+        const blob = new Blob([csvContent], { type: 'text/csv' })
+        const url = URL.createObjectURL(blob)
+
+        let regionString = ''
+        if (region === 'tropics') {
+            regionString = selectedExtent
+        } else if (region === 'temperate') {
+            regionString = selectedTemperateExtent
+        } else {
+            regionString = region
+        }
+
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${regionString}_2024_${selectedMetric}_${selectedVariable}.csv`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+    }
 
 
     {/* for graph legend */ }
@@ -377,6 +424,37 @@ const MonthlyPerformance = (props) => {
 
 
                     </LineChart>
+                    <Row
+                        sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            my: 3,
+                        }}
+                    >
+                        <Button
+                            inverted
+                            onClick={handleDownloadCSV}
+                            size='xs'
+                            sx={{
+                                fontSize: [1, 1, 1, 2],
+                                textTransform: 'uppercase',
+                                fontFamily: 'mono',
+                                letterSpacing: 'mono',
+                                minWidth: '120px',
+                                textAlign: 'right',
+                                whiteSpace: 'nowrap',
+                                '&:disabled': {
+                                    color: 'muted',
+                                    pointerEvents: 'none',
+                                },
+                            }}
+                            prefix={<Down />}
+                        >
+                            Download CSV
+                        </Button>
+                    </Row>
                 </ResponsiveContainer>
 
 

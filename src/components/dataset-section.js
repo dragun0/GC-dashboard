@@ -127,9 +127,9 @@ const DatasetControls = () => {
 
   // conditional model labels based on showAIFS
   const modelLabels = {
-    marsfc: 'ECMWF IFS',
+    marsfc: 'ECMWF-IFS',
     gc: 'GraphCast',
-    ...(showAIFS && { marsai: 'ECMWF AIFS' }),
+    ...(showAIFS && { marsai: 'ECMWF-AIFS' }),
   }
   // conditional model values based on modelLabels
   const modelValues = Object.fromEntries(

@@ -365,9 +365,9 @@ const LeadTimesMap = (props) => {
     const data = useMemo(() => {
         if (chunks && latitudes) {
 
-            // Temperate zones: 35 to 60 and -35 to -60
+
             // polar+subpolar zones: 60 to 90 and -60 to -90
-            if (region == 'temperate' || region == 'polar') {
+            if (region == 'polar') {
                 // for temperate case: Find indices for the -60 to 60 latitude window 
                 // for polar case: find indeces for the -90 to 90 latitude window
                 const latStartAll = latitudes.findIndex(lat => lat >= LAT_MIN)
@@ -377,12 +377,12 @@ const LeadTimesMap = (props) => {
                 const nLon = chunks.shape[2]
 
                 // Indices for north and south temperate (polar) bands within the subset
-                const northStart = latitudes.findIndex(lat => lat >= (region === 'temperate' ? 35 : 60)) // 35 if 'temperate' and 60 if 'polar'
+                const northStart = latitudes.findIndex(lat => lat >= 60)
                 let northEnd = latitudes.findIndex(lat => lat > LAT_MAX)
                 if (northEnd === -1) northEnd = latitudes.length
 
                 const southStart = latitudes.findIndex(lat => lat >= LAT_MIN)
-                let southEnd = latitudes.findIndex(lat => lat > (region === 'temperate' ? -35 : -60)) // -35 if 'temperate' and -60 if 'polar'
+                let southEnd = latitudes.findIndex(lat => lat > -60)
                 if (southEnd === -1) southEnd = latitudes.length
 
                 // Adjust indices to be relative to the subset
@@ -415,6 +415,8 @@ const LeadTimesMap = (props) => {
                         subset.set(i + southStartSub, j, southBand.get(i, j))
 
                 return subset
+
+
             } if (region === 'tropics') {
                 const bothSelected = selectedExtent.includes('tropics') && selectedExtent.includes('subtropics');
                 const subtropicsOnly = selectedExtent.length === 1 && selectedExtent[0] === 'subtropics';
@@ -492,10 +494,89 @@ const LeadTimesMap = (props) => {
                 return cropped;
             }
 
+            // if region = temperate
+            if (region === 'temperate') {
+                const bothSelected = selectedTemperateExtent.includes('northtemperate') && selectedTemperateExtent.includes('southtemperate');
+                const northTempOnly = selectedTemperateExtent.length === 1 && selectedTemperateExtent[0] === 'northtemperate';
+                const southTempOnly = selectedTemperateExtent.length === 1 && selectedTemperateExtent[0] === 'southtemperate'; // check if this works
+
+                // If both selected → do north and south banding
+
+                if (bothSelected) {
+                    // Find indeces for the -60 to 60 latitude window
+                    const latStartAll = latitudes.findIndex(lat => lat >= -60)
+                    let latEndAll = latitudes.findIndex(lat => lat > 60)
+                    if (latEndAll === -1) latEndAll = latitudes.length
+                    const nLatSubset = latEndAll - latStartAll
+                    const nLon = chunks.shape[2]
+
+                    // Indices for north and south temperate bands within the subset
+                    const northStart = latitudes.findIndex(lat => lat >= 35)
+                    let northEnd = latitudes.findIndex(lat => lat > 60)
+                    if (northEnd === -1) northEnd = latitudes.length
+
+                    const southStart = latitudes.findIndex(lat => lat >= -60)
+                    let southEnd = latitudes.findIndex(lat => lat > -35)
+                    if (southEnd === -1) southEnd = latitudes.length
+
+                    // Adjust indices to be relative to the subset
+                    const northStartSub = northStart - latStartAll
+                    const northEndSub = northEnd - latStartAll
+                    const southStartSub = southStart - latStartAll
+                    const southEndSub = southEnd - latStartAll
+
+                    const picked = chunks.pick(time, null, null)
+
+                    // Bands (relative to full picked)
+                    const northBand = picked.lo(northStart, 0).hi(northEnd - northStart, nLon)
+                    const southBand = picked.lo(southStart, 0).hi(southEnd - southStart, nLon)
+
+                    // Create a subset array filled with FILL_VALUE
+                    // needed to fill the space between north and south temperate zone with fill values
+                    const subset = ndarray(
+                        new picked.data.constructor(nLatSubset * nLon),
+                        [nLatSubset, nLon]
+                    )
+                    ops.assigns(subset, FILL_VALUE)
+
+                    // Copy northBand into subset
+                    for (let i = 0; i < northBand.shape[0]; ++i)
+                        for (let j = 0; j < nLon; ++j)
+                            subset.set(i + northStartSub, j, northBand.get(i, j))
+                    // Copy southBand into subset
+                    for (let i = 0; i < southBand.shape[0]; ++i)
+                        for (let j = 0; j < nLon; ++j)
+                            subset.set(i + southStartSub, j, southBand.get(i, j))
+
+                    return subset
+                }
+
+                // If only north temperate selected
+                if (northTempOnly) {
+                    const latStart = latitudes.findIndex(lat => lat >= 35);
+                    let latEnd = latitudes.findIndex(lat => lat > 60);
+                    if (latEnd === -1) latEnd = latitudes.length;
+
+                    const picked = chunks.pick(time, null, null);
+                    const cropped = picked.lo(latStart, 0).hi(latEnd - latStart, picked.shape[1]);
+                    return cropped;
+                }
+
+                // If only south temperate selected
+                if (southTempOnly) {
+                    const latStart = latitudes.findIndex(lat => lat >= -60);
+                    let latEnd = latitudes.findIndex(lat => lat > -35);
+                    if (latEnd === -1) latEnd = latitudes.length;
+
+                    const picked = chunks.pick(time, null, null);
+                    const cropped = picked.lo(latStart, 0).hi(latEnd - latStart, picked.shape[1]);
+                    return cropped;
+                }
+            }
 
             else {
                 // Default: single band
-                // used for the tropics and global extent
+                // used for global and africa extent
                 const latStart = latitudes.findIndex(lat => lat >= LAT_MIN)
                 let latEnd = latitudes.findIndex(lat => lat > LAT_MAX)
                 if (latEnd === -1) latEnd = latitudes.length
@@ -506,7 +587,7 @@ const LeadTimesMap = (props) => {
         } else {
             return null
         }
-    }, [chunks, time, latitudes, LAT_MIN, LAT_MAX, selectedExtent, region])
+    }, [chunks, time, latitudes, LAT_MIN, LAT_MAX, region, selectedExtent, selectedTemperateExtent])
 
 
     /*
@@ -726,6 +807,7 @@ const LeadTimesMap = (props) => {
                                         if (selected) setSelectedModel(selected)
                                     }}
                                     multiSelect={false}
+                                    labels={{ ECMWFAIFS: 'ecmwf-aifs', ECMWFIFS: 'ecmwf-ifs', GraphCast: 'graphcast' }}
                                 />
                             </Box>
                         </Box>
@@ -826,10 +908,19 @@ const LeadTimesMap = (props) => {
                                 colormap={finalColormap}
                                 bounds={{
                                     lat:
-                                        region === 'tropics' && selectedExtent.includes('subtropics') &&
+                                        region === 'tropics' &&
+                                            selectedExtent.includes('subtropics') &&
                                             (selectedExtent.length === 1 || selectedExtent.includes('tropics'))
                                             ? [-35, 35]
-                                            : [LAT_MIN, LAT_MAX],
+                                            : region === 'temperate' &&
+                                                selectedTemperateExtent.length === 1 &&
+                                                selectedTemperateExtent.includes('southtemperate')
+                                                ? [-60, -35]
+                                                : region === 'temperate' &&
+                                                    selectedTemperateExtent.length === 1 &&
+                                                    selectedTemperateExtent.includes('northtemperate')
+                                                    ? [35, 60]
+                                                    : [LAT_MIN, LAT_MAX],
                                     lon: [-180, 180],
                                 }}
                             />

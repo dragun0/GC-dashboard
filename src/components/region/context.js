@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react'
 const RegionContext = createContext(null)
 
 export const RegionProvider = ({ children }) => {
+  const [basemap, setBasemap] = useState('oceanMask')
   const [regionData, setRegionData] = useState(null) //(null) //({ loading: true })
   //const [regionExtent, setRegionExtent] = useState(null) // for time-series component
   //const [showRegionPicker, setShowRegionPicker] = useState(false)
@@ -28,6 +29,8 @@ export const RegionProvider = ({ children }) => {
     <RegionContext.Provider
 
       value={{
+        basemap,
+        setBasemap,
         regionData,
         setRegionData,
         showRegionControls,
@@ -72,6 +75,8 @@ export const useRegionContext = () => {
   // for debugging: Log the entire context object
 
   const {
+    basemap,
+    setBasemap,
     regionData,
     setRegionData,
     // regionExtent, // Expose regionExtent
@@ -107,6 +112,8 @@ export const useRegionContext = () => {
   } = useContext(RegionContext)
 
   return {
+    basemap,
+    setBasemap,
     regionData,
     setRegionData,
     // regionExtent, // Expose regionExtent

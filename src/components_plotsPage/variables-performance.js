@@ -1,6 +1,7 @@
 import { Box, useThemeUI } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Select, Filter } from '@carbonplan/components'
+import { Select, Filter, Row, Button } from '@carbonplan/components'
+import { Down } from '@carbonplan/icons'
 import {
     XAxis,
     YAxis,
@@ -157,6 +158,64 @@ const VariablesPerformance = (props) => {
         setSelectedMonth(monthCode)
     }, [setSelectedMonth])
 
+    // For CSV file name
+    const getMonthName = (monthCode) => {
+        if (monthCode === 13) return 'Annual';
+
+        // Remove 'Annual' from the month list to align indices
+        const monthList = month_options.filter((m) => m !== 'Annual');
+
+        // Valid monthCode is from 1 to 12
+        return (monthCode >= 1 && monthCode <= 12) ? monthList[monthCode - 1] : null;
+    };
+
+
+    // download the graph data as a CSV file
+    const handleDownloadCSV = () => {
+
+        const headerMap = {
+            variable: 'variable',
+            gc: 'GraphCast',
+            marsai: 'ECMWF-AIFS',
+            marsfc: 'ECMWF-IFS',
+        }
+
+        if (!globalRData || globalRData.length === 0) return
+
+        const headers = Object.keys(headerMap)
+        const headerLabels = headers.map(key => headerMap[key])
+
+
+        const csvRows = [
+            headerLabels.join(','), // custom header row
+            ...globalRData.map(row =>
+                headers.map(field => {
+                    return JSON.stringify(row[field] ?? '')
+                }).join(',')
+            )
+        ]
+
+        const csvContent = csvRows.join('\n')
+        const blob = new Blob([csvContent], { type: 'text/csv' })
+        const url = URL.createObjectURL(blob)
+
+        let regionString = ''
+        if (region === 'tropics') {
+            regionString = selectedExtent
+        } else if (region === 'temperate') {
+            regionString = selectedTemperateExtent
+        } else {
+            regionString = region
+        }
+
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${regionString}_CorrelationCoefficient_${getMonthName(selectedMonth)}_2024.csv`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+    }
 
 
 
@@ -380,6 +439,38 @@ const VariablesPerformance = (props) => {
                         <Bar dataKey="marsai" name="ECMWF-AIFS" stackId="a" fill="#FF746C" />
 
                     </BarChart>
+                    <Row
+                        sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            my: 3,
+                        }}
+                    >
+                        <Button
+                            inverted
+                            onClick={handleDownloadCSV}
+                            size='xs'
+                            sx={{
+                                fontSize: [1, 1, 1, 2],
+                                textTransform: 'uppercase',
+                                fontFamily: 'mono',
+                                letterSpacing: 'mono',
+                                minWidth: '120px',
+                                textAlign: 'right',
+                                whiteSpace: 'nowrap',
+                                '&:disabled': {
+                                    color: 'muted',
+                                    pointerEvents: 'none',
+                                },
+                            }}
+                            prefix={<Down />}
+                        >
+                            Download CSV
+                        </Button>
+                    </Row>
+
                 </ResponsiveContainer>
 
                 {/* CarbonPlans - Variable Stacked plot 

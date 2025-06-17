@@ -93,11 +93,15 @@ const VariablesPerformance = (props) => {
     // keep track of the actual extent selected (for the tropics section)
     const [selectedExtent, setSelectedExtent] = useState('tropics');
 
+    // keep track of the actual temperate extent selected (for the temperate zones section)
+    const [selectedTemperateExtent, setSelectedTemperateExtent] = useState('northtemperate');
+
     let JSON_PATH = '';
     if (region === 'global') JSON_PATH = '/plotsPageData/Global/R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'tropics' && selectedExtent == 'tropics') JSON_PATH = '/plotsPageData/Tropics/Tropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'tropics' && selectedExtent == 'subtropics') JSON_PATH = '/plotsPageData/Subtropics/Subtropics_R_RMSE_MAE_MBE_monthly_allmodels.json';
-    else if (region === 'temperate') JSON_PATH = '/plotsPageData/NTemperate/NTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'temperate' && selectedTemperateExtent == 'northtemperate') JSON_PATH = '/plotsPageData/NTemperate/NTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json';
+    else if (region === 'temperate' && selectedTemperateExtent == 'southtemperate') JSON_PATH = '/plotsPageData/STemperate/SouthernTemperate_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'polar') JSON_PATH = '/plotsPageData/Polar/Polar_R_RMSE_MAE_MBE_monthly_allmodels.json';
     else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json';
 
@@ -113,11 +117,20 @@ const VariablesPerformance = (props) => {
     // UI radio buttons
     const [extent, setExtent] = useState({ tropics: true, subtropics: false })
 
-    // handle extent change
+    const [TemperateExtent, setTemperateExtent] = useState({ northtemperate: true, southtemperate: false })
+
+
+    // handle extent change for tropics or subtropics
     const handleExtentChange = useCallback((e) => {
         const newExtent = e.target.value
         setSelectedExtent(newExtent)
     }, [setSelectedExtent])
+
+    // handle temperate extent change (north or south)
+    const handleTemperateExtentChange = useCallback((e) => {
+        const newTemperateExtent = e.target.value
+        setSelectedTemperateExtent(newTemperateExtent)
+    }, [setSelectedTemperateExtent])
 
 
 
@@ -135,6 +148,7 @@ const VariablesPerformance = (props) => {
     const [selectedMonth, setSelectedMonth] = useState(13)
     const [globalRData, setGlobalRData] = useState([]);
 
+
     // handle month change
     const handleMonthChange = useCallback((e) => {
         console.log('handleMonthChange', e.target.value)
@@ -142,6 +156,9 @@ const VariablesPerformance = (props) => {
         const monthCode = getMonthCode(month)
         setSelectedMonth(monthCode)
     }, [setSelectedMonth])
+
+
+
 
     //  for structuring the json data
     //const MODELS = ['gc', 'marsai', 'marsfc'];
@@ -176,7 +193,7 @@ const VariablesPerformance = (props) => {
                     console.error('Failed to load or process data.json:', error);
                 });
         }
-    }, [selectedMonth, selectedExtent, region]);
+    }, [selectedMonth, selectedExtent, selectedTemperateExtent, region]);
 
 
 
@@ -208,7 +225,7 @@ const VariablesPerformance = (props) => {
                     >
                         {/* tropics or subtropics filter if region = tropics */}
 
-                        {region == 'tropics' &&
+                        {region == 'tropics' && (
                             <Filter
                                 sx={{
                                     pr: 1,
@@ -227,8 +244,36 @@ const VariablesPerformance = (props) => {
                                 }}
                                 multiSelect={false}
 
+
                             />
-                        }
+                        )}
+
+                        {/* show north or south temperate filter if overall region is = temperate */}
+                        {region === 'temperate' && (
+
+
+                            <Filter
+                                sx={{
+                                    pr: 1,
+
+                                }}
+                                values={TemperateExtent}
+                                setValues={(newTemperateExtent) => {
+                                    // highlight the selected extent
+                                    setTemperateExtent(newTemperateExtent)
+                                    //Call handleVariableChange when the filter changes
+                                    const selExtent = Object.keys(newTemperateExtent).find(key => newTemperateExtent[key]);
+                                    if (selExtent) {
+                                        handleTemperateExtentChange({ target: { value: selExtent } })
+                                    }
+                                }}
+                                multiSelect={false}
+                                labels={{ northtemperate: 'North Temp', southtemperate: 'South Temp' }}
+
+                            />
+
+
+                        )}
 
 
 

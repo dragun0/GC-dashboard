@@ -25,11 +25,11 @@ const link = {
     },
   },
   '&:hover': {
-    color: 'text',
+    color: 'secondaryColor',
   },
 }
 
-function Menu({ visible, setExpanded }) {
+function Menu({ visible, setExpanded, setShowMenu }) {
   const router = useRouter()
 
   const handleMapClick = () => {
@@ -37,6 +37,7 @@ function Menu({ visible, setExpanded }) {
       router.push('/')
     } else {
       setExpanded(true)
+      setShowMenu(false)
     }
   }
 
@@ -83,22 +84,14 @@ function Menu({ visible, setExpanded }) {
             Map
           </Link>
           <Link
-            sx={{ textDecoration: 'none' }}
+            sx={{ textDecoration: 'none', ...link, }}
             href="/plotsPage"
-            sx={{
-              ...link,
-
-            }}
           >
-            Explainer
+            Analysis
           </Link>
           <Link
-            sx={{ textDecoration: 'none' }}
-            href='https://carbonplan.org/research'
-            sx={{
-              ...link,
-
-            }}
+            sx={{ textDecoration: 'none', ...link, }}
+            href='https://www.google.com/search?q=hello+world&sca_esv=01250f61e108407c&rlz=1C5CHFA_enIT1108IT1108&sxsrf=AE3TifMKmwnlyRKUhJo_27yxBlhJS8TpOA%3A1750061586436&ei=EtJPaMirGrOpi-gP9tzP6Qw&ved=0ahUKEwjI_Ma5v_WNAxWz1AIHHXbuM80Q4dUDCBA&uact=5&oq=hello+world&gs_lp=Egxnd3Mtd2l6LXNlcnAiC2hlbGxvIHdvcmxkMgQQABhHMgQQABhHMgQQABhHMgQQABhHMgQQABhHMgQQABhHMgQQABhHMgQQABhHSK8EUOkCWOkCcAF4ApABAJgBAKABAKoBALgBA8gBAPgBAZgCAqACEsICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgIOEAAYsAMY5AIY1gTYAQHCAhMQLhiABBiwAxhDGMgDGIoF2AEBmAMA4gMFEgExIECIBgGQBgi6BgYIARABGAmSBwEyoAcAsgcAuAcAwgcFMi0xLjHIBw8&sclient=gws-wiz-serp'
           >
             Paper
           </Link>

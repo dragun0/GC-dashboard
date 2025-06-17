@@ -107,7 +107,7 @@ const Index = () => {
   return (
     <>
       <Header showMenu={showMenu} toggleMenu={() => setShowMenu(!showMenu)} />
-      <Menu visible={showMenu} setExpanded={setExpanded} />
+      <Menu visible={showMenu} setExpanded={setExpanded} setShowMenu={setShowMenu} />
 
       {/* Map + Layers */}
 
@@ -275,11 +275,9 @@ const Index = () => {
 
             <Group spacing={4}>
               <Box sx={sx.description}>
-                This is an interactive tool for exploring the potential
-                of machine learning for weather forecasting. The tool allows
-                for the performance evaluation of Google DeepMind's GraphCast (deterministic)
-                and the ECMWF's AIFS and physics-based deterministic model.
-                All models are compared to ERA5 reanalysis data.
+                This interactive tool maps the accuracies of two machine learning models
+                (GraphCast and ECMWF-AIFS) and a traditional numerical weather model (ECMWF-IFS HRES).
+                All models have been evaluated against ERA5 reanalysis data, and the results can be explored on this dashboard.
               </Box>
               {/* rewrite this intro section -> make it more concise */}
 

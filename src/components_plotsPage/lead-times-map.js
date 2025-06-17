@@ -192,6 +192,8 @@ const LeadTimesMap = (props) => {
     const [metrics, setMetrics] = useState({ RMSE: true, MAE: false, MBE: false })
     const [extent, setExtent] = useState({ tropics: true, subtropics: false })
 
+    const [TemperateExtent, setTemperateExtent] = useState({ northtemperate: true, southtemperate: false })
+
     // for the UI button of the region filter only
     //const [regions, setRegion] = useState({ global: true, tropics: false, temperate: false, polar: false, africa: false })
 
@@ -206,6 +208,9 @@ const LeadTimesMap = (props) => {
     // keep track of the actual extent selected (for the tropics section)
     const [selectedExtent, setSelectedExtent] = useState(['tropics']);
 
+    // keep track of the actual temperate extent selected (for the temperate zones section)
+    const [selectedTemperateExtent, setSelectedTemperateExtent] = useState('northtemperate');
+
     // make sure one button of the tropic extents is always selected
     const handleSetExtent = (newExtent) => {
         const activeKeys = Object.keys(newExtent).filter(key => newExtent[key]);
@@ -213,6 +218,16 @@ const LeadTimesMap = (props) => {
 
         setExtent(newExtent);
         setSelectedExtent(activeKeys);
+    };
+
+    // handle temperate extent change (north or south)
+    // make sure one button is always selected
+    const handleSetTemperateExtent = (newTemperateExtent) => {
+        const activeKeys = Object.keys(newTemperateExtent).filter(key => newTemperateExtent[key]);
+        if (activeKeys.length === 0) return; // prevent none selected
+
+        setTemperateExtent(newTemperateExtent);
+        setSelectedTemperateExtent(activeKeys);
     };
 
     // for debugging only
@@ -562,51 +577,91 @@ const LeadTimesMap = (props) => {
                     regional extent at each lead time computed over all months of the year 2024.
                     Each pixel in this map answers the question: "On average across the year, how wrong is the model at this location for this lead time?"'
                     >
+                        {/* show tropics or subtropics filter if overall region is = tropics */}
+                        {(() => {
+                            if (region === 'tropics') {
+                                return (
+                                    <Row
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            width: '100%',
+                                            //alignItems: 'center', // optional: aligns them vertically
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                ...sx.heading,
+                                                textTransform: 'uppercase',
+                                                fontSize: [2],
+                                                color: '#45DFB1',
+                                            }}
+                                        >
+                                            Lead Times Spatial Performance
+                                        </Box>
 
-                        {region === 'tropics' ? (
-                            <Row
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    width: '100%',
-                                    //alignItems: 'center', // optional: aligns them vertically
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        ...sx.heading,
-                                        textTransform: 'uppercase',
-                                        fontSize: [2],
-                                        color: '#45DFB1',
-                                    }}
-                                >
-                                    Lead Times Spatial Performance
-                                </Box>
+
+                                        <Filter
+                                            sx={{
+                                                pr: 4,
+                                            }}
+                                            values={extent}
+                                            setValues={handleSetExtent}
+                                            multiSelect={true}
+
+                                        />
+
+                                    </Row>
+                                )
+                            } else if (region === 'temperate') {
+                                return (
+                                    <Row
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            width: '100%',
+                                            //alignItems: 'center', // optional: aligns them vertically
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                ...sx.heading,
+                                                textTransform: 'uppercase',
+                                                fontSize: [2],
+                                                color: '#45DFB1',
+                                            }}
+                                        >
+                                            Lead Times Spatial Performance
+                                        </Box>
 
 
-                                <Filter
-                                    sx={{
-                                        pr: 4,
-                                    }}
-                                    values={extent}
-                                    setValues={handleSetExtent}
-                                    multiSelect={true}
+                                        <Filter
+                                            values={TemperateExtent}
+                                            setValues={handleSetTemperateExtent}
+                                            multiSelect={true}
+                                            labels={{ northtemperate: 'North Temperate', southtemperate: 'South Temperate' }}
 
-                                />
+                                        />
 
-                            </Row>
-                        ) : (
-                            <Box
-                                sx={{
-                                    ...sx.heading,
-                                    textTransform: 'uppercase',
-                                    fontSize: [2],
-                                    color: '#45DFB1', // color: 'blue'
-                                }}
-                            >
-                                Lead Times Spatial Performance
-                            </Box>
-                        )}
+                                    </Row>
+                                )
+                            } else {
+                                return (
+
+
+                                    <Box
+                                        sx={{
+                                            ...sx.heading,
+                                            textTransform: 'uppercase',
+                                            fontSize: [2],
+                                            color: '#45DFB1', // color: 'blue'
+                                        }}
+                                    >
+                                        Lead Times Spatial Performance
+                                    </Box>
+                                )
+                            }
+                        })()}
                     </TooltipWrapper>
                 </Box>
 
@@ -743,7 +798,7 @@ const LeadTimesMap = (props) => {
                                 <Spinner size={32} />
                             </Box>
                         )}
-                        {/* <Box sx={{ width: '85%', mx: 'auto' }}> */}
+
                         <Minimap projection={naturalEarth1}
                             {...(region !== 'africa' ? {
                                 scale:
@@ -781,7 +836,7 @@ const LeadTimesMap = (props) => {
 
 
                         </Minimap>
-                        {/*  </Box> */}
+
                     </Box>
                 </Column >
             </Row >

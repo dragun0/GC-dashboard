@@ -34,7 +34,7 @@ const Index = () => {
 
   //Get shared context state
   const {
-    basemap, setBasemap,
+    basemap,
     display, setDisplay,
     debug, setDebug,
     opacity, setOpacity,
@@ -161,26 +161,46 @@ const Index = () => {
         <Map zoom={1} center={[0, 50]} debug={debug}>
 
           {basemap == 'oceanMask' && (
-            <Fill
-              color={theme.rawColors.background}
-              source={bucket + 'basemaps/ocean'}
-              variable={'ocean'}
-            />
+            <Box>
+              <Fill
+                color={theme.rawColors.background}
+                source={bucket + 'basemaps/ocean'}
+                variable={'ocean'}
+              />
+
+              <Line
+                color={theme.rawColors.primary}
+                source={bucket + 'basemaps/land'}
+                variable={'land'}
+              />
+            </Box>
           )}
 
           {basemap == 'landMask' && (
-            <Fill
-              color={theme.rawColors.background}
-              source={bucket + 'basemaps/land'}
-              variable={'land'}
-            />
+            <Box>
+              <Fill
+                color={theme.rawColors.background}
+                source={bucket + 'basemaps/land'}
+                variable={'land'}
+              />
+
+              <Line
+                color={theme.rawColors.primary}
+                source={bucket + 'basemaps/land'}
+                variable={'land'}
+              />
+            </Box>
+
+
           )}
+
 
           <Line
             color={theme.rawColors.primary}
             source={bucket + 'basemaps/land'}
             variable={'land'}
           />
+
 
           <Raster
             colormap={colormap}

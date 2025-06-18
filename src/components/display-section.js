@@ -45,7 +45,11 @@ const DisplaySection = () => {
 
     // for UI buttons only:
     // value of basemap is stored in context state
-    const [uiBasemap, setUiBasemap] = useState({ oceanMask: true, landMask: false })
+    // const [uiBasemap, setUiBasemap] = useState({ oceanMask: true, landMask: false })
+
+    // Toggle states for basemap toggle button
+    const oceanMaskOn = basemap === 'oceanMask'
+    const landMaskOn = basemap === 'landMask'
 
 
     return (
@@ -118,11 +122,19 @@ const DisplaySection = () => {
 
                                 <Flex sx={{ gap: 2, mb: 2, mt: 2, fontSize: [2, 2, 2, 3] }}>
                                     Ocean mask
-                                    <Toggle value={uiBasemap.oceanMask} onClick={() => setBasemap(uiBasemap.oceanMask)} />
+                                    <Toggle
+                                        label="Ocean Mask"
+                                        value={oceanMaskOn}
+                                        onClick={() => setBasemap(oceanMaskOn ? null : 'oceanMask')}
+                                    />
                                 </Flex>
                                 <Flex sx={{ gap: 2, mb: 2, fontSize: [2, 2, 2, 3] }}>
                                     Land mask
-                                    <Toggle value={uiBasemap.landMask} onClick={() => setBasemap(uiBasemap.oceanMask)} />
+                                    <Toggle
+                                        label="Land Mask"
+                                        value={landMaskOn}
+                                        onClick={() => setBasemap(landMaskOn ? null : 'landMask')}
+                                    />
                                 </Flex>
 
 

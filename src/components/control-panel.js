@@ -38,8 +38,8 @@ const useScrollbarClasses = () => {
 }
 
 const ControlPanel = ({ expanded, setExpanded, children }) => {
-const embedded = false
-const { setShowRegionControls, setShowTimeSeries, setShowRegionPicker, showRegionPicker } = useRegionContext()
+  const embedded = false
+  const { setShowRegionControls, setShowTimeSeries, setShowRegionPicker, showRegionPicker } = useRegionContext()
   const className = useScrollbarClasses()
   const index = useBreakpointIndex({ defaultIndex: 2 })
   //console.log('className:', className)
@@ -88,12 +88,12 @@ const { setShowRegionControls, setShowTimeSeries, setShowRegionPicker, showRegio
     )
   } else 
   */
-  
+
   if (index < 2) {
-   // console.log('className:', className)
+    // console.log('className:', className)
     return (
       <Box
-        className= {className} //"custom-scrollbar"//
+        className={className} //"custom-scrollbar"//
         sx={{
           overflowX: 'hidden',
           overflowY: 'scroll',
@@ -125,52 +125,54 @@ const { setShowRegionControls, setShowTimeSeries, setShowRegionPicker, showRegio
       </Box>
     )
   } else {
-  
-  
+
+
 
     return (
 
       <Box
-        className= {className} //-> "custom-scrollbar"
+        className={className} //-> "custom-scrollbar"
         sx={{
           overflowX: 'hidden',
           overflowY: 'scroll',
-        
+
         }}
       >
-      
-      <Sidebar 
-      
-        expanded={expanded}
-        setExpanded={setExpanded}
-        tooltip='Data controls'
-        side='left'
-        width={4}
-        onClose={() => {
-          setShowRegionControls(false)
-          setShowTimeSeries(false)
-        }}
-        //onClose={() => regionControlsProps.setShowRegionPicker(false)}
-      
 
-        footer={
 
-          <> 
 
-          <RegionControls />
+        <Sidebar
 
-          <TimeSeries  /> 
+          expanded={expanded}
+          setExpanded={setExpanded}
+          tooltip='Data controls'
+          side='left'
+          width={4}
+          onClose={() => {
+            setShowRegionControls(false)
+            setShowTimeSeries(false)
+          }}
+          //onClose={() => regionControlsProps.setShowRegionPicker(false)}
 
-          <TimeSlider/> 
 
-          
-          </>
-        }
-      >
-        
-        
-        {children}
-      </Sidebar>
+          footer={
+
+            <>
+
+              <RegionControls />
+
+              <TimeSeries />
+
+              <TimeSlider />
+
+
+            </>
+          }
+        >
+
+
+          {children}
+        </Sidebar>
       </Box>
     )
   }

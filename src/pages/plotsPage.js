@@ -143,7 +143,7 @@ const PlotsPage = () => {
                   <Box sx={{ mb: [0], mt: [0, 0, 5, 6], fontSize: [3], letterSpacing: 'faux', fontFamily: 'faux' }}>
 
                     Can AI outperform traditional physics-based models in forecasting complex atmospheric variables? This web-tool allows for a performance comparison of three weather forecast models:
-                    Google Deepmind's GraphCast (AI-based), ECMWF Integrated Forecasting System (IFS) (physics-based), and ECMWF AIFS (AI-based).
+                    Google Deepmind&apos;s GraphCast (AI-based), ECMWF Integrated Forecasting System (IFS) (physics-based), and ECMWF AIFS (AI-based).
 
                     The comparison is based on verification results between each forecasting model against the ERA5 reanalysis dataset.
                     Verification metrics include: RMSE (root mean square error), MAE (mean absolute error), MBE (mean bias error), and R (correlation coefficient).
@@ -156,7 +156,7 @@ const PlotsPage = () => {
                       <li>Mean sea level pressure (msl)</li>
                       <li>10-meter u-component of wind (u10) </li>
                       <li>10-meter v-component of wind (v10)</li>
-                      <li>Specific humidity (q) at 1000 hPa pressure (closest to earth's surface)</li>
+                      <li>Specific humidity (q) at 1000 hPa pressure (closest to earth&apos;s surface)</li>
                     </ul>
 
                     The main objective of this comparative analysis is to evaluate whether the forecasting models perform differently in different geographic regions.

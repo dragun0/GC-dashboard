@@ -57,7 +57,7 @@ const sx = {
 
 
 
-const plotsPage = () => {
+const PlotsPage = () => {
 
   //Get shared context state
   const {
@@ -527,7 +527,7 @@ const plotsPage = () => {
 
 
 
-export default plotsPage
+export default PlotsPage
 
 // used <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
 // </Box>

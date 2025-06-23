@@ -267,8 +267,8 @@ const VariablesPerformance = (props) => {
             }}>
                 <TooltipWrapper
                     tooltip=' Compares the correlation coefficient of each variable of the forecasting models
-                    for each selected month. The correlation coefficient value of each variable is calculated
-                    across all lead times and spatial points.'
+                    for each selected month or across the whole year (annual). The correlation coefficient value of each variable is calculated
+                    across all lead times and spatial points in the region.'
                 >
 
                     <Box

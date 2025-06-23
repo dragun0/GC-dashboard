@@ -256,8 +256,8 @@ const RegionComparison = () => {
             }>
 
                 <TooltipWrapper
-                    tooltip=' An overview of how the different forecasting models are performing across four spatial extents. The selected verification metric is computed across
-                    all leadtimes and spatial points (within the geographic extent) for the selected month. "Annual" represents the average value of that metric across the whole year.
+                    tooltip=' An overview of how the forecasting models are performing across different geographic climate zones. The selected verification metric is computed across
+                    all leadtimes and spatial points (within the geographic extent) for the selected month and the selected variable. "Annual" represents the average value of that metric across the whole year.
                     '
                 >
                     <Box

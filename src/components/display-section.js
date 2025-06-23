@@ -56,9 +56,10 @@ const DisplaySection = () => {
         <Box>
             <>
                 <TooltipWrapper
-                    tooltip='Use the menu to choose a colormap or switch the layer on/off. Click and drag
+                    tooltip='Use the drop down menu to choose a colormap or switch the layer on/off. Click and drag
         the colorbar limits of the legend in the lower right corner to change them. Click the "sun" in the lower right
-        to switch between light mode and dark mode.'
+        to switch between light mode and dark mode. Toggle the ocean and land masks on/off to hide or show these parts of the map.'
+                    placement='top'
                 >
                     <Box sx={{ ...sx.heading, mb: [0] }}>Display</Box>
                 </TooltipWrapper>

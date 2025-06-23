@@ -209,7 +209,7 @@ const LeadTimesMap = (props) => {
     const [selectedExtent, setSelectedExtent] = useState(['tropics']);
 
     // keep track of the actual temperate extent selected (for the temperate zones section)
-    const [selectedTemperateExtent, setSelectedTemperateExtent] = useState('northtemperate');
+    const [selectedTemperateExtent, setSelectedTemperateExtent] = useState(['northtemperate']);
 
     // make sure one button of the tropic extents is always selected
     const handleSetExtent = (newExtent) => {

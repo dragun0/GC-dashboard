@@ -15,14 +15,15 @@ import { SidebarFooter } from '@carbonplan/layouts'
 import { useRegionContext } from '../components/region'
 import ExpandingSection from './expanding-section'
 import { useRegion } from '@carbonplan/maps'
+import React from 'react'
 
 const TimeSeries = () => {
-  const { 
-    band, 
-    showTimeSeries, 
-    setShowTimeSeries, 
-    showRegionPicker, 
-    regionData, 
+  const {
+    band,
+    showTimeSeries,
+    setShowTimeSeries,
+    showRegionPicker,
+    regionData,
     time,
     forecastModel,
     evaluationMetric,
@@ -45,13 +46,15 @@ const TimeSeries = () => {
 
   // needed to access the regionPickers center coordinates and radius for CSV file download
   const { region } = useRegion()
-  console.log('region:', region)
-  //
+  //console.log('region:', region)
+  const data = regionData?.value?.climate?.[band] // access the band data from regionData
+
+  console.log('data:', data)
 
   // this loading statement is not working
-  const { data, range, domain } = useMemo(() => {
-    if (!regionData?.value || !regionData.value.climate || !band) {
-      return 'loading...'
+  const { lineData, range, domain } = useMemo(() => {
+    if (!data || !band) {
+      return { lineData: undefined, range: undefined, domain: undefined }
     }
     //console.log('region.properties.radius:', region.properties.radius)
 
@@ -65,29 +68,28 @@ const TimeSeries = () => {
     let range = [Infinity, -Infinity] // Initialize y-axis range
 
 
-    const data = Object.keys(regionData.value['climate'][band]).map((key) => {
-      const values = regionData.value['climate'][band][key]
+    const lineData = Object.keys(data).map((key) => {
+      const values = data[key]
       const filtered = values.filter((d) => d !== 9.969209968386869e36)
       const sum = filtered.reduce((a, d) => a + d, 0)
       const value = sum / filtered.length
-
+      console.log('filtered.length:', filtered.length)
       range = [Math.min(range[0], value), Math.max(range[1], value)]  // y-axis
       domain = [Math.min(domain[0], key), Math.max(domain[1], key)]   // x-axis
       return [Number(key), value]
     })
 
+    console.log('lineData:', lineData)
+    return { lineData, range, domain }
+  }, [data])
+  console.log('lineData:', lineData)
 
-    return { data, range, domain }
-  }, [regionData, band])
-  //console.log('data:', data)
 
-
-
-  const timeData = data && data.find((d) => d[0] === Number(time))
+  const timeData = lineData && lineData.find((d) => d[0] === Number(time))
   const validtimeData = timeData && !Number.isNaN(timeData[1])
   //console.log('timeData:', timeData)
   //console.log('validtimeData:', validtimeData)
-  
+
   // Download CSV
   const handleDownloadCSV = () => {
     // check regionpicker radius is NOT zero
@@ -96,36 +98,36 @@ const TimeSeries = () => {
       alert('No data available for export.')
       return
     }
-    
+
 
     //const [centerLon, centerLat] = region.properties.center
     const radius = region.properties.radius
     const centerLon = region.properties.center.lng
     const centerLat = region.properties.center.lat
     //console.log('region.properties.center.lat:', region.properties.center.lat )
-    
-   let startDate
+
+    let startDate
     if (forecastModel === 'marsfc') {
       startDate = new Date(`${year}-${month}-01T00:00:00Z`) // UTC base datetime
     } else {
       startDate = new Date(`${year}-${month}-01T06:00:00Z`)
     }
 
-    const rows = data.map(([timestep, mae]) => {
-    const datetime = new Date(startDate.getTime() + timestep * 6 * 60 * 60 * 1000).toISOString()
+    const rows = lineData.map(([timestep, mae]) => {
+      const datetime = new Date(startDate.getTime() + timestep * 6 * 60 * 60 * 1000).toISOString()
 
-      
-    return {
-      lat: centerLat,
-      lon: centerLon,
-      radius: radius.toFixed(2),
-      timestep,
-      datetime,
-      mae: mae.toFixed(4),
-      
-    }
+
+      return {
+        lat: centerLat,
+        lon: centerLon,
+        radius: radius.toFixed(2),
+        timestep,
+        datetime,
+        mae: mae.toFixed(4),
+
+      }
     })
-  
+
     // keys must match header names exactly
     const header = ['timestep', 'datetime', 'mae', 'lat', 'lon', 'radius']
     const csv = [
@@ -137,12 +139,12 @@ const TimeSeries = () => {
     let forecastModelName
     if (forecastModel === 'marsfc') {
       forecastModelName = 'ECMWF_IFS';
-    } else if (forecastModel === 'marsai'){
+    } else if (forecastModel === 'marsai') {
       forecastModelName = 'ECMWF_AIFS';
     } else if (forecastModel === 'gc') {
       forecastModelName = 'GC';
     }
-    
+
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -152,9 +154,9 @@ const TimeSeries = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    
+
   }
-  
+
 
 
   return (
@@ -183,7 +185,7 @@ const TimeSeries = () => {
             transform: 'translateY(10px)'
           }}
         >
-          {regionData?.value && domain && (
+          {regionData?.value && domain && timeData && (
 
             <Chart
               x={domain} y={range}  >
@@ -203,7 +205,7 @@ const TimeSeries = () => {
                   mt: 0,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 6, // Space between button and MAE label
+                  gap: 4, // Space between button and MAE label
                 }}
               >
                 <Box
@@ -214,7 +216,7 @@ const TimeSeries = () => {
                     fontSize: [0, 0, 0, 1],
                     color: 'secondary',
                   }}
-                  >
+                >
                   <Box as='span' sx={{ textTransform: 'none', mr: 2 }}>
                     MAE:
                   </Box>
@@ -245,7 +247,7 @@ const TimeSeries = () => {
                   Download CSV
                 </Button>
 
-                
+
               </Box>
 
               <Plot>
@@ -257,7 +259,7 @@ const TimeSeries = () => {
                     size={9}
                   />
                 )}
-                <Line data={data} />
+                <Line data={lineData} />
               </Plot>
             </Chart>
 

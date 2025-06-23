@@ -109,7 +109,7 @@ const DatasetControls = () => {
   // only necessary for highlighting the radio buttons
   const [models, setModels] = useState({ marsfc: false, gc: true, marsai: false })
   const [variables, setVariables] = useState({ t2m: true, q: false })
-  const [metrics, setMetrics] = useState({ AE: true, BE: false, RE: false, RA: false })
+  const [metrics, setMetrics] = useState({ AE: true }) // BE: false, RE: false, RA: false 
 
   // is the time series component (and regional stats) that display the average AE
   // at each time step in the regiona not the mean absolute error
@@ -201,7 +201,7 @@ const DatasetControls = () => {
         </Column>
         <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]} sx={{ pb: [1] }}>
           <TooltipWrapper
-            tooltip='Select a climate variable to show on the map. The 2-m air temperature error is shown in celsius. Error of the precipitation variable is shown in ...'
+            tooltip='Select a climate variable to show on the map. The 2-m air temperature error is shown in celsius. Error of specific humidity is shown in g/kg'
           >
             <Filter
               values={variables}

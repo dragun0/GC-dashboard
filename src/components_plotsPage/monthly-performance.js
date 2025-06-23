@@ -262,7 +262,7 @@ const MonthlyPerformance = (props) => {
             }}>
                 <TooltipWrapper
                     tooltip=' Compares the performance of the different forecast models at each month of the year 2024. 
-                    The monthly values are computed across all spatial points and leadtimes of the month.'
+                    The monthly values are computed across all spatial points in the region and leadtimes of the month.'
 
                 >
                     <Column>

@@ -119,7 +119,9 @@ const Index = () => {
         <Box
           //className="custom-scrollbar"
           sx={{
-            px: [2, 5], py: [1],
+            py: [1],
+            pl: [3, 4, 5, 6],
+            pr: [3, 4, 5, 6],
             opacity: expanded ? 1 : 0,
             transition: ' opacity 0.25s',
 
@@ -309,7 +311,7 @@ const Index = () => {
             <Group spacing={4}>
               <Box sx={sx.description}>
                 This interactive tool maps the accuracies of two machine learning models
-                (GraphCast and ECMWF-AIFS) and a traditional numerical weather model (ECMWF-IFS HRES).
+                (GraphCast and ECMWF-AIFS) and a traditional numerical weather prediction model (ECMWF-IFS HRES).
                 All models have been evaluated against ERA5 reanalysis data, and the results can be explored on this dashboard.
               </Box>
               {/* rewrite this intro section -> make it more concise */}

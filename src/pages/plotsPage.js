@@ -138,17 +138,15 @@ const plotsPage = () => {
               <Column start={[1, 2]} width={[7]}>
                 <Box>
                   <Box as='h1' variant='styles.h1' sx={{ mt: [5, 7, 7, 8] }}>
-                    {'Forecast Performance Analysis Explainer'}
+                    {'Forecast Performance Analysis'}
                   </Box>
                   <Box sx={{ mb: [0], mt: [0, 0, 5, 6], fontSize: [3], letterSpacing: 'faux', fontFamily: 'faux' }}>
 
                     Can AI outperform traditional physics-based models in forecasting complex atmospheric variables? This web-tool allows for a performance comparison of three weather forecast models:
                     Google Deepmind's GraphCast (AI-based), ECMWF Integrated Forecasting System (IFS) (physics-based), and ECMWF AIFS (AI-based).
 
-                    The comparison is based on verification results between each forecasting model against the ERA5 reanalysis dataset, which combines on-ground measurements with satellite observations.
+                    The comparison is based on verification results between each forecasting model against the ERA5 reanalysis dataset.
                     Verification metrics include: RMSE (root mean square error), MAE (mean absolute error), MBE (mean bias error), and R (correlation coefficient).
-                    The units of the metrics are as follows: RMSE, MAE and MBE are expressed in °C (Degrees Celsius) for temperature,
-                    hPa (hectopascal) for pressure, m/s (meters per second) for wind speed, and g/kg (grams per kilogram) for specific humidity. R is unitless.
 
                     The evaluation covers the first 10 days of each month in 2024, with a focus on the performance of the forecast models across the lead times (10 days in 6 hour increments).
                     Since the ECMWF AIFS model has only been operational since March 2024, data for this model is only available from March onwards.
@@ -162,7 +160,7 @@ const plotsPage = () => {
                     </ul>
 
                     The main objective of this comparative analysis is to evaluate whether the forecasting models perform differently in different geographic regions.
-                    Four geographic regions are examined: Global, Tropics + Subtropics, Temperate Zones, and Africa.
+                    Four geographic regions are examined: Global, Tropics, Subtropics, Northern and Southern Temperate Zone, Polar regions and Africa.
 
 
                   </Box>
@@ -235,7 +233,7 @@ const plotsPage = () => {
                       • <strong>MBE</strong> <br />
                       • <strong>Correlation Coefficient (R)</strong>  <br /> <br />
                       Purpose:<br />
-                      • Explore weather forecast accuracies of ML and NwP models in different climate zones
+                      • Explore weather forecasting accuracies of ML and NWP models in different climate zones
 
 
 
@@ -320,8 +318,8 @@ const plotsPage = () => {
                     }
                     }>
                       <TooltipWrapper
-                        tooltip=' Compares the performance of the forecast models at the different forecast lead times
-                     of the selected month, averaged over all spatial points in the region.'
+                        tooltip='Chose between the lead times performance of the models at the different forecast lead times or 
+                        the monthly performance of the models averaged over all lead times for each month of the year 2024.'
                       >
 
 
@@ -441,8 +439,8 @@ const plotsPage = () => {
                     }
                     }>
                       <TooltipWrapper
-                        tooltip=' Compares the performance of the forecast models at the different forecast lead times
-                     of the selected month, averaged over all spatial points in the region.'
+                        tooltip='Chose between the lead times performance of the models at the different forecast lead times or 
+                        the monthly performance of the models averaged over all lead times for each month of the year 2024.'
                       >
 
 

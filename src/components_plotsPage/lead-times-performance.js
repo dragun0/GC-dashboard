@@ -334,122 +334,130 @@ const LeadTimesPerformance = (props) => {
 
             )}
 
+            <TooltipWrapper
+                tooltip='Compares the performance of the forecast models at the different forecast lead times
+                     of the selected month or over the whole year (annual), averaged over all spatial points in the region.'
 
-            {/* Variables filters */}
-            < Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',       // allows wrapping on small screens
-                    //gap: 8, 
-                    gap: 4,                 // adds spacing between filters
-                    //mt: 3,                   // margin above the filters
-                    //mb: 3,                   // margin below the filters
-
-                    alignItems: 'center',    // vertically align filters
-                }}
             >
-
-
-                <Box>
-                    <Filter
-                        values={variables}
-                        setValues={(newVariable) => {
-                            // highlight the selected variable
-                            setVariables(newVariable)
-                            //Call handleVariableChange when the filter changes
-                            const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
-                            if (selectedVariable) {
-                                handleVariableChange({ target: { value: selectedVariable } })
-                            }
-                        }}
-                        multiSelect={false}
-                    />
-                </Box>
-                {/* Metrics filters */}
-                <Box>
-                    <Filter
-                        values={metrics}
-                        setValues={(newMetric) => {
-                            // highlight the selected metric
-                            setMetrics(newMetric)
-                            // Call handleMetricChange when the filter changes
-                            const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
-                            if (selectedMetric) {
-                                handleMetricChange({ target: { value: selectedMetric } })
-                            }
-                        }}
-                        multiSelect={false}
-                    // labels={{ q: 'Specific humidity' }}
-                    />
-                </Box>
-
-                <Box
+                {/* Variables filters */}
+                < Box
                     sx={{
                         display: 'flex',
                         flexWrap: 'wrap',       // allows wrapping on small screens
-                        gap: 3,                  // adds spacing between selects
+                        //gap: 8, 
+                        gap: 4,                 // adds spacing between filters
+                        //mt: 3,                   // margin above the filters
+                        //mb: 3,                   // margin below the filters
 
-                        alignItems: 'center',    // vertically align selects
+                        alignItems: 'center',    // vertically align filters
                     }}
                 >
-                    {/* Year and Month filters */}
-                    <Select size='xs'
-                        sxSelect={{
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            fontSize: [1, 1, 1, 2],
-                            width: '100%',
-                            //   pb: [1],
-                        }}>
-                        <option>2024</option>
-
-                    </Select>
 
 
 
-                    <Select
-                        size='xs'
-                        onChange={handleMonthChange}
-                        sxSelect={{
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            fontSize: [1, 1, 1, 2],
-                            width: '100%',
-                            //   pb: [1],
-                        }}>
-                        {month_options.map((month) => (
-                            <option
-                                key={month}
-                                value={month}
-                            >
-                                {month}
-                            </option>
-                        ))}
-                    </Select>
+                    <Box>
+                        <Filter
+                            values={variables}
+                            setValues={(newVariable) => {
+                                // highlight the selected variable
+                                setVariables(newVariable)
+                                //Call handleVariableChange when the filter changes
+                                const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
+                                if (selectedVariable) {
+                                    handleVariableChange({ target: { value: selectedVariable } })
+                                }
+                            }}
+                            multiSelect={false}
+                        />
+                    </Box>
+                    {/* Metrics filters */}
+                    <Box>
+                        <Filter
+                            values={metrics}
+                            setValues={(newMetric) => {
+                                // highlight the selected metric
+                                setMetrics(newMetric)
+                                // Call handleMetricChange when the filter changes
+                                const selectedMetric = Object.keys(newMetric).find(key => newMetric[key]);
+                                if (selectedMetric) {
+                                    handleMetricChange({ target: { value: selectedMetric } })
+                                }
+                            }}
+                            multiSelect={false}
+                        // labels={{ q: 'Specific humidity' }}
+                        />
+                    </Box>
 
-                    <Button
-                        inverted
-                        onClick={handleDownloadCSV}
-                        size='xs'
+
+
+                    <Box
                         sx={{
-                            fontSize: [1, 1, 1, 2],
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            letterSpacing: 'mono',
-                            minWidth: '120px',
-                            textAlign: 'right',
-                            whiteSpace: 'nowrap',
-                            '&:disabled': {
-                                color: 'muted',
-                                pointerEvents: 'none',
-                            },
+                            display: 'flex',
+                            flexWrap: 'wrap',       // allows wrapping on small screens
+                            gap: 3,                  // adds spacing between selects
+
+                            alignItems: 'center',    // vertically align selects
                         }}
-                        prefix={<Down />}
                     >
-                        Download CSV
-                    </Button>
-                </Box>
-            </Box >
+                        {/* Year and Month filters */}
+                        <Select size='xs'
+                            sxSelect={{
+                                textTransform: 'uppercase',
+                                fontFamily: 'mono',
+                                fontSize: [1, 1, 1, 2],
+                                width: '100%',
+                                //   pb: [1],
+                            }}>
+                            <option>2024</option>
+
+                        </Select>
+
+
+
+                        <Select
+                            size='xs'
+                            onChange={handleMonthChange}
+                            sxSelect={{
+                                textTransform: 'uppercase',
+                                fontFamily: 'mono',
+                                fontSize: [1, 1, 1, 2],
+                                width: '100%',
+                                //   pb: [1],
+                            }}>
+                            {month_options.map((month) => (
+                                <option
+                                    key={month}
+                                    value={month}
+                                >
+                                    {month}
+                                </option>
+                            ))}
+                        </Select>
+
+                        <Button
+                            inverted
+                            onClick={handleDownloadCSV}
+                            size='xs'
+                            sx={{
+                                fontSize: [1, 1, 1, 2],
+                                textTransform: 'uppercase',
+                                fontFamily: 'mono',
+                                letterSpacing: 'mono',
+                                minWidth: '120px',
+                                textAlign: 'right',
+                                whiteSpace: 'nowrap',
+                                '&:disabled': {
+                                    color: 'muted',
+                                    pointerEvents: 'none',
+                                },
+                            }}
+                            prefix={<Down />}
+                        >
+                            Download CSV
+                        </Button>
+                    </Box>
+                </Box >
+            </TooltipWrapper>
 
             {/* Lead times plot */}
             < Box sx={{
@@ -501,6 +509,7 @@ const LeadTimesPerformance = (props) => {
                                     }
                                     : undefined
                             }
+                        //  domain={['dataMin', 'dataMax']}
                         />
                         <Tooltip
                             labelFormatter={(label) => `Lead time: ${(label * 0.25).toFixed(2)}`}

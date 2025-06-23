@@ -28,6 +28,8 @@ const formatValue = (value) => {
   }
 }
 
+
+/*
 export const averageData = (data, area) => {
   const totalArea = area
     .filter((a, i) => a !== NAN && data[i] !== NAN)
@@ -39,10 +41,23 @@ export const averageData = (data, area) => {
       return a
     } else {
       const areaWeight = dArea / totalArea
+      console.log('weight:', areaWeight)
       return a + d * areaWeight
     }
+
   }, 0)
 }
+*/
+
+export const averageData = (data) => {
+  const sum = data.reduce((a, d) => a + d, 0)
+  const value = sum / data.length
+  return value
+}
+
+
+
+
 
 const getDonutData = (data, area, clim) => {
   console.log('data in function:', data)
@@ -78,7 +93,7 @@ const getDonutData = (data, area, clim) => {
     if (d === NAN || dArea === NAN) {
       return
     }
-    console.log('dArea:', dArea)
+    // console.log('dArea:', dArea)
 
     let index = bins.findIndex((bin) => d >= bin.x0 && d < bin.x1)
 
@@ -136,7 +151,7 @@ const BinnedSummary = ({ clim, colormap, data, area, label, units }) => {
       colors={colors.map((c) => `rgb(${c})`)}
       units={units}
       label={label}
-      summary={(averageData(data, area).toFixed(2))}
+      summary={(averageData(data).toFixed(2))}
     />
   )
 }

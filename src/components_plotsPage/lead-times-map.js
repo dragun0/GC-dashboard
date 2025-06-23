@@ -6,16 +6,12 @@ import { Minimap, Raster, Path, Sphere, Graticule } from '@carbonplan/minimaps'
 import { naturalEarth1, mercator, orthographic, equirectangular } from '@carbonplan/minimaps/projections'
 import { useThemedColormap, viridis } from '@carbonplan/colormaps'
 import { usePlotsContext } from '../components_plotsPage/PlotsContext'
-import MonthSlider from '../components_plotsPage/month-slider'
 import LeadTimesSlider from '../components_plotsPage/lead-times-slider'
 import zarr from 'zarr-js'
 import ndarray from 'ndarray'
 import ops from 'ndarray-ops'
-import pool from 'ndarray-scratch'
 import Legend from '../components_plotsPage/lead-times-legend'
-import { get } from 'ol/proj'
-import { set } from 'ol/transform'
-import { color } from '@carbon/charts'
+
 
 // plate carree projection zarr works: 
 // has float32 data and is in equirectangular projection BUT y axis NEEDS TO BE FLIPPED (is going from + to - instead of - to +)

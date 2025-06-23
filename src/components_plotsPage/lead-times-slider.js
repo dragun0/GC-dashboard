@@ -4,7 +4,6 @@ import { Box } from 'theme-ui'
 import { usePlotsContext } from './PlotsContext'
 import { Button } from '@carbonplan/components'
 import { Play, Pause } from '../components/icons'
-import { set } from 'ol/transform'
 
 const LeadTimesSlider = (props) => {
     const context = usePlotsContext()

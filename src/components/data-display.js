@@ -16,7 +16,7 @@ const DataDisplay = () => {
     return band
   }
 
-  const { band, time, regionData, colormapName, clim } = useRegionContext()
+  const { band, time, regionData, colormapName, clim, evaluationMetric } = useRegionContext()
   const colormap = useThemedColormap(colormapName)
   const value = regionData?.value
 
@@ -56,6 +56,8 @@ const DataDisplay = () => {
   //const area = filteredData.length
   const area = value.climate[band][time]
 
+
+
   return (
 
     <Box
@@ -68,9 +70,18 @@ const DataDisplay = () => {
         colormap={colormap}
         data={filteredData}
         area={area}
-        label={'Mean Absolute Error'}
+        label={
+          evaluationMetric === 'AE'
+            ? 'MAE'
+            : evaluationMetric === 'RMSE'
+              ? 'RMSE'
+              : evaluationMetric === 'MAE'
+                ? 'MAE'
+                : evaluationMetric === 'MBE'
+                  ? 'MBE'
+                  : ''
+        }
         units={getUnits(band)}
-
       />
     </Box>
 

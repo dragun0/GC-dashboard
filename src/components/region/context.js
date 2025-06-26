@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from 'react'
 const RegionContext = createContext(null)
 
 export const RegionProvider = ({ children }) => {
-  const [basemap, setBasemap] = useState('oceanMask')
+  const [basemap, setBasemap] = useState({ oceanMask: false, landMask: false })
   const [regionData, setRegionData] = useState(null) //(null) //({ loading: true })
   //const [regionExtent, setRegionExtent] = useState(null) // for time-series component
   //const [showRegionPicker, setShowRegionPicker] = useState(false)
@@ -14,7 +14,7 @@ export const RegionProvider = ({ children }) => {
   const [forecastModel, setForecastModel] = useState('gc') // for layer change
   const [evaluationMetric, setEvaluationMetric] = useState('AE') // for layer change
   const [year, setYear] = useState('2024') // for layer change
-  const [month, setMonth] = useState('01')
+  const [month, setMonth] = useState('06')
   const [display, setDisplay] = useState(true)
   const [debug, setDebug] = useState(false)
   const [opacity, setOpacity] = useState(1)

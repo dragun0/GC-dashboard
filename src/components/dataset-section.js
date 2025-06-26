@@ -1,5 +1,5 @@
 import { Box, Flex } from 'theme-ui'
-import { useCallback } from 'react'
+import { useCallback, useMemo, useEffect } from 'react'
 import { Row, Column, Filter, Slider, Badge, Toggle, Select, Link } from '@carbonplan/components'
 import { colormaps } from '@carbonplan/colormaps'
 import { useRegionContext } from './region'
@@ -58,7 +58,8 @@ const DatasetControls = () => {
     setForecastModel,
     evaluationMetric,
     setEvaluationMetric,
-    setMonth
+    setMonth,
+    month
   } = useRegionContext()
 
   // handle change of variable 
@@ -109,28 +110,42 @@ const DatasetControls = () => {
   // only necessary for highlighting the radio buttons
   const [models, setModels] = useState({ marsfc: false, gc: true, marsai: false })
   const [variables, setVariables] = useState({ t2m: true, q: false })
-  const [metrics, setMetrics] = useState({ AE: true }) // BE: false, RE: false, RA: false 
-
-  // is the time series component (and regional stats) that display the average AE
-  // at each time step in the regiona not the mean absolute error
-
-  // same question for bias error and mean bias error
-  // is correlation coefficient possible to compute for each gri cell
-  // at each time step?
+  const [metrics, setMetrics] = useState({ AE: true, MAE: false, RMSE: false, MBE: false }) // BE: false, RE: false, RA: false 
 
 
   // used to make ECMWF AIFS unavailable for January and February
-  const [selectedMonth, setSelectedMonth] = useState('January')
+  const [selectedMonth, setSelectedMonth] = useState('June')
 
-  // used to conditionally show ECMWF AIFS option only when month is not January or February
-  const showAIFS = !['January', 'February'].includes(selectedMonth)
+  // used to conditionally show ECMWF AIFS option only when month is not January or February OR evaluation metric is not AE
+  const showAIFS = useMemo(() => {
+    return evaluationMetric !== 'AE' ||
+      !['January', 'February'].includes(selectedMonth)
+  }, [evaluationMetric, selectedMonth])
 
   // conditional model labels based on showAIFS
-  const modelLabels = {
+  const modelLabels = useMemo(() => ({
     marsfc: 'ECMWF-IFS',
     gc: 'GraphCast',
     ...(showAIFS && { marsai: 'ECMWF-AIFS' }),
-  }
+  }), [showAIFS])
+
+  useEffect(() => {
+    console.log('showAIFS:', showAIFS)
+  }, [showAIFS])
+
+  useEffect(() => {
+    console.log('modelLabels:', modelLabels)
+  }, [modelLabels])
+
+  useEffect(() => {
+    console.log('evaluationMetric:', evaluationMetric)
+  }, [evaluationMetric])
+
+  useEffect(() => {
+    console.log('selectedMonth', selectedMonth)
+  }, [selectedMonth])
+
+
   // conditional model values based on modelLabels
   const modelValues = Object.fromEntries(
     Object.entries(models).filter(([key]) => key in modelLabels)
@@ -151,8 +166,8 @@ const DatasetControls = () => {
           >
 
             <Filter
+              key={Object.keys(modelLabels).join(',')} // ensure filter rerenders when modelLabels change
               values={modelValues}
-
               labels={modelLabels}
               setValues={(newModel) => {
                 setModels(newModel)
@@ -178,7 +193,7 @@ const DatasetControls = () => {
           >
             <Filter
               values={metrics}
-              labels={{ AE: 'Absolute Error', BE: 'Bias Error', RE: 'Relative Error', RA: 'Relative Accuracy' }}
+              labels={{ AE: 'Absolute Error', MAE: 'Mean Absolute Error', RMSE: 'Root Mean Squared Error', MBE: 'Mean Bias Error' }}
               //setValues={setMetrics}
 
               setValues={(newMetric) => {
@@ -245,29 +260,32 @@ const DatasetControls = () => {
 
             </Select>
 
-            <Select
-              size='xs'
-              onChange={handleMonthChange}
-              sxSelect={{
-                textTransform: 'uppercase',
-                fontFamily: 'mono',
-                fontSize: [1, 1, 1, 2],
-                width: '100%',
-                pb: [1],
-              }}>
-              {month_options.map((month) => (
-                <option
-                  key={month}
-                  value={month}
-                  disabled={
-                    forecastModel === 'marsai' &&
-                    ['January', 'February'].includes(month)
-                  }
-                >
-                  {month}
-                </option>
-              ))}
-            </Select>
+            {evaluationMetric === 'AE' && (
+              <Select
+                size='xs'
+                value={selectedMonth} // ensures UI matches the state after change from e.g. RMSE (where filter is not rendered) to AE (filter is rerendered)
+                onChange={handleMonthChange}
+                sxSelect={{
+                  textTransform: 'uppercase',
+                  fontFamily: 'mono',
+                  fontSize: [1, 1, 1, 2],
+                  width: '100%',
+                  pb: [1],
+                }}>
+                {month_options.map((month) => (
+                  <option
+                    key={month}
+                    value={month}
+                    disabled={
+                      forecastModel === 'marsai' &&
+                      ['January', 'February'].includes(month)
+                    }
+                  >
+                    {month}
+                  </option>
+                ))}
+              </Select>
+            )}
 
           </TooltipWrapper>
 

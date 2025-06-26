@@ -5,15 +5,14 @@ import TooltipWrapper from '../components/tooltip-wrapper'
 import { useState } from 'react'
 import { Row, Column, Button, Scrollbar, Dimmer } from '@carbonplan/components'
 import { Left } from '@carbonplan/icons'
-import { Filter, Select } from '@carbonplan/components'
+import { Filter } from '@carbonplan/components'
 import { usePlotsContext } from '../components_plotsPage/PlotsContext'
 import Metadata from '../components_plotsPage/metadata'
 import LeadTimesPerformance from '../components_plotsPage/lead-times-performance'
 import LeadTimesMap from '../components_plotsPage/lead-times-map'
 import MonthlyPerformance from '@/components_plotsPage/monthly-performance'
 import VariablesPerformance from '@/components_plotsPage/variables-performance'
-import MonthlyMap from '@/components_plotsPage/monthly-map'
-import RegionOverview from '@/components_plotsPage/region-overview-plot'
+
 import RegionComparison from '@/components_plotsPage/region-comparison'
 
 
@@ -66,15 +65,15 @@ const PlotsPage = () => {
 
   } = usePlotsContext()
 
-  // for the UI button of the region filter for column 1 and 2 (left and right)
+  // for the UI button of the region filter for column 1 and 2 (left and right) - highlights the selected region
   const [c1regions, setc1Region] = useState({ global: true, tropics: false, temperate: false, polar: false, africa: false })
   const [c2regions, setc2Region] = useState({ global: false, tropics: true, temperate: false, polar: false, africa: false })
 
-  // for the UI buttons of the plots filters for column 1 and 2 (left and right)
+  // for the UI buttons of the plots filters for column 1 and 2 (left and right) - highlights the selected plot
   const [c1plots, setc1Plots] = useState({ LeadTimesPerformance: false, MonthlyPerformance: true })
   const [c2plots, setc2Plots] = useState({ LeadTimesPerformance: true, MonthlyPerformance: false })
 
-  // keeps track of which plot is selected
+  // actually keeps track of which plot is selected
   const [selectedc1Plot, setSelectedc1Plot] = useState('MonthlyPerformance')
   const [selectedc2Plot, setSelectedc2Plot] = useState('LeadTimesPerformance')
 
@@ -134,7 +133,7 @@ const PlotsPage = () => {
 
 
 
-              {/* Title - Forecast Performance Analysis Explainer */}
+              {/* Title and Intro - Forecast Performance Analysis Explainer */}
               <Column start={[1, 2]} width={[7]}>
                 <Box>
                   <Box as='h1' variant='styles.h1' sx={{ mt: [5, 7, 7, 8] }}>
@@ -329,7 +328,7 @@ const PlotsPage = () => {
           <Row >
             <Column start={[1, 2]} width={[5]}>
 
-              {/* Geographic region filter  */}
+
               <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
 
                 <Divider />
@@ -338,13 +337,10 @@ const PlotsPage = () => {
                     pt: [2],
 
                   }}>
-
-
+                  {/* Geographic region filter  */}
                   <Filter
                     sx={{
                       button: { fontSize: 2, color: '#FF800D' }// py: 2, px: 3 }, // Increase button size // color: '#45DFB1'
-                      // label: { fontSize: 3 },                // Increase label size
-                      // You can also target other elements if needed
                     }}
                     values={c1regions}
                     setValues={(newRegion) => {
@@ -353,28 +349,25 @@ const PlotsPage = () => {
                       if (selected) setColumn1Region(selected)
                     }}
                     multiSelect={false}
-                  //  size='xl'
-                  // labels={{ q: 'Specific humidity' }}
                   />
                 </Box>
               </Box>
 
               <Row>
                 <Column start={[1, 1]} width={[13]}>
+                  {/* Spatial Lead Times Performance -> Map */}
                   <LeadTimesMap
-                    // LAT_MIN={-90}
-                    // LAT_MAX={90}
                     region={Column1Region}
                   />
                 </Column>
               </Row>
 
               <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
-                {/* Lead Times Performance / Monthly / Variable Performance */}
+                {/* Lead Times / Monthly / Variable Performance Graphs*/}
                 <Row>
                   <Column start={[1, 1]} width={[13]}>
 
-                    {/* Lead Times Performance or Monthly/Variable Performance Filter */}
+
                     < Box sx={{
                       pt: [2],
                       pb: [2],
@@ -386,7 +379,7 @@ const PlotsPage = () => {
                         the monthly performance of the models averaged over all lead times for each month of the year 2024.'
                       >
 
-
+                        {/* Show filters to selecte either Lead Times Performance or Monthly/Variable Performance  */}
                         <Filter
                           sx={{
 
@@ -394,8 +387,6 @@ const PlotsPage = () => {
                               mr: 5,
                               fontSize: 2, fontFamily: 'heading', color: '#45DFB1', letterSpacing: 'smallcaps'
                             },// py: 2, px: 3 }, // Increase button size // color: '#45DFB1'
-
-                            // label: { fontSize: 3 },                // Increase label size
 
                           }}
                           values={c1plots}
@@ -406,8 +397,6 @@ const PlotsPage = () => {
                           }}
                           multiSelect={false}
                           labels={{ LeadTimesPerformance: 'Lead Times Performance', MonthlyPerformance: 'Monthly Performance' }}
-                        //  size='xl'
-                        // labels={{ q: 'Specific humidity' }}
                         />
 
 
@@ -416,13 +405,14 @@ const PlotsPage = () => {
 
 
                     {selectedc1Plot === 'LeadTimesPerformance' && (
+                      // Show Lead Times Performance Graph if selected
                       <LeadTimesPerformance region={Column1Region} />
                     )}
                   </Column>
                 </Row>
 
                 {selectedc1Plot === 'MonthlyPerformance' && (
-                  // Monthly Performance
+                  // Show Monthly and Variable Performance Graph if selected
                   <Row>
                     <Column start={[1, 1]} width={[7, 7]}>
                       <MonthlyPerformance

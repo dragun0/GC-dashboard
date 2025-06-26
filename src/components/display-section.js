@@ -56,9 +56,9 @@ const DisplaySection = () => {
         <Box>
             <>
                 <TooltipWrapper
-                    tooltip='Use the drop down menu to choose a colormap or switch the layer on/off. Click and drag
+                    tooltip='Use the drop down menu to choose a colormap or switch the ocean and land masks on/off. Click and drag
         the colorbar limits of the legend in the lower right corner to change them. Click the "sun" in the lower right
-        to switch between light mode and dark mode. Toggle the ocean and land masks on/off to hide or show these parts of the map.'
+        to switch between light mode and dark mode.'
                     placement='top'
                 >
                     <Box sx={{ ...sx.heading, mb: [0] }}>Display</Box>
@@ -96,123 +96,40 @@ const DisplaySection = () => {
                             </Column>
 
                             <Column start={[1, 1, 3, 3]} width={[6, 4, 2, 2]}>
-                                <Box sx={{ ...sx.label, mb: 2 }}>
-                                    Layer I/O
-                                    <Column start={1} width={[6, 4, 4, 4]}>
-                                        <Box sx={{ pt: 2 }}>
-                                            <Toggle value={display} onClick={() => setDisplay((prev) => !prev)} />
-                                        </Box>
-                                    </Column>
+                                <Column start={1} width={[6, 4, 2, 2]}>
+                                    <Box sx={{ ...sx.label, mb: 2, mt: 2 }}>
+                                        BASEMAPS
 
+                                    </Box>
 
+                                </Column>
+                                <Column start={[1, 1, 3, 3]} width={[3]}>
 
-                                </Box>
+                                    <Flex sx={{ gap: 2, mb: 2, mt: 2, fontSize: [2, 2, 2, 3] }}>
+                                        Ocean mask
+                                        <Toggle
+                                            label="Ocean Mask"
+                                            value={basemap.oceanMask}
+                                            onClick={() => setBasemap((prev) => ({ ...prev, oceanMask: !prev.oceanMask }))}
+                                        />
+                                    </Flex>
+                                    <Flex sx={{ gap: 2, mb: 2, fontSize: [2, 2, 2, 3] }}>
+                                        Land mask
+                                        <Toggle
+                                            label="Land Mask"
+                                            value={basemap.landMask}
+                                            onClick={() => setBasemap((prev) => ({ ...prev, landMask: !prev.landMask }))}
+                                        />
+                                    </Flex>
+                                </Column>
                             </Column>
                         </Row>
-
-                        <Row columns={[6, 8, 4, 4]}>
-                            <Column start={1} width={[6, 4, 2, 2]}>
-                                <Box sx={{ ...sx.label, mb: 2, mt: 2 }}>
-                                    BASEMAPS
-
-                                </Box>
-
-                            </Column>
-
-                            <Column start={[1, 1, 3, 3]} width={[3]}>
-
-                                <Flex sx={{ gap: 2, mb: 2, mt: 2, fontSize: [2, 2, 2, 3] }}>
-                                    Ocean mask
-                                    <Toggle
-                                        label="Ocean Mask"
-                                        value={oceanMaskOn}
-                                        onClick={() => setBasemap(oceanMaskOn ? null : 'oceanMask')}
-                                    />
-                                </Flex>
-                                <Flex sx={{ gap: 2, mb: 2, fontSize: [2, 2, 2, 3] }}>
-                                    Land mask
-                                    <Toggle
-                                        label="Land Mask"
-                                        value={landMaskOn}
-                                        onClick={() => setBasemap(landMaskOn ? null : 'landMask')}
-                                    />
-                                </Flex>
-
-
-                            </Column>
-                        </Row>
-
-
                     </>
-
                 </Box>
-
             </>
         </Box>
-
-
     )
-
 }
 
 export default DisplaySection
 
-
-
-/*
-                    <Column start={[1, 1, 3, 3]} width={[6, 4, 2, 2]}>
-                    <Box sx={{ ...sx.label, mb: 2 }}>
-                        Units
-                        <Select
-                        value={displayUnits}
-                        onChange={(e) => setDisplayUnits(e.target.value)}
-                        size='xs'
-                        sx={{
-                            mt: [1],
-                            display: 'block',
-                        }}
-                        sxSelect={{
-                            fontFamily: 'mono',
-                            fontSize: [1, 1, 1, 2],
-                            width: '100%',
-                            pb: [1],
-                        }}
-                        >
-                        {UNITS_OPTIONS[variable].map(({ value, label }) => (
-                            <option key={value} value={value}>
-                            {label}
-                            </option>
-                        ))}
-                        </Select>
-                    </Box>
-                    </Column>
-
-                    <Column start={1} width={[6, 4, 4, 4]}>
-                    <Box>
-                        <Box sx={{ ...sx.label, mb: '5px' }}>
-                        {variable} (
-                        <Box as='span' sx={{ textTransform: 'none' }}>
-                            {
-                            UNITS_OPTIONS[variable].find(
-                                ({ value }) => value === displayUnits
-                            )?.label
-                            }
-                        </Box>
-                        )
-                        </Box>
-                        <Colorbar
-                        colormap={colormap}
-                        format={(d) =>
-                            Math.round(
-                            convertUnits(d, DEFAULT_DISPLAY_UNITS[variable], displayUnits)
-                            )
-                        }
-                        clim={clim}
-                        setClim={(setter) => setClim(setter(clim))}
-                        horizontal
-                        width={'100%'}
-                        sxClim={{ fontSize: [1, 1, 1, 2], mt: ['-1px'], pb: ['2px'] }}
-                        />
-                    </Box>
-                    </Column>
-*/

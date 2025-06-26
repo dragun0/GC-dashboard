@@ -218,7 +218,10 @@ const TimeSeries = () => {
                   }}
                 >
                   <Box as='span' sx={{ textTransform: 'none', mr: 2 }}>
-                    MAE:
+                    {evaluationMetric === 'AE' && 'MAE:'}
+                    {evaluationMetric === 'RMSE' && 'RMSE:'}
+                    {evaluationMetric === 'MAE' && 'MAE:'}
+                    {evaluationMetric === 'MBE' && 'MBE:'}
                   </Box>
                   {timeData[1].toFixed(2)}
                   <Box as='span' sx={{ textTransform: 'none' }}>

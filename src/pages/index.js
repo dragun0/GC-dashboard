@@ -5,23 +5,15 @@ import { Map, Raster, Fill, Line, RegionPicker } from '@carbonplan/maps'
 import { useThemedColormap } from '@carbonplan/colormaps'
 import { SidebarAttachment } from '@carbonplan/layouts'
 import { useRegionContext } from '../components/region'
-//import { openArray, HTTPStore } from 'zarr'
 import DatasetControls from '../components/dataset-section'
 import ControlPanel from '../components/control-panel'
 import Ruler from '../components/ruler'
 import Legend from '../components/legend'
 import Title from '../components/title'
-import TimeSeries from '../components/time-series'
-//import Legend from '../components/legend'
-import { Reset } from '@carbonplan/icons'
 import DisplaySection from '../components/display-section'
 import Menu from '../components/menu'
 import Header from '../components/header'
 import PlayButtonDateTime from '../components/play-datetime'
-//import Menu from '../components/menu'
-//import Header from '../components/header'
-// also install '@carbonplan/themes'
-//import { Group } from '@carbonplan/components'
 
 const bucket = 'https://carbonplan-maps.s3.us-west-2.amazonaws.com/'
 const bucket_metrics = 'https://dashboard-app-zarr.s3.amazonaws.com/Pyramids/'
@@ -50,9 +42,14 @@ const Index = () => {
     month,
   } = useRegionContext()
 
+
   const rasterSource = useMemo(() => {
-    return `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`
+    return evaluationMetric === 'AE'
+      ? `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`
+      : `${bucket_metrics}Annual_${evaluationMetric}_${forecastModel}.zarr`
   }, [year, month, evaluationMetric, forecastModel])
+
+  // `${bucket_metrics}Annual_${evaluationMetric}_${forecastModel}.zarr` 
 
   //console.log('source url:', `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`)
   //console.log('raster source:', rasterSource)
@@ -162,7 +159,7 @@ const Index = () => {
 
         <Map zoom={1} center={[0, 50]} debug={debug}>
 
-          {basemap == 'oceanMask' && (
+          {basemap.oceanMask && (
             <Box>
               <Fill
                 color={theme.rawColors.background}
@@ -178,7 +175,7 @@ const Index = () => {
             </Box>
           )}
 
-          {basemap == 'landMask' && (
+          {basemap.landMask && (
             <Box>
               <Fill
                 color={theme.rawColors.background}
@@ -289,7 +286,7 @@ const Index = () => {
                 time={time}
                 setTime={setTime}
                 max={40}
-                delay={200}
+                delay={300}
                 pause='max'
               />
             )

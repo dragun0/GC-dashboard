@@ -15,7 +15,7 @@ const PlayButtonDateTime = ({
   autoPlay = false,
   setAutoPlay,
 }) => {
-  const { forecastModel, year, month } = useRegionContext()
+  const { forecastModel, year, month, evaluationMetric } = useRegionContext()
 
   const [playing, setPlaying] = useState(false)
   const timeout = useRef(null)
@@ -106,6 +106,13 @@ const PlayButtonDateTime = ({
     return date.toISOString().replace('T', ' ').substring(0, 19)
   })()
 
+  const formattedLeadTime = (() => {
+    const leadTime = time * 6 // each unit of time is 6 hours
+    return `LEAD TIME: ${leadTime} HOURS`
+  }
+  )()
+
+
   return (
     <Button
       size='xs'
@@ -128,7 +135,7 @@ const PlayButtonDateTime = ({
       disabled={disabled}
     >
 
-      {formattedDate}
+      {evaluationMetric === 'AE' ? formattedDate : formattedLeadTime}
 
     </Button>
   )

@@ -33,7 +33,7 @@ const Summary = ({ colors, data, label, labels, units, summary }) => {
           </Box>
 
           {summary != null && (
-            <Flex sx={{ gap: 2, alignItems: 'baseline',  mt: 0 }}>
+            <Flex sx={{ gap: 2, alignItems: 'baseline', mt: 0 }}>
               <Box
                 sx={{
                   fontFamily: 'mono',
@@ -81,10 +81,10 @@ const Summary = ({ colors, data, label, labels, units, summary }) => {
             background: empty
               ? 'secondary'
               : `linear-gradient(to right, ${percentages
-                  .map(
-                    (p, i) => `${colors[i]} ${percentages[i - 1] ?? 0}% ${p}%`
-                  )
-                  .join(', ')})`,
+                .map(
+                  (p, i) => `${colors[i]} ${percentages[i - 1] ?? 0}% ${p}%`
+                )
+                .join(', ')})`,
           }}
         />
       </Column>

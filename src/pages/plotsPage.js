@@ -1,4 +1,4 @@
-import { Box, Flex, Divider } from 'theme-ui'
+import { Box, Flex, Divider, Text } from 'theme-ui'
 import Header from '../components/header'
 import Menu from '../components/menu'
 import TooltipWrapper from '../components/tooltip-wrapper'
@@ -140,7 +140,7 @@ const PlotsPage = () => {
                   <Box as='h1' variant='styles.h1' sx={{ mt: [5, 7, 7, 8] }}>
                     {'Forecast Performance Analysis'}
                   </Box>
-                  <Box sx={{ mb: [0], mt: [0, 0, 5, 6], fontSize: [3], letterSpacing: 'faux', fontFamily: 'faux' }}>
+                  <Box sx={{ mb: [-7], mt: [0, 0, 5, 6], fontSize: [3], letterSpacing: 'faux', fontFamily: 'faux' }}>
 
                     Can AI outperform traditional physics-based models in forecasting complex atmospheric variables? This web-tool allows for a performance comparison of three weather forecast models:
                     Google Deepmind&apos;s GraphCast (AI-based), ECMWF Integrated Forecasting System (IFS) (physics-based), and ECMWF AIFS (AI-based).
@@ -149,18 +149,82 @@ const PlotsPage = () => {
                     Verification metrics include: RMSE (root mean square error), MAE (mean absolute error), MBE (mean bias error), and R (correlation coefficient).
 
                     The evaluation covers the first 10 days of each month in 2024, with a focus on the performance of the forecast models across the lead times (10 days in 6 hour increments).
-                    Since the ECMWF AIFS model has only been operational since March 2024, data for this model is only available from March onwards.
                     The following weather variables have been assessed for their accuracy across the selected regions and lead times:
-                    <ul>
-                      <li>2-meter temperature (t2m)</li>
-                      <li>Mean sea level pressure (msl)</li>
-                      <li>10-meter u-component of wind (u10) </li>
-                      <li>10-meter v-component of wind (v10)</li>
-                      <li>Specific humidity (q) at 1000 hPa pressure (closest to earth&apos;s surface)</li>
+                    <ul sx={{ pl: 7, mt: 0 }}>
+                      <li>
+                        2-meter temperature{'   '}
+                        <Text as="span" sx={sx.label}>
+                          T2M
+                        </Text>
+                      </li>
+                      <li>
+                        Mean sea level pressure {'   '}
+                        <Text as="span" sx={sx.label}>
+                          MSL
+                        </Text>
+                      </li>
+                      <li>
+                        10-meter u-component of wind {'   '}
+                        <Text as="span" sx={sx.label}>
+                          U10
+                        </Text>
+                      </li>
+                      <li>
+                        10-meter v-component of wind {'   '}
+                        <Text as="span" sx={sx.label}>
+                          V10
+                        </Text>
+                      </li>
+                      <li>Specific humidity at 1000 hPa pressure{'   '}
+                        <Text as="span" sx={sx.label}>
+                          Q
+                        </Text>
+                      </li>
                     </ul>
 
                     The main objective of this comparative analysis is to evaluate whether the forecasting models perform differently in different geographic regions.
-                    Four geographic regions are examined: Global, Tropics, Subtropics, Northern and Southern Temperate Zone, Polar regions and Africa.
+                    Four geographic regions are examined:
+                    <ul sx={{ pl: 7, mt: 0 }}>
+                      <li>
+                        Global
+                      </li>
+                      <li>
+                        Tropics{' '}
+                        <Text as="span" sx={sx.label}>
+                          23.5°S – 23.5°N
+                        </Text>
+                      </li>
+                      <li>
+                        Subtropics{' '}
+                        <Text as="span" sx={sx.label}>
+                          23.5° – 35° N/S
+                        </Text>
+                      </li>
+                      <li>
+                        Northern Temperate{' '}
+                        <Text as="span" sx={sx.label}>
+                          35°N – 60°N
+                        </Text>
+                      </li>
+                      <li>
+                        Southern Temperate{' '}
+                        <Text as="span" sx={sx.label}>
+                          35°S – 60°S
+                        </Text>
+                      </li>
+                      <li>
+                        Polar{' '}
+                        <Text as="span" sx={sx.label}>
+                          &gt;60°N and &gt;60°S
+                        </Text>
+                      </li>
+                      <li>
+                        Africa{' '}
+                        <Text as="span" sx={sx.label}>
+                          37°N – 35°S, 17°W – 51°E
+                        </Text>
+                      </li>
+                    </ul>
 
 
                   </Box>
@@ -233,7 +297,7 @@ const PlotsPage = () => {
                       • <strong>MBE</strong> <br />
                       • <strong>Correlation Coefficient (R)</strong>  <br /> <br />
                       Purpose:<br />
-                      • Explore weather forecasting accuracies of ML and NWP models in different climate zones
+                      • Compare weather forecasting accuracies of ML and NWP models in different climate zones
 
 
 

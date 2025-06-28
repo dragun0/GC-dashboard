@@ -1,5 +1,6 @@
 import { Box, Flex } from 'theme-ui'
 
+/*
 const SummaryLegend = ({ colors, data, labels, units }) => {
   const rawPercentages = data.map((d) => (d ? d * 100 : 0))
   const nonFractionSum = rawPercentages.reduce(
@@ -8,6 +9,19 @@ const SummaryLegend = ({ colors, data, labels, units }) => {
   )
   let percentages
   if (Math.round(nonFractionSum) === 100) {
+    percentages = rawPercentages.map((p) => p.toFixed(0))
+  } else {
+    percentages = rawPercentages.map((p) =>
+      p > 0 && p < 1 ? p.toFixed(1) : p.toFixed(0)
+    )
+  }
+  */
+
+const SummaryLegend = ({ colors, data, labels, units }) => {
+  const total = data.reduce((sum, d) => sum + Math.abs(d), 0)
+  const rawPercentages = data.map((d) => (total === 0 ? 0 : (Math.abs(d) / total) * 100))
+  let percentages
+  if (Math.round(rawPercentages.reduce((sum, p) => sum + p, 0)) === 100) {
     percentages = rawPercentages.map((p) => p.toFixed(0))
   } else {
     percentages = rawPercentages.map((p) =>

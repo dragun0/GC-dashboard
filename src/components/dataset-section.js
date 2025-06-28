@@ -34,15 +34,59 @@ const sx = {
   */
 }
 
+/*
 const CLIM_RANGES = {
   t2m: { max: 15, min: 0 },
   q: { max: 5, min: 0 },
 }
+*/
 
+const CLIM_RANGES = {
+  AE: {
+    t2m: { min: 0, max: 10 },
+    q: { min: 0, max: 3 },
+  },
+  RMSE: {
+    t2m: { min: 0, max: 10 },
+    q: { min: 0, max: 3 },
+  },
+  MAE: {
+    t2m: { min: 0, max: 10 },
+    q: { min: 0, max: 3 },
+  },
+  MBE: {
+    t2m: { min: -2, max: 2 },
+    q: { min: -1, max: 1 },
+  },
+}
+
+/*
 const DEFAULT_COLORMAPS = {
   t2m: 'warm',
   q: 'cool',
 }
+*/
+
+const DEFAULT_COLORMAPS = {
+  AE: {
+    t2m: { name: 'warm', reverse: false },
+    q: { name: 'cool', reverse: false },
+  },
+  RMSE: {
+    t2m: { name: 'warm', reverse: false },
+    q: { name: 'cool', reverse: false },
+  },
+  MAE: {
+    t2m: { name: 'warm', reverse: false },
+    q: { name: 'cool', reverse: false },
+  },
+  MBE: {
+    t2m: { name: 'redteal', reverse: true },      // reversed!
+    q: { name: 'orangeblue', reverse: true },
+  },
+}
+
+
 
 const DatasetControls = () => {
   const {
@@ -59,7 +103,9 @@ const DatasetControls = () => {
     evaluationMetric,
     setEvaluationMetric,
     setMonth,
-    month
+    month,
+    setColormapReverse,
+    colormapReverse
   } = useRegionContext()
 
   // handle change of variable 
@@ -67,9 +113,12 @@ const DatasetControls = () => {
     console.log('handleBandChange', e.target.value)
     const band = e.target.value
     setBand(band)
-    setClim([CLIM_RANGES[band].min, CLIM_RANGES[band].max])
-    setColormapName(DEFAULT_COLORMAPS[band])
-  }, [setBand, setClim, setColormapName])
+    const climRange = CLIM_RANGES[evaluationMetric]?.[band] || { min: 0, max: 1 }
+    setClim([climRange.min, climRange.max])
+    const colormapConfig = DEFAULT_COLORMAPS[evaluationMetric]?.[band] || { name: 'warm', reverse: false }
+    setColormapName(colormapConfig.name)
+    setColormapReverse(colormapConfig.reverse)
+  }, [setBand, evaluationMetric])
 
   // handle change of forecast Model
   const handleModelChange = useCallback((e) => {
@@ -83,7 +132,12 @@ const DatasetControls = () => {
     console.log('handleEvalMetricChange', e.target.value)
     const evaluationMetric = e.target.value
     setEvaluationMetric(evaluationMetric)
-  }, [setEvaluationMetric])
+    const climRange = CLIM_RANGES[evaluationMetric]?.[band] || { min: 0, max: 1 }
+    setClim([climRange.min, climRange.max])
+    const colormapConfig = DEFAULT_COLORMAPS[evaluationMetric]?.[band] || { name: 'warm', reverse: false }
+    setColormapName(colormapConfig.name)
+    setColormapReverse(colormapConfig.reverse)
+  }, [setEvaluationMetric, band])
 
   const getMonthCode = (monthName) => {
     const monthIndex = month_options.indexOf(monthName) + 1
@@ -242,7 +296,7 @@ const DatasetControls = () => {
         <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]} sx={{ pb: [1] }}>
 
           <TooltipWrapper
-            tooltip='Select a time frame for the forecast assessment. All models have a lead time of 10 days, forecasted in 6 hour increments. 
+            tooltip='Select a time frame for the forecast assessment. The absolute error is available per month. All other metrics are computed over the whole year. All models have a lead time of 10 days, forecasted in 6 hour increments. 
             The ECMWF AIFS model has only been running since March 2024, therefore no data is available for January and February.'
           >
 

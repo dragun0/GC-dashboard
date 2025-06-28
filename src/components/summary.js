@@ -3,14 +3,28 @@ import { Column, Row } from '@carbonplan/components'
 
 import SummaryLegend from './summary-legend'
 
+
 const Summary = ({ colors, data, label, labels, units, summary }) => {
   const empty = data.every((d) => !d)
-  const percentages = data.reduce((a, d, i) => {
-    const prev = a[i - 1] ?? 0
-    const value = d ? d * 100 : 0
-    a.push(prev + value)
-    return a
-  }, [])
+  const total = data.reduce((sum, d) => sum + Math.abs(d), 0)
+  let acc = 0
+  const percentages = data.map((d) => {
+    const pct = total === 0 ? 0 : (Math.abs(d) / total) * 100
+    acc += pct
+    return acc
+  })
+
+  /*
+  const Summary = ({ colors, data, label, labels, units, summary }) => {
+    const empty = data.every((d) => !d)
+    const percentages = data.reduce((a, d, i) => {
+      const prev = a[i - 1] ?? 0
+      const value = d ? d * 100 : 0
+      a.push(prev + value)
+      return a
+    }, [])
+  */
+
 
   return (
     <Row columns={3}>

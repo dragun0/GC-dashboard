@@ -15,13 +15,15 @@ const Legend = () => {
     clim,
     setClim,
     colormapName,
-    band
+    band,
+    colormapReverse,
   } = useRegionContext()
 
 
   //    const colormap = useThemedColormap('warm')
 
-  const colormap = useThemedColormap(colormapName)
+  const cm = useThemedColormap(colormapName)
+  const colormap = colormapReverse ? [...cm].reverse() : cm
 
   const getUnits = (band) => {
     if (band === 'u10') {

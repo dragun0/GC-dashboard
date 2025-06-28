@@ -113,28 +113,78 @@ const TimeSeries = () => {
       startDate = new Date(`${year}-${month}-01T06:00:00Z`)
     }
 
-    const rows = lineData.map(([timestep, mae]) => {
-      const datetime = new Date(startDate.getTime() + timestep * 6 * 60 * 60 * 1000).toISOString()
+    const getValueKey = (evaluationMetric) => {
+      if (evaluationMetric === 'AE' || evaluationMetric === 'MAE') return 'MAE'
+      if (evaluationMetric === 'RMSE') return 'RMSE'
+      if (evaluationMetric === 'MBE') return 'MBE'
+      return 'Value'
+    }
 
+    const getUnits = (band) => {
+      if (band === 't2m') return '°C'
+      if (band === 'q') return 'g/kg'
+      return ''
+    }
 
-      return {
+    const valueKey = getValueKey(evaluationMetric)
+    const valueUnit = getUnits(band)
+    const leadtimeUnit = 'hours'
+
+    // ...inside handleDownloadCSV...
+
+    const rows = lineData.map(([timestep, value]) => {
+      let row = {
         lat: centerLat,
         lon: centerLon,
         radius: radius.toFixed(2),
         timestep,
-        datetime,
-        mae: mae.toFixed(4),
-
+        [valueKey]: value.toFixed(4),
       }
+
+      if (evaluationMetric === 'AE') {
+        const datetime = new Date(startDate.getTime() + timestep * 6 * 60 * 60 * 1000).toISOString()
+        row.datetime = datetime
+      } else {
+        row.leadtime = timestep * 6
+      }
+
+      return row
     })
 
-    // keys must match header names exactly
-    const header = ['timestep', 'datetime', 'mae', 'lat', 'lon', 'radius']
+    const header = evaluationMetric === 'AE'
+      ? [
+        'timestep',
+        'datetime',
+        valueKey + (valueUnit ? ` [${valueUnit}]` : ''),
+        'lat',
+        'lon',
+        'radius'
+      ]
+      : [
+        'timestep',
+        `leadtime [${leadtimeUnit}]`,
+        valueKey + (valueUnit ? ` [${valueUnit}]` : ''),
+        'lat',
+        'lon',
+        'radius'
+      ]
+
     const csv = [
       header.join(','),
-      ...rows.map((row) => header.map((h) => row[h]).join(',')),
+      ...rows.map((row) =>
+        header.map((h) => {
+          // Remove units from header to get the key
+          if (h.startsWith(valueKey)) return row[valueKey]
+          if (h.startsWith('leadtime')) return row.leadtime
+          if (h === 'datetime') return row.datetime
+          return row[h]
+        }).join(',')
+      ),
     ].join('\n')
-    //console.log('rows:', rows)
+
+
+
+
 
     let forecastModelName
     if (forecastModel === 'marsfc') {
@@ -205,7 +255,7 @@ const TimeSeries = () => {
                   mt: 0,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 4, // Space between button and MAE label
+                  gap: [2, 2, 2, 8], // Space between button and MAE label
                 }}
               >
                 <Box
@@ -217,13 +267,15 @@ const TimeSeries = () => {
                     color: 'secondary',
                   }}
                 >
-                  <Box as='span' sx={{ textTransform: 'none', mr: 2 }}>
+                  <Box as='span' sx={{ textTransform: 'none', mr: 1 }}>
                     {evaluationMetric === 'AE' && 'MAE:'}
-                    {evaluationMetric === 'RMSE' && 'RMSE:'}
-                    {evaluationMetric === 'MAE' && 'MAE:'}
-                    {evaluationMetric === 'MBE' && 'MBE:'}
+                    {evaluationMetric === 'RMSE' && 'Average RMSE:'}
+                    {evaluationMetric === 'MAE' && 'Average MAE:'}
+                    {evaluationMetric === 'MBE' && 'Average MBE:'}
                   </Box>
-                  {timeData[1].toFixed(2)}
+                  <Box as='span' >
+                    {timeData[1].toFixed(2)}
+                  </Box>
                   <Box as='span' sx={{ textTransform: 'none' }}>
                     {band === 'q' ? ' g/kg' : ' °C'}
                   </Box>

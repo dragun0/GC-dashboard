@@ -16,8 +16,12 @@ const DataDisplay = () => {
     return band
   }
 
-  const { band, time, regionData, colormapName, clim, evaluationMetric } = useRegionContext()
-  const colormap = useThemedColormap(colormapName)
+  const { band, time, regionData, colormapName, clim, evaluationMetric, colormapReverse } = useRegionContext()
+
+  const cm = useThemedColormap(colormapName)
+  const colormap = colormapReverse ? [...cm].reverse() : cm
+
+  //const colormap = useThemedColormap(colormapName)
   const value = regionData?.value
 
   // Memoize data extraction and filtering
@@ -74,11 +78,11 @@ const DataDisplay = () => {
           evaluationMetric === 'AE'
             ? 'MAE'
             : evaluationMetric === 'RMSE'
-              ? 'RMSE'
+              ? 'Average RMSE'
               : evaluationMetric === 'MAE'
-                ? 'MAE'
+                ? 'Average MAE'
                 : evaluationMetric === 'MBE'
-                  ? 'MBE'
+                  ? 'Average MBE'
                   : ''
         }
         units={getUnits(band)}

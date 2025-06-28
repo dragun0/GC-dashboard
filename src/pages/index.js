@@ -40,6 +40,7 @@ const Index = () => {
     evaluationMetric,
     year,
     month,
+    colormapReverse, setColormapReverse
   } = useRegionContext()
 
 
@@ -58,7 +59,9 @@ const Index = () => {
     console.log('Updated raster source URL:', rasterSource)
   }, [rasterSource])
 
-  const colormap = useThemedColormap(colormapName)
+  //const colormap = useThemedColormap(colormapName)
+  const cm = useThemedColormap(colormapName)
+  const colormap = colormapReverse ? [...cm].reverse() : cm
 
   //const selector = {time: [1, 2, 3]}
 

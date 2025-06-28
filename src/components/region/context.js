@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from 'react'
 const RegionContext = createContext(null)
 
 export const RegionProvider = ({ children }) => {
-  const [basemap, setBasemap] = useState({ oceanMask: false, landMask: false })
+  const [basemap, setBasemap] = useState({ oceanMask: true, landMask: false })
   const [regionData, setRegionData] = useState(null) //(null) //({ loading: true })
   //const [regionExtent, setRegionExtent] = useState(null) // for time-series component
   //const [showRegionPicker, setShowRegionPicker] = useState(false)
@@ -20,6 +20,7 @@ export const RegionProvider = ({ children }) => {
   const [opacity, setOpacity] = useState(1)
   const [clim, setClim] = useState([0, 15])
   const [colormapName, setColormapName] = useState('warm')
+  const [colormapReverse, setColormapReverse] = useState(false)
   //console.log('regionData testing:', regionData)
 
   // Derived state for RegionPicker visibility
@@ -61,6 +62,8 @@ export const RegionProvider = ({ children }) => {
         setClim,
         colormapName,
         setColormapName,
+        colormapReverse,
+        setColormapReverse,
       }}
 
     >
@@ -109,6 +112,8 @@ export const useRegionContext = () => {
     setClim,
     colormapName,
     setColormapName,
+    colormapReverse,
+    setColormapReverse,
   } = useContext(RegionContext)
 
   return {
@@ -146,6 +151,8 @@ export const useRegionContext = () => {
     setClim,
     colormapName,
     setColormapName,
+    colormapReverse,
+    setColormapReverse,
 
   }
 

@@ -242,9 +242,11 @@ const TimeSeries = () => {
 
               <Grid horizontal />
               <Grid vertical />
-              <TickLabels left bottom />
+              <TickLabels left bottom
+                format={(v) => (v * 0.25)} // Convert timestep to days and round
+              />
               <AxisLabel left>{getBandName(band)}</AxisLabel>
-              <AxisLabel bottom>Time step</AxisLabel>
+              <AxisLabel bottom>Lead Time (days)</AxisLabel>
 
 
               <Box
@@ -308,7 +310,7 @@ const TimeSeries = () => {
               <Plot>
                 {validtimeData && (
                   <Circle
-                    x={timeData[0]}
+                    x={timeData[0]} // Convert time step to days
                     y={timeData[1]}
                     color={'primary'}
                     size={9}

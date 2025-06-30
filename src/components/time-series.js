@@ -32,17 +32,29 @@ const TimeSeries = () => {
   } =
     useRegionContext()
 
-  const getBandName = (band) => {
+  const getBandName = (band, evaluationMetric) => {
+    let metricLabel
+    if (evaluationMetric === 'AE') metricLabel = 'MAE'
+    else if (evaluationMetric === 'RMSE') metricLabel = 'RMSE'
+    else if (evaluationMetric === 'MAE') metricLabel = 'MAE'
+    else if (evaluationMetric === 'MBE') metricLabel = 'MBE'
+    else metricLabel = evaluationMetric
+
     if (band === 'u10') {
-      return 'MAE (m/s)'
+      return `${metricLabel} (m/s)`
     } else if (band === 't2m') {
-      return 'MAE (ºC)'
+      return `${metricLabel} (ºC)`
     } else if (band === 'q') {
-      return 'MAE (g/kg)'
+      return `${metricLabel} (g/kg)`
     } else {
-      return band // Default to the band value if no match
+      return `${metricLabel} (${band})`
     }
   }
+
+  { evaluationMetric === 'AE' && 'MAE:' }
+  { evaluationMetric === 'RMSE' && 'Average RMSE:' }
+  { evaluationMetric === 'MAE' && 'Average MAE:' }
+  { evaluationMetric === 'MBE' && 'Average MBE:' }
 
   // needed to access the regionPickers center coordinates and radius for CSV file download
   const { region } = useRegion()
@@ -245,7 +257,7 @@ const TimeSeries = () => {
               <TickLabels left bottom
                 format={(v) => (v * 0.25)} // Convert timestep to days and round
               />
-              <AxisLabel left>{getBandName(band)}</AxisLabel>
+              <AxisLabel left>{getBandName(band, evaluationMetric)}</AxisLabel>
               <AxisLabel bottom>Lead Time (days)</AxisLabel>
 
 

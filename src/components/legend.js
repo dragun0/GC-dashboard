@@ -17,6 +17,7 @@ const Legend = () => {
     colormapName,
     band,
     colormapReverse,
+    evaluationMetric
   } = useRegionContext()
 
 
@@ -38,6 +39,15 @@ const Legend = () => {
     }
   }
 
+  const getMetric = (evaluationMetric) => {
+    let metricLabel
+    if (evaluationMetric === 'AE') metricLabel = 'Absolute Error'
+    else if (evaluationMetric === 'RMSE') metricLabel = 'Root Mean Squared Error'
+    else if (evaluationMetric === 'MAE') metricLabel = 'Mean Absolute Error'
+    else if (evaluationMetric === 'MBE') metricLabel = 'Mean Bias Error'
+    else metricLabel = evaluationMetric
+    return `${metricLabel}`
+  }
 
 
   return (
@@ -46,7 +56,7 @@ const Legend = () => {
       <Colorbar
         colormap={colormap}
         units={getUnits(band)}
-        label={'Absolute Error'}
+        label={getMetric(evaluationMetric)}
         clim={clim}
         setClim={setClim}
         horizontal

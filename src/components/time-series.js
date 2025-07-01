@@ -61,7 +61,6 @@ const TimeSeries = () => {
   //console.log('region:', region)
   const data = regionData?.value?.climate?.[band] // access the band data from regionData
 
-  console.log('data:', data)
 
   // this loading statement is not working
   const { lineData, range, domain } = useMemo(() => {
@@ -85,21 +84,19 @@ const TimeSeries = () => {
       const filtered = values.filter((d) => d !== 9.969209968386869e36)
       const sum = filtered.reduce((a, d) => a + d, 0)
       const value = sum / filtered.length
-      console.log('filtered.length:', filtered.length)
       range = [Math.min(range[0], value), Math.max(range[1], value)]  // y-axis
       domain = [Math.min(domain[0], key), Math.max(domain[1], key)]   // x-axis
       return [Number(key), value]
     })
 
-    console.log('lineData:', lineData)
     return { lineData, range, domain }
   }, [data])
-  console.log('lineData:', lineData)
+  // console.log('lineData:', lineData)
 
 
   const timeData = lineData && lineData.find((d) => d[0] === Number(time))
   const validtimeData = timeData && !Number.isNaN(timeData[1])
-  //console.log('timeData:', timeData)
+
   //console.log('validtimeData:', validtimeData)
 
   // Download CSV
@@ -254,8 +251,10 @@ const TimeSeries = () => {
 
               <Grid horizontal />
               <Grid vertical />
-              <TickLabels left bottom
+              <TickLabels bottom
                 format={(v) => (v * 0.25)} // Convert timestep to days and round
+              />
+              <TickLabels left
               />
               <AxisLabel left>{getBandName(band, evaluationMetric)}</AxisLabel>
               <AxisLabel bottom>Lead Time (days)</AxisLabel>

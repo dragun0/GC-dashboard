@@ -60,10 +60,10 @@ export const averageData = (data) => {
 
 
 const getDonutData = (data, area, clim) => {
-  console.log('data in function:', data)
+  //  console.log('data in function:', data)
   const filteredData = data.filter((d, i) => d !== NAN && area[i] !== NAN)
 
-  console.log('filteredData:', filteredData)
+  //  console.log('filteredData:', filteredData)
 
   const thresholds = [0, 1, 2, 3].map(
     (d) => clim[0] + (d * (clim[1] - clim[0])) / 4
@@ -85,8 +85,8 @@ const getDonutData = (data, area, clim) => {
     .filter((a, i) => a !== NAN && data[i] !== NAN)
     .reduce((accum, a) => a + accum, 0)
 
-  console.log('totalArea:', totalArea)
-  console.log('area:', area)
+  //  console.log('totalArea:', totalArea)
+  //  console.log('area:', area)
 
   data.forEach((d, i) => {
     const dArea = area[i]
@@ -125,7 +125,7 @@ const BinnedSummary = ({ clim, colormap, data, area, label, units }) => {
     return '...loading in binned summary...'
   }
   //const { clim } = useRegionContext
-  console.log('data in binned summary:', data)
+  //  console.log('data in binned summary:', data)
 
   const bins = getDonutData(data, area, clim)
 

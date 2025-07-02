@@ -136,14 +136,14 @@ const MonthlyPerformance = (props) => {
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        console.log('handleVariableChange', e.target.value)
+        //  console.log('handleVariableChange', e.target.value)
         const selectedVariable = e.target.value
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
     // handle metric change
     const handleMetricChange = useCallback((e) => {
-        console.log('handleMetricChange', e.target.value)
+        //   console.log('handleMetricChange', e.target.value)
         const selectedMetric = e.target.value.toLowerCase()
         setSelectedMetric(selectedMetric)
     }, [setSelectedMetric])

@@ -225,12 +225,12 @@ const LeadTimesMap = (props) => {
         setTemperateExtent(newTemperateExtent);
         setSelectedTemperateExtent(activeKeys);
     };
-
-    // for debugging only
-    useEffect(() => {
-        console.log('Selected extent changed:', selectedExtent)
-    }, [selectedExtent])
-
+    /*
+        // for debugging only
+        useEffect(() => {
+            console.log('Selected extent changed:', selectedExtent)
+        }, [selectedExtent])
+    */
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
@@ -319,8 +319,8 @@ const LeadTimesMap = (props) => {
 
     useEffect(() => {
 
-        console.log('useEffect - Selected variable changed:', selectedVariable)
-        console.log('cacheKey:', cacheKey)
+        //   console.log('useEffect - Selected variable changed:', selectedVariable)
+        //   console.log('cacheKey:', cacheKey)
 
         // Load the selected variable only if not cached
         if (!variableCache.current[cacheKey]) {
@@ -620,20 +620,18 @@ const LeadTimesMap = (props) => {
   
   */
 
-
-    // for debugging only
-    useEffect(() => {
-        console.log('Updated data:', data)
-
-
-    }, [data])
-
-
-    // for debugging only
-    useEffect(() => {
-        console.log('selected var changed:', selectedVariable)
-    }, [selectedVariable])
-
+    /*
+        // for debugging only
+        useEffect(() => {
+            console.log('Updated data:', data)
+        }, [data])
+    
+    
+        // for debugging only
+        useEffect(() => {
+            console.log('selected var changed:', selectedVariable)
+        }, [selectedVariable])
+    */
 
 
 

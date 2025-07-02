@@ -110,7 +110,7 @@ const DatasetControls = () => {
 
   // handle change of variable 
   const handleBandChange = useCallback((e) => {
-    console.log('handleBandChange', e.target.value)
+    //  console.log('handleBandChange', e.target.value)
     const band = e.target.value
     setBand(band)
     const climRange = CLIM_RANGES[evaluationMetric]?.[band] || { min: 0, max: 1 }
@@ -122,14 +122,14 @@ const DatasetControls = () => {
 
   // handle change of forecast Model
   const handleModelChange = useCallback((e) => {
-    console.log('handleModelChange', e.target.value)
+    //  console.log('handleModelChange', e.target.value)
     const forecastModel = e.target.value
     setForecastModel(forecastModel)
   }, [setForecastModel])
 
   // handle change of evaluation metric
   const handleEvalMetricChange = useCallback((e) => {
-    console.log('handleEvalMetricChange', e.target.value)
+    //   console.log('handleEvalMetricChange', e.target.value)
     const evaluationMetric = e.target.value
     setEvaluationMetric(evaluationMetric)
     const climRange = CLIM_RANGES[evaluationMetric]?.[band] || { min: 0, max: 1 }
@@ -147,7 +147,7 @@ const DatasetControls = () => {
 
 
   const handleMonthChange = useCallback((e) => {
-    console.log('handleMonthChange', e.target.value)
+    //  console.log('handleMonthChange', e.target.value)
     const month = e.target.value
     setSelectedMonth(month)
     const monthCode = getMonthCode(month)
@@ -183,22 +183,24 @@ const DatasetControls = () => {
     ...(showAIFS && { marsai: 'ECMWF-AIFS' }),
   }), [showAIFS])
 
-  useEffect(() => {
-    console.log('showAIFS:', showAIFS)
-  }, [showAIFS])
-
-  useEffect(() => {
-    console.log('modelLabels:', modelLabels)
-  }, [modelLabels])
-
-  useEffect(() => {
-    console.log('evaluationMetric:', evaluationMetric)
-  }, [evaluationMetric])
-
-  useEffect(() => {
-    console.log('selectedMonth', selectedMonth)
-  }, [selectedMonth])
-
+  // log changes for debugging
+  /*
+    useEffect(() => {
+      console.log('showAIFS:', showAIFS)
+    }, [showAIFS])
+  
+    useEffect(() => {
+      console.log('modelLabels:', modelLabels)
+    }, [modelLabels])
+  
+    useEffect(() => {
+      console.log('evaluationMetric:', evaluationMetric)
+    }, [evaluationMetric])
+  
+    useEffect(() => {
+      console.log('selectedMonth', selectedMonth)
+    }, [selectedMonth])
+  */
 
   // conditional model values based on modelLabels
   const modelValues = Object.fromEntries(

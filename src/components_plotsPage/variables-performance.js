@@ -152,7 +152,7 @@ const VariablesPerformance = (props) => {
 
     // handle month change
     const handleMonthChange = useCallback((e) => {
-        console.log('handleMonthChange', e.target.value)
+        //   console.log('handleMonthChange', e.target.value)
         const month = e.target.value
         const monthCode = getMonthCode(month)
         setSelectedMonth(monthCode)

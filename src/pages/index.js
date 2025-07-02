@@ -55,9 +55,12 @@ const Index = () => {
   //console.log('source url:', `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`)
   //console.log('raster source:', rasterSource)
 
+  /*
+  // for debuggin only
   useEffect(() => {
     console.log('Updated raster source URL:', rasterSource)
   }, [rasterSource])
+*/
 
   //const colormap = useThemedColormap(colormapName)
   const cm = useThemedColormap(colormapName)
@@ -209,7 +212,7 @@ const Index = () => {
             clim={clim}
             display={display}
             opacity={opacity}
-            mode={'texture'}
+            mode={'dotgrid'}
             key={rasterSource}
             source={rasterSource}
             // source={`${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`}

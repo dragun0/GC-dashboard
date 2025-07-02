@@ -21,7 +21,7 @@ export const RegionProvider = ({ children }) => {
   const [clim, setClim] = useState([0, 15])
   const [colormapName, setColormapName] = useState('warm')
   const [colormapReverse, setColormapReverse] = useState(false)
-  //console.log('regionData testing:', regionData)
+
 
   // Derived state for RegionPicker visibility
   const showRegionPicker = showRegionControls || showTimeSeries

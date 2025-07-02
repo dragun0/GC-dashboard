@@ -154,7 +154,7 @@ const RegionComparison = () => {
 
     // handle month change
     const handleMonthChange = useCallback((e) => {
-        console.log('handleMonthChange', e.target.value)
+        //   console.log('handleMonthChange', e.target.value)
         const month = e.target.value
         const monthCode = getMonthCode(month)
         setSelectedMonth(monthCode)
@@ -162,14 +162,14 @@ const RegionComparison = () => {
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        console.log('handleVariableChange', e.target.value)
+        //    console.log('handleVariableChange', e.target.value)
         const selectedVariable = e.target.value
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
     // handle metric change
     const handleMetricChange = useCallback((e) => {
-        console.log('handleMetricChange', e.target.value)
+        //   console.log('handleMetricChange', e.target.value)
         const selectedMetric = e.target.value.toLowerCase()
         setSelectedMetric(selectedMetric)
     }, [setSelectedMetric])

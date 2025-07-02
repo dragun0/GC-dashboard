@@ -1,7 +1,6 @@
-import { Box, Flex } from 'theme-ui'
-import { useCallback, useMemo, useEffect } from 'react'
-import { Row, Column, Filter, Slider, Badge, Toggle, Select, Link } from '@carbonplan/components'
-import { colormaps } from '@carbonplan/colormaps'
+import { Box } from 'theme-ui'
+import { useCallback, useMemo } from 'react'
+import { Row, Column, Filter, Select } from '@carbonplan/components'
 import { useRegionContext } from './region'
 import { useState } from 'react'
 import TooltipWrapper from './tooltip-wrapper'
@@ -23,23 +22,8 @@ const sx = {
     fontSize: [2, 2, 2, 3],
     mb: [3],
   },
-  /*
-  label: {
-    fontFamily: 'mono',
-    letterSpacing: 'mono',
-    textTransform: 'uppercase',
-    fontSize: [1, 1, 1, 2],
-    mt: [3],
-  },
-  */
 }
 
-/*
-const CLIM_RANGES = {
-  t2m: { max: 15, min: 0 },
-  q: { max: 5, min: 0 },
-}
-*/
 
 const CLIM_RANGES = {
   AE: {
@@ -60,12 +44,6 @@ const CLIM_RANGES = {
   },
 }
 
-/*
-const DEFAULT_COLORMAPS = {
-  t2m: 'warm',
-  q: 'cool',
-}
-*/
 
 const DEFAULT_COLORMAPS = {
   AE: {
@@ -90,27 +68,20 @@ const DEFAULT_COLORMAPS = {
 
 const DatasetControls = () => {
   const {
-    opacity,
-    setOpacity,
-    clim,
     setClim,
     band,
     setBand,
-    colormapName,
     setColormapName,
     forecastModel,
     setForecastModel,
     evaluationMetric,
     setEvaluationMetric,
     setMonth,
-    month,
     setColormapReverse,
-    colormapReverse
   } = useRegionContext()
 
   // handle change of variable 
   const handleBandChange = useCallback((e) => {
-    //  console.log('handleBandChange', e.target.value)
     const band = e.target.value
     setBand(band)
     const climRange = CLIM_RANGES[evaluationMetric]?.[band] || { min: 0, max: 1 }
@@ -122,14 +93,12 @@ const DatasetControls = () => {
 
   // handle change of forecast Model
   const handleModelChange = useCallback((e) => {
-    //  console.log('handleModelChange', e.target.value)
     const forecastModel = e.target.value
     setForecastModel(forecastModel)
   }, [setForecastModel])
 
   // handle change of evaluation metric
   const handleEvalMetricChange = useCallback((e) => {
-    //   console.log('handleEvalMetricChange', e.target.value)
     const evaluationMetric = e.target.value
     setEvaluationMetric(evaluationMetric)
     const climRange = CLIM_RANGES[evaluationMetric]?.[band] || { min: 0, max: 1 }
@@ -147,7 +116,6 @@ const DatasetControls = () => {
 
 
   const handleMonthChange = useCallback((e) => {
-    //  console.log('handleMonthChange', e.target.value)
     const month = e.target.value
     setSelectedMonth(month)
     const monthCode = getMonthCode(month)
@@ -183,24 +151,6 @@ const DatasetControls = () => {
     ...(showAIFS && { marsai: 'ECMWF-AIFS' }),
   }), [showAIFS])
 
-  // log changes for debugging
-  /*
-    useEffect(() => {
-      console.log('showAIFS:', showAIFS)
-    }, [showAIFS])
-  
-    useEffect(() => {
-      console.log('modelLabels:', modelLabels)
-    }, [modelLabels])
-  
-    useEffect(() => {
-      console.log('evaluationMetric:', evaluationMetric)
-    }, [evaluationMetric])
-  
-    useEffect(() => {
-      console.log('selectedMonth', selectedMonth)
-    }, [selectedMonth])
-  */
 
   // conditional model values based on modelLabels
   const modelValues = Object.fromEntries(
@@ -250,7 +200,6 @@ const DatasetControls = () => {
             <Filter
               values={metrics}
               labels={{ AE: 'Absolute Error', MAE: 'Mean Absolute Error', RMSE: 'Root Mean Squared Error', MBE: 'Mean Bias Error' }}
-              //setValues={setMetrics}
 
               setValues={(newMetric) => {
                 setMetrics(newMetric)
@@ -301,8 +250,6 @@ const DatasetControls = () => {
             tooltip='Select a time frame for the forecast assessment. The absolute error is available per month. All other metrics are computed over the whole year. All models have a lead time of 10 days, forecasted in 6 hour increments. 
             The ECMWF AIFS model has only been running since March 2024, therefore no data is available for January and February.'
           >
-
-
 
             <Select size='xs'
               sxSelect={{
@@ -357,163 +304,3 @@ const DatasetControls = () => {
 }
 
 export default DatasetControls
-
-/*
-      <Row columns={[6, 8, 4, 4]}>
-        <Column start={1} width={[2, 2, 1, 1]} sx={sx.label}>
-          Timescale
-        </Column>
-        <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]}>
-          <TooltipWrapper tooltip='Select whether to view data at a yearly or monthly timestep.'>
-            <Filter
-              values={timescaleFilter}
-              setValues={(obj) => {
-                const timescale = Object.keys(LABEL_MAP).find(
-                  (k) => obj[LABEL_MAP[k]]
-                )
-                setFilters({ timescale })
-              }}
-            />
-          </TooltipWrapper>
-        </Column>
-      </Row>
-      <Row columns={[6, 8, 4, 4]}>
-        <Column start={1} width={[2, 2, 1, 1]} sx={sx.label}>
-          Scenarios
-        </Column>
-        <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]}>
-          <TooltipWrapper tooltip='Select whether to view historical data or future data from Shared Socioeconomic Pathways (SSPs) representing different levels of warming.'>
-            <Flex sx={{ flexDirection: 'column' }}>
-              <Filter
-                values={historicalFilter}
-                setValues={(obj) => {
-                  const historical = obj[LABEL_MAP.historical]
-                  const {
-                    historical: previousHistorical,
-                    ...previousScenarios
-                  } = filters.experiment
-                  const scenarios = historical
-                    ? { ssp245: false, ssp370: false, ssp585: false }
-                    : previousScenarios
-
-                  setFilters({
-                    experiment: {
-                      historical,
-                      ...scenarios,
-                    },
-                  })
-                  clearRegionData()
-                }}
-                multiSelect
-              />
-              <Filter
-                values={scenarioFilter}
-                setValues={(obj) => {
-                  const scenarioSelected = Object.keys(obj).some((k) => obj[k])
-                  const { historical: previousHistorical } = filters.experiment
-                  const historical = scenarioSelected
-                    ? false
-                    : previousHistorical
-
-                  setFilters({
-                    experiment: {
-                      historical,
-                      ssp245: obj[LABEL_MAP.ssp245],
-                      ssp370: obj[LABEL_MAP.ssp370],
-                      ssp585: obj[LABEL_MAP.ssp585],
-                    },
-                  })
-                  if (historical !== previousHistorical) {
-                    clearRegionData()
-                  }
-                }}
-                multiSelect
-              />
-            </Flex>
-          </TooltipWrapper>
-        </Column>
-      </Row>
-
-      <Row columns={[6, 8, 4, 4]}>
-        <Column start={1} width={[2, 2, 1, 1]} sx={sx.label}>
-          GCMs
-        </Column>
-        <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]}>
-          <TooltipWrapper tooltip='Select the global climate model (GCM) used in the creation of the dataset.'>
-            <ExpandableFilter
-              values={filters.gcm}
-              setValues={(obj) => {
-                setFilters({ gcm: obj })
-              }}
-              multiSelect
-            />
-          </TooltipWrapper>
-        </Column>
-      </Row>
-      <Row columns={[6, 8, 4, 4]}>
-        <Column start={1} width={[2, 2, 1, 1]} sx={sx.label}>
-          Methods
-        </Column>
-        <Column start={[3, 3, 2, 2]} width={[4, 6, 3, 3]}>
-          <TooltipWrapper tooltip='Select the downscaling method used to derive the dataset.'>
-            <Filter
-              values={filters.method}
-              setValues={(obj) => {
-                setFilters({ method: obj })
-              }}
-              multiSelect
-            />
-          </TooltipWrapper>
-        </Column>
-      </Row>
-    </>
-
-    */
-
-
-
-
-
-
-
-/*
-  return (
-    
-    <Box 
-    //className="custom-scrollbar" //overflowY: 'scroll'
-    sx={{ px: [2, 1], py: [0], fontSize: [1, 1, 1, 2] }} > 
-      
-        <Box sx={{ ...sx.label, mt: [0] }}>Variable</Box>
-        <Select
-          sxSelect={{ bg: 'transparent' }}
-          size='xs'
-          onChange={handleBandChange}
-          sx={{ mt: [1] }}
-          value={band}
-        >
-          <option value='t2m'>Temperature</option>
-          <option value='u10'>Wind</option>
-        </Select>
-
-        <Box sx={{ ...sx.label, mt: [4] }}>Colormap</Box>
-        <Select
-          sxSelect={{ bg: 'transparent' }}
-          size='xs'
-          onChange={(e) => setColormapName(e.target.value)}
-          sx={{ mt: [1] }}
-          value={colormapName}
-        >
-          {colormaps.map((d) => (
-            <option key={d.name}>{d.name}</option>
-          ))}
-        </Select>
-       
-      </Box>
-    
-  )
-
-
-}
-
-export default DatasetControls
-*/

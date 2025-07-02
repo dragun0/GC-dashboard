@@ -3,7 +3,7 @@ import { useState } from 'react'
 import AnimateHeight from 'react-animate-height'
 import InfoTooltip from './info-tooltip'
 
-const TooltipWrapper = ({ children, tooltip = '', mt = '6px'}) => {
+const TooltipWrapper = ({ children, tooltip = '', mt = '6px' }) => {
   const [expanded, setExpanded] = useState(false)
 
   return (
@@ -13,7 +13,7 @@ const TooltipWrapper = ({ children, tooltip = '', mt = '6px'}) => {
         <InfoTooltip
           expanded={expanded}
           setExpanded={setExpanded}
-          sx={{ mt : mt, flexShrink: 0 }}
+          sx={{ mt: mt, flexShrink: 0 }}
         />
       </Flex>
       <AnimateHeight
@@ -23,21 +23,9 @@ const TooltipWrapper = ({ children, tooltip = '', mt = '6px'}) => {
       >
         <Box sx={{ my: 1, fontSize: [1, 1, 1, 2] }}>{tooltip}</Box>
       </AnimateHeight>
-      
+
     </>
   )
 }
 
 export default TooltipWrapper
-
-/*
-      <AnimateHeight
-        duration={100}
-        height={expanded && tooltip ? 'auto' : 0}
-        easing={'linear'}
-      >
-        {tooltip ? (
-          <Box sx={{ my: 1, fontSize: [1, 1, 1, 2] }}>{tooltip}</Box>
-        ) : null}
-      </AnimateHeight>
-      */

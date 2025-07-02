@@ -246,7 +246,7 @@ const PlotsPage = () => {
                         fontFamily: 'faux',
                         letterSpacing: 'smallcaps',
                         mb: [3],
-                        pt: [0, 0, '42px', '55px'],          //   pt: tool ? [0, 0, '42px', '55px'] : [0, 0, '42px', '23px'],
+                        pt: [0, 0, '42px', '55px'],
                         textAlign: 'right',
                       }}
                     >
@@ -270,7 +270,7 @@ const PlotsPage = () => {
                         fontFamily: 'faux',
                         letterSpacing: 'smallcaps',
                         mb: [1],
-                        pt: [0, 0, '42px', '55px'],  //  pt: tool ? [0, 0, '42px', '55px'] : [0, 0, '42px', '23px'],
+                        pt: [0, 0, '42px', '55px'],
                       }}
                     >
                       QUICK LOOK
@@ -340,7 +340,7 @@ const PlotsPage = () => {
                   {/* Geographic region filter  */}
                   <Filter
                     sx={{
-                      button: { fontSize: 2, color: '#FF800D' }// py: 2, px: 3 }, // Increase button size // color: '#45DFB1'
+                      button: { fontSize: 2, color: '#FF800D' }
                     }}
                     values={c1regions}
                     setValues={(newRegion) => {
@@ -386,7 +386,7 @@ const PlotsPage = () => {
                             button: {
                               mr: 5,
                               fontSize: 2, fontFamily: 'heading', color: '#45DFB1', letterSpacing: 'smallcaps'
-                            },// py: 2, px: 3 }, // Increase button size // color: '#45DFB1'
+                            },
 
                           }}
                           values={c1plots}
@@ -449,9 +449,7 @@ const PlotsPage = () => {
 
                   <Filter
                     sx={{
-                      button: { fontSize: 2, color: '#FF800D' }// py: 2, px: 3 }, // Increase button size // color: '#45DFB1'
-                      // label: { fontSize: 3 },                // Increase label size
-                      // You can also target other elements if needed
+                      button: { fontSize: 2, color: '#FF800D' }
                     }}
                     values={c2regions}
                     setValues={(newRegion) => {
@@ -460,8 +458,6 @@ const PlotsPage = () => {
                       if (selected) setColumn2Region(selected)
                     }}
                     multiSelect={false}
-                  //  size='xl'
-                  // labels={{ q: 'Specific humidity' }}
                   />
                 </Box>
               </Box>
@@ -472,8 +468,6 @@ const PlotsPage = () => {
                 <Column start={[1, 1]} width={[13]}>
 
                   <LeadTimesMap
-                    // LAT_MIN={-90}
-                    // LAT_MAX={90}
                     region={Column2Region}
                   />
                 </Column>
@@ -504,9 +498,7 @@ const PlotsPage = () => {
                             button: {
                               mr: 5,
                               fontSize: 2, fontFamily: 'heading', color: '#45DFB1', letterSpacing: 'smallcaps'
-                            },// py: 2, px: 3 }, // Increase button size // color: '#45DFB1'
-
-                            // label: { fontSize: 3 },                // Increase label size
+                            },
 
                           }}
                           values={c2plots}
@@ -517,8 +509,6 @@ const PlotsPage = () => {
                           }}
                           multiSelect={false}
                           labels={{ LeadTimesPerformance: 'Lead Times Performance', MonthlyPerformance: 'Monthly Performance' }}
-                        //  size='xl'
-                        // labels={{ q: 'Specific humidity' }}
                         />
 
 
@@ -583,52 +573,6 @@ const PlotsPage = () => {
 
 export default PlotsPage
 
-// used <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
-// </Box>
-// to scale everything to a smaller size: now all four graphs/maps can be seen in one view even on smaller displays -> better UX
-// width: '111.11%'  = 1 / 0.9 x 100
-
-
-// Tropics: 23.5°N – 23.5°S | 180°W – 180°E
-
-// Extra-Tropics: >23.5°N & <23.5°S | 180°W – 180°E
-
-// Africa: 37°N – 35°S | 17°W – 51°E
-
-
-//  <Metadata mode= {'scroll'} />
-
-
-
-
-/*
-                  <Chart x={[0, 20]} y={[0, 3]} padding={{ left: 0, top: 30 }}>
-                    <Ticks bottom />
-                    <TickLabels bottom />
-                    <Axis bottom />
-                    <Plot>
-                      <CPBar data={BarChartData}
-                        color={BarChartData.map((_, i) => ['purple', 'red', 'orange',][i % 4])}
-                        direction='horizontal' />
-                    </Plot>
-                  </Chart>
-                </Box>
-*/
-
-
-/* CarbonPlans - Variable Stacked plot
-
-<Chart x={[-1, 4]} y={[0, 100]} padding={{ left: 60, top: 50, right: 10 }}>
-    <Ticks left  />
-    <TickLabels left  />
-    <Axis left bottom />
-    <AxisLabel left>Evaluation metric</AxisLabel>
-  
-    <Plot>
-    <StackedBar data={StackedBarChartData} color={'purple'} />
-    </Plot>
-</Chart>
-*/
 
 
 

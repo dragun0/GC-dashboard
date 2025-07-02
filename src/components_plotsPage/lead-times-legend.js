@@ -1,6 +1,5 @@
 import { Box } from 'theme-ui'
 import { Colorbar } from '@carbonplan/components'
-import { useThemedColormap } from '@carbonplan/colormaps'
 
 const sx = {
   fontFamily: 'mono',
@@ -19,9 +18,7 @@ const Legend = (props) => {
   } = props
 
 
-  //    const colormap = useThemedColormap('warm')
 
-  //const colormap = useThemedColormap(colormapName)
 
 
   const getUnits = (selectedVariable) => {
@@ -51,12 +48,10 @@ const Legend = (props) => {
     <Box sx={{ ...sx, mb: 2 }}>
       <Colorbar
         colormap={colormap}
-        // units={getUnits(selectedVariable)}
         label={getUnits(selectedVariable)}
         clim={clim}
         setClim={setClim}
         horizontal
-      //  width={'100%'}
       />
     </Box>
 

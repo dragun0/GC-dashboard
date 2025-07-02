@@ -1,4 +1,4 @@
-import { Box, Flex, Link, IconButton } from 'theme-ui'
+import { Box, Flex, IconButton } from 'theme-ui'
 import { useRouter } from 'next/router'
 
 const Header = ({ showMenu, toggleMenu }) => {
@@ -28,7 +28,6 @@ const Header = ({ showMenu, toggleMenu }) => {
         height: '56px',
         zIndex: 1100,
         pointerEvents: 'none'
-        //  bg: 'background', // optional: ensure it has a background
       }}
     >
       <Flex

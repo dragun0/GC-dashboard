@@ -1,17 +1,13 @@
-import { Box, IconButton } from 'theme-ui'
-//import AnimateHeight from 'react-animate-height'
-import { Search, X } from '@carbonplan/icons'
+import { Box } from 'theme-ui'
 import DataDisplay from './data-display'
 import ExpandingSection from './expanding-section'
-import { useRecenterRegion } from '@carbonplan/maps'
-import { XCircle } from '@carbonplan/icons'
 import { useRegionContext } from './region'
 import { SidebarFooter } from '@carbonplan/layouts'
 
 
 
 export const RegionControls = () => {
-  const { showRegionControls, setShowRegionControls, showRegionPicker, regionData, band, time } = useRegionContext()
+  const { showRegionControls, setShowRegionControls } = useRegionContext()
 
   return (
     <SidebarFooter

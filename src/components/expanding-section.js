@@ -1,7 +1,6 @@
 import { Expander } from '@carbonplan/components'
 import { useState } from 'react'
 import { Box, Flex } from 'theme-ui'
-import { useRegionContext } from '../components/region'
 
 const sx = {
   heading: {
@@ -13,9 +12,8 @@ const sx = {
 }
 
 const ExpandingSection = ({ label, children, onClick }) => {
-  //const { approach, dataset } = useRegionContext
   const [expanded, setExpanded] = useState(false)
-  
+
   const disabled = false
 
   return (

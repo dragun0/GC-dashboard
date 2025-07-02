@@ -1,9 +1,7 @@
 import { Box, Flex } from 'theme-ui'
-import { useCallback } from 'react'
-import { Row, Column, Filter, Slider, Badge, Toggle, Select, Link } from '@carbonplan/components'
+import { Row, Column, Toggle, Select } from '@carbonplan/components'
 import { colormaps } from '@carbonplan/colormaps'
 import { useRegionContext } from './region'
-import { useState } from 'react'
 import TooltipWrapper from './tooltip-wrapper'
 
 const sx = {
@@ -26,26 +24,13 @@ const sx = {
 
 
 
-
 const DisplaySection = () => {
     const {
-        opacity,
-        setOpacity,
-        clim,
-        setClim,
-        band,
-        setBand,
-        display,
-        setDisplay,
         colormapName,
         setColormapName,
         basemap,
         setBasemap,
     } = useRegionContext()
-
-    // for UI buttons only:
-    // value of basemap is stored in context state
-    // const [uiBasemap, setUiBasemap] = useState({ oceanMask: true, landMask: false })
 
     // Toggle states for basemap toggle button
     const oceanMaskOn = basemap === 'oceanMask'

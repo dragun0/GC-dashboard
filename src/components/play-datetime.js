@@ -1,5 +1,4 @@
 import React, { useCallback, useRef, useEffect, useState } from 'react'
-import { Box } from 'theme-ui'
 import { useRegionContext } from '../components/region'
 import { Button } from '@carbonplan/components'
 import { Play, Pause } from './icons'
@@ -143,20 +142,3 @@ const PlayButtonDateTime = ({
 
 export default PlayButtonDateTime
 
-
-/*
-
-<Box
-        sx={{
-          fontFamily: 'mono',
-          fontSize: ['9px', 1, 1, 2],
-          letterSpacing: 'smallcaps',
-          textTransform: 'uppercase',
-          mb: 2,
-          pr: 11,
-          transition: 'left 0.3s ease',
-        }}
-      >
-        {formattedDate}
-      </Box>
-*/

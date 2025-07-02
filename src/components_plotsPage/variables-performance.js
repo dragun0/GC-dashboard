@@ -219,9 +219,6 @@ const VariablesPerformance = (props) => {
 
 
 
-    //  for structuring the json data
-    //const MODELS = ['gc', 'marsai', 'marsfc'];
-
     useEffect(() => {
         if (selectedMonth) {
             fetch(JSON_PATH)
@@ -236,8 +233,6 @@ const VariablesPerformance = (props) => {
                     );
 
 
-                    // console.log("Filtered data:", filtered);
-
                     const formatted = variables.map((variable) => {
                         const entry = { variable }; // x-axis key
                         filtered.forEach((item) => {
@@ -245,7 +240,6 @@ const VariablesPerformance = (props) => {
                         });
                         return entry;
                     });
-                    //   console.log("Formatted data:", formatted);
                     setGlobalRData(formatted);
                 })
                 .catch((error) => {
@@ -295,7 +289,7 @@ const VariablesPerformance = (props) => {
                                 setValues={(newExtent) => {
                                     // highlight the selected extent
                                     setExtent(newExtent)
-                                    //Call handleVariableChange when the filter changes
+                                    // Call handleVariableChange when the filter changes
                                     const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
                                     if (selExtent) {
                                         handleExtentChange({ target: { value: selExtent } })
@@ -320,7 +314,7 @@ const VariablesPerformance = (props) => {
                                 setValues={(newTemperateExtent) => {
                                     // highlight the selected extent
                                     setTemperateExtent(newTemperateExtent)
-                                    //Call handleVariableChange when the filter changes
+                                    // Call handleVariableChange when the filter changes
                                     const selExtent = Object.keys(newTemperateExtent).find(key => newTemperateExtent[key]);
                                     if (selExtent) {
                                         handleTemperateExtentChange({ target: { value: selExtent } })
@@ -472,20 +466,6 @@ const VariablesPerformance = (props) => {
                     </Row>
 
                 </ResponsiveContainer>
-
-                {/* CarbonPlans - Variable Stacked plot 
-
-        <Chart x={[-1, 4]} y={[0, 100]} padding={{ left: 60, top: 50, right: 10 }}>
-            <Ticks left  />
-            <TickLabels left  />
-            <Axis left bottom />
-            <AxisLabel left>Evaluation metric</AxisLabel>
-            
-            <Plot>
-            <StackedBar data={StackedBarChartData} color={'purple'} />
-            </Plot>
-        </Chart>
-            */}
 
             </Box>
 

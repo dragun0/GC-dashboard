@@ -1,10 +1,6 @@
 import { bin } from 'd3-array'
-import { useRegionContext } from '../components/region'
 import Summary from './summary'
 import { format } from 'd3-format'
-//import { averageData } from './utils'
-//import { format } from 'd3-format'
-//import { NAN } from '../../constants'
 
 
 const NAN = 9.969209968386869e36
@@ -29,26 +25,6 @@ const formatValue = (value) => {
 }
 
 
-/*
-export const averageData = (data, area) => {
-  const totalArea = area
-    .filter((a, i) => a !== NAN && data[i] !== NAN)
-    .reduce((accum, a) => a + accum, 0)
-
-  return data.reduce((a, d, i) => {
-    const dArea = area[i]
-    if (d === NAN || dArea === NAN) {
-      return a
-    } else {
-      const areaWeight = dArea / totalArea
-      console.log('weight:', areaWeight)
-      return a + d * areaWeight
-    }
-
-  }, 0)
-}
-*/
-
 export const averageData = (data) => {
   const sum = data.reduce((a, d) => a + d, 0)
   const value = sum / data.length
@@ -56,15 +32,8 @@ export const averageData = (data) => {
 }
 
 
-
-
-
 const getDonutData = (data, area, clim) => {
-  //  console.log('data in function:', data)
   const filteredData = data.filter((d, i) => d !== NAN && area[i] !== NAN)
-
-  //  console.log('filteredData:', filteredData)
-
   const thresholds = [0, 1, 2, 3].map(
     (d) => clim[0] + (d * (clim[1] - clim[0])) / 4
   )
@@ -85,15 +54,12 @@ const getDonutData = (data, area, clim) => {
     .filter((a, i) => a !== NAN && data[i] !== NAN)
     .reduce((accum, a) => a + accum, 0)
 
-  //  console.log('totalArea:', totalArea)
-  //  console.log('area:', area)
 
   data.forEach((d, i) => {
     const dArea = area[i]
     if (d === NAN || dArea === NAN) {
       return
     }
-    // console.log('dArea:', dArea)
 
     let index = bins.findIndex((bin) => d >= bin.x0 && d < bin.x1)
 
@@ -124,8 +90,6 @@ const BinnedSummary = ({ clim, colormap, data, area, label, units }) => {
     console.error('Data is undefined in BinnedSummary')
     return '...loading in binned summary...'
   }
-  //const { clim } = useRegionContext
-  //  console.log('data in binned summary:', data)
 
   const bins = getDonutData(data, area, clim)
 

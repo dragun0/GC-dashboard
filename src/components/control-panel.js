@@ -1,14 +1,12 @@
-import { Box, Container, Divider } from 'theme-ui'
+import { Box } from 'theme-ui'
 import { useBreakpointIndex } from '@theme-ui/match-media'
 import { useState } from 'react'
 import { Column, Row, getScrollbarWidth } from '@carbonplan/components'
-import { Sidebar, SidebarFooter, SidebarHeader } from '@carbonplan/layouts'
+import { Sidebar } from '@carbonplan/layouts'
 import RegionControls from './region-controls'
 import { useRegionContext } from './region'
 import TimeSlider from './time-slider'
 import TimeSeries from './time-series'
-
-//import Statistics from '../components/statistics'
 
 
 const sx = {
@@ -42,55 +40,9 @@ const ControlPanel = ({ expanded, setExpanded, children }) => {
   const { setShowRegionControls, setShowTimeSeries, setShowRegionPicker, showRegionPicker } = useRegionContext()
   const className = useScrollbarClasses()
   const index = useBreakpointIndex({ defaultIndex: 2 })
-  //console.log('className:', className)
 
-  /*
-  if (embedded) {
-    return (
-      console.log('className:', className),
-      <Box
-      //className= "custom-scrollbar"
-        sx={{
-          opacity: expanded ? 1 : 0,
-          pointerEvents: expanded ? 'all' : 'none',
-          position: 'fixed',
-          top: '0px',
-          right: '0px',
-          bottom: '0px',
-          minWidth: '0px',
-          maxHeight: '100vh',
-          width: '100vw',
-          overflowX: 'hidden',
-          overflowY: 'scroll',
-          backgroundColor: 'background',
-          zIndex: 4000,
-          pt: ['56px'],
-          transition: 'opacity 0.25s',
-        }}
-      >
-        <Container>
-          <Row>
-            <Column start={[1]} width={[12]}>
-              <Divider />
-  
-              <Box
-                sx={{
-                  display: expanded ? 'inherit' : 'none',
-                  mt: [4],
-                }}
-              >
-                {expanded && children}
-              </Box>
-            </Column>
-          </Row>
-        </Container>
-      </Box>
-    )
-  } else 
-  */
 
   if (index < 2) {
-    // console.log('className:', className)
     return (
       <Box
         className={className} //"custom-scrollbar"//
@@ -181,18 +133,3 @@ const ControlPanel = ({ expanded, setExpanded, children }) => {
 
 
 export default ControlPanel
-
-// <RegionControls {...regionControlsProps} />
-
-/*
-{expanded && (
-            <PlayButtonDateTime
-              time={time}
-              setTime={setTime}
-              max={40}
-              delay={200}
-              pause = 'max'
-            />
-            )
-          }
-*/

@@ -44,25 +44,7 @@ const sx = {
     },
 }
 
-/*
-const RadialBarData = [
-    {
-        name: 'GraphCast',
-        AE: 13.5,
-        fill: '#8884d8',
-    },
-    {
-        name: 'ECMWF AIFS',
-        AE: 15.2,
-        fill: '#FF746C',
-    },
-    {
-        name: 'ECMWF IFS',
-        AE: 20.1,
-        fill: '#82ca9d',
-    }
-];
-*/
+
 
 const RegionOverview = (props) => {
 
@@ -82,7 +64,6 @@ const RegionOverview = (props) => {
     else if (region === 'africa') JSON_PATH = '/plotsPageData/Africa/Africa_R_RMSE_MAE_MBE_monthly_allmodels.json';
 
 
-    // adjust these values after having produced all the regions data
     const MAX_VALUES = {
         rmse: {
             t2m: 7,
@@ -159,7 +140,6 @@ const RegionOverview = (props) => {
 
     // handle month change
     const handleMonthChange = useCallback((e) => {
-        //  console.log('handleMonthChange', e.target.value)
         const month = e.target.value
         const monthCode = getMonthCode(month)
         setSelectedMonth(monthCode)
@@ -167,14 +147,12 @@ const RegionOverview = (props) => {
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        //   console.log('handleVariableChange', e.target.value)
         const selectedVariable = e.target.value
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
     // handle metric change
     const handleMetricChange = useCallback((e) => {
-        //   console.log('handleMetricChange', e.target.value)
         const selectedMetric = e.target.value.toLowerCase()
         setSelectedMetric(selectedMetric)
     }, [setSelectedMetric])

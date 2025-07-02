@@ -1,6 +1,6 @@
-import { Box, useThemeUI, Divider } from 'theme-ui'
+import { Box, useThemeUI } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
-import { Filter, Select, Row, Button } from '@carbonplan/components'
+import { Filter, Select, Button } from '@carbonplan/components'
 import { Down } from '@carbonplan/icons'
 import {
     LineChart,
@@ -13,7 +13,7 @@ import {
     ResponsiveContainer,
 } from 'recharts'
 import { useCallback, useState, useEffect } from 'react'
-import MonthlyPerformance from './monthly-performance'
+
 
 const sx = {
     label: {
@@ -50,16 +50,6 @@ const sx = {
     },
 }
 
-// recharts lead times plot (mock data)
-const newdata = Array.from({ length: 41 }, (_, i) => {
-    const x = i * 0.25;
-    return {
-        x,
-        GraphCast: 10 + Math.sin(x / 4) * 5 + x * 0.2,
-        ecmwfIFS: 12 + Math.cos(x / 5) * 4 + x * 0.25,
-        ecmwfAIFS: 11 + Math.sin(x / 6) * 3 + x * 0.3,
-    };
-});
 
 
 const LeadTimesPerformance = (props) => {
@@ -172,7 +162,6 @@ const LeadTimesPerformance = (props) => {
 
     // handle month change
     const handleMonthChange = useCallback((e) => {
-        //   console.log('handleMonthChange', e.target.value)
         const month = e.target.value
         const monthCode = getMonthCode(month)
         setSelectedMonth(monthCode)
@@ -180,14 +169,12 @@ const LeadTimesPerformance = (props) => {
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        //  console.log('handleVariableChange', e.target.value)
         const selectedVariable = e.target.value
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
     // handle metric change
     const handleMetricChange = useCallback((e) => {
-        //    console.log('handleMetricChange', e.target.value)
         const selectedMetric = e.target.value.toLowerCase()
         setSelectedMetric(selectedMetric)
     }, [setSelectedMetric])
@@ -204,7 +191,6 @@ const LeadTimesPerformance = (props) => {
                         entry[selectedVariable] !== null &&
                         typeof entry.time === 'number' // Ensure time is a number
                 );
-                //  console.log("Filtered data:", filtered)
 
                 // Group by 'time' (0–40)
                 const grouped = Array.from({ length: 41 }, (_, i) => {
@@ -219,11 +205,9 @@ const LeadTimesPerformance = (props) => {
                             timeData[model] = Number(entry[selectedVariable].toFixed(3)); // cap value to 3 decimal places
                         }
                     });
-                    //  console.log("Month data:", monthData)
 
                     return timeData;
                 });
-                //  console.log("Grouped data:", grouped)
                 setData(grouped);
             });
     }, [selectedVariable, selectedMetric, selectedMonth, region, selectedExtent, selectedTemperateExtent]);
@@ -344,16 +328,10 @@ const LeadTimesPerformance = (props) => {
                     sx={{
                         display: 'flex',
                         flexWrap: 'wrap',       // allows wrapping on small screens
-                        //gap: 8, 
                         gap: 4,                 // adds spacing between filters
-                        //mt: 3,                   // margin above the filters
-                        //mb: 3,                   // margin below the filters
-
                         alignItems: 'center',    // vertically align filters
                     }}
                 >
-
-
 
                     <Box>
                         <Filter
@@ -384,7 +362,6 @@ const LeadTimesPerformance = (props) => {
                                 }
                             }}
                             multiSelect={false}
-                        // labels={{ q: 'Specific humidity' }}
                         />
                     </Box>
 
@@ -395,7 +372,6 @@ const LeadTimesPerformance = (props) => {
                             display: 'flex',
                             flexWrap: 'wrap',       // allows wrapping on small screens
                             gap: 3,                  // adds spacing between selects
-
                             alignItems: 'center',    // vertically align selects
                         }}
                     >
@@ -509,7 +485,6 @@ const LeadTimesPerformance = (props) => {
                                     }
                                     : undefined
                             }
-                        //  domain={['dataMin', 'dataMax']}
                         />
                         <Tooltip
                             labelFormatter={(label) => `Lead time: ${(label * 0.25).toFixed(2)}`}
@@ -528,37 +503,3 @@ const LeadTimesPerformance = (props) => {
 }
 
 export default LeadTimesPerformance
-
-/*
-<Row
-                    sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        my: 3,
-                    }}
-                >
-                    <Button
-                        inverted
-                        onClick={handleDownloadCSV}
-                        size='xs'
-                        sx={{
-                            fontSize: [1, 1, 1, 2],
-                            textTransform: 'uppercase',
-                            fontFamily: 'mono',
-                            letterSpacing: 'mono',
-                            minWidth: '120px',
-                            textAlign: 'right',
-                            whiteSpace: 'nowrap',
-                            '&:disabled': {
-                                color: 'muted',
-                                pointerEvents: 'none',
-                            },
-                        }}
-                        prefix={<Down />}
-                    >
-                        Download CSV
-                    </Button>
-                </Row>
-*/

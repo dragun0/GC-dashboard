@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useEffect, useState } from 'react'
-import { Slider, Row } from '@carbonplan/components'
+import { Slider } from '@carbonplan/components'
 import { Box } from 'theme-ui'
 import { usePlotsContext } from './PlotsContext'
 import { Button } from '@carbonplan/components'

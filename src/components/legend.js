@@ -1,5 +1,5 @@
-import { Box, Flex } from 'theme-ui'
-import { Group, Colorbar } from '@carbonplan/components'
+import { Box } from 'theme-ui'
+import { Colorbar } from '@carbonplan/components'
 import { useRegionContext } from '../components/region'
 import { useThemedColormap } from '@carbonplan/colormaps'
 
@@ -21,7 +21,6 @@ const Legend = () => {
   } = useRegionContext()
 
 
-  //    const colormap = useThemedColormap('warm')
 
   const cm = useThemedColormap(colormapName)
   const colormap = colormapReverse ? [...cm].reverse() : cm

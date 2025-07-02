@@ -10,7 +10,7 @@ import {
 import { Button } from '@carbonplan/components'
 import { Down } from '@carbonplan/icons'
 import { Box } from 'theme-ui'
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { SidebarFooter } from '@carbonplan/layouts'
 import { useRegionContext } from '../components/region'
 import ExpandingSection from './expanding-section'
@@ -22,7 +22,6 @@ const TimeSeries = () => {
     band,
     showTimeSeries,
     setShowTimeSeries,
-    showRegionPicker,
     regionData,
     time,
     forecastModel,
@@ -62,18 +61,10 @@ const TimeSeries = () => {
   const data = regionData?.value?.climate?.[band] // access the band data from regionData
 
 
-  // this loading statement is not working
   const { lineData, range, domain } = useMemo(() => {
     if (!data || !band) {
       return { lineData: undefined, range: undefined, domain: undefined }
     }
-    //console.log('region.properties.radius:', region.properties.radius)
-
-    // for debugging
-    // console.log('regionData:', regionData)
-    // console.log('regionData.value:', regionData.value)
-    // console.log('regionData.value[climate]:', regionData.value['climate'])
-    // console.log('regionData.value[climate].band:', regionData.value['climate'][band])
 
     let domain = [Infinity, -Infinity] // initialise x-axis range
     let range = [Infinity, -Infinity] // Initialize y-axis range
@@ -93,6 +84,14 @@ const TimeSeries = () => {
   }, [data])
   // console.log('lineData:', lineData)
 
+  useEffect(() => {
+    console.log('Selected data changed:', data)
+    console.log('regionData:', regionData)
+  }, [data, region])
+
+  useEffect(() => {
+    console.log('Selected region changed:', region)
+  }, [region])
 
   const timeData = lineData && lineData.find((d) => d[0] === Number(time))
   const validtimeData = timeData && !Number.isNaN(timeData[1])
@@ -102,18 +101,14 @@ const TimeSeries = () => {
   // Download CSV
   const handleDownloadCSV = () => {
     // check regionpicker radius is NOT zero
-    // regionData.value.radius == null
     if (!data || !regionData?.value || !band || region.properties.radius == null) {
       alert('No data available for export.')
       return
     }
 
-
-    //const [centerLon, centerLat] = region.properties.center
     const radius = region.properties.radius
     const centerLon = region.properties.center.lng
     const centerLat = region.properties.center.lat
-    //console.log('region.properties.center.lat:', region.properties.center.lat )
 
     let startDate
     if (forecastModel === 'marsfc') {
@@ -240,7 +235,6 @@ const TimeSeries = () => {
             flexDirection: 'column', // Stack children vertically
             justifyContent: 'center', // Center the chart vertically
             alignItems: 'center', // Center the chart horizontally (optional)
-            //paddingTop: '-20px', // Add padding to move the chart lower
             transform: 'translateY(10px)'
           }}
         >
@@ -340,42 +334,3 @@ const TimeSeries = () => {
 
 export default TimeSeries
 
-
-/*
-// Download CSV
-  const handleDownloadCSV = () => {
-    // check regionpicker radius is NOT zero
-    // regionData.value.radius == null
-    if (!data || !regionData?.value || !band) {
-      alert('No data available for export.')
-      return
-    }
-
-    const [centerLon, centerLat] = regionData.value.center
-    const radius = regionData.value.radius
-
-    const rows = data.map(([timestep, mae]) => ({
-      lat: centerLat,
-      lon: centerLon,
-      radius,
-      timestep,
-      mae: mae === 9.969209968386869e36 ? '' : mae.toFixed(4),
-    }))
-
-    const header = ['lat', 'lon', 'radius', 'timestep', 'mae']
-    const csv = [
-      header.join(','),
-      ...rows.map((row) => header.map((h) => row[h]).join(',')),
-    ].join('\n')
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', `region_mae_timeseries_${band}.csv`)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-*/

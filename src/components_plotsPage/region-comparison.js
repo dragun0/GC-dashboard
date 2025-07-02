@@ -85,40 +85,38 @@ const RegionComparison = () => {
         africaData: [],
     });
 
-    // adjust these values after having produced all the regions data
-    // done is without africa
+
     const MAX_VALUES = {
         rmse: {
-            t2m: 5, //done
-            msl: 9, //done
-            u10: 4.5, //done
-            v10: 4.5, //done
-            q: 2, //done
+            t2m: 5,
+            msl: 9,
+            u10: 4.5,
+            v10: 4.5,
+            q: 2,
         },
         mae: {
-            t2m: 5, //done
-            msl: 9, // done or do 6
-            u10: 4.5, //done
-            v10: 4.5, //done
-            q: 2, //done
+            t2m: 5,
+            msl: 9,
+            u10: 4.5,
+            v10: 4.5,
+            q: 2,
         },
         mbe: {
-            t2m: 0.5, //done
-            msl: 2.7, //done
-            u10: 0.5, //done
-            v10: 0.5, //done
+            t2m: 0.5,
+            msl: 2.7,
+            u10: 0.5,
+            v10: 0.5,
             q: 1.5,
         },
         r: {
-            t2m: 1, //done
-            msl: 1,  //done
-            u10: 1, //done
-            v10: 1, //done
-            q: 1, //done
+            t2m: 1,
+            msl: 1,
+            u10: 1,
+            v10: 1,
+            q: 1,
         },
     }
 
-    // const MAX_CHART_VALUE = 7;
 
     // UI states
     const { theme } = useThemeUI()
@@ -154,7 +152,6 @@ const RegionComparison = () => {
 
     // handle month change
     const handleMonthChange = useCallback((e) => {
-        //   console.log('handleMonthChange', e.target.value)
         const month = e.target.value
         const monthCode = getMonthCode(month)
         setSelectedMonth(monthCode)
@@ -162,14 +159,12 @@ const RegionComparison = () => {
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        //    console.log('handleVariableChange', e.target.value)
         const selectedVariable = e.target.value
         setSelectedVariable(selectedVariable)
     }, [setSelectedVariable])
 
     // handle metric change
     const handleMetricChange = useCallback((e) => {
-        //   console.log('handleMetricChange', e.target.value)
         const selectedMetric = e.target.value.toLowerCase()
         setSelectedMetric(selectedMetric)
     }, [setSelectedMetric])
@@ -301,7 +296,7 @@ const RegionComparison = () => {
                                     setValues={(newVariable) => {
                                         // highlight the selected variable
                                         setVariables(newVariable)
-                                        //Call handleVariableChange when the filter changes
+                                        // Call handleVariableChange when the filter changes
                                         const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
                                         if (selectedVariable) {
                                             handleVariableChange({ target: { value: selectedVariable } })
@@ -324,7 +319,6 @@ const RegionComparison = () => {
                                         }
                                     }}
                                     multiSelect={false}
-                                // labels={{ q: 'Specific humidity' }}
                                 />
                             </Box>
 

@@ -1,10 +1,10 @@
-import { Box, useThemeUI, Spinner, Divider } from 'theme-ui'
+import { Box, useThemeUI, Spinner } from 'theme-ui'
 import TooltipWrapper from '../components/tooltip-wrapper'
 import { Row, Column, Filter } from '@carbonplan/components'
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Minimap, Raster, Path, Sphere, Graticule } from '@carbonplan/minimaps'
-import { naturalEarth1, mercator, orthographic, equirectangular } from '@carbonplan/minimaps/projections'
-import { useThemedColormap, viridis } from '@carbonplan/colormaps'
+import { naturalEarth1 } from '@carbonplan/minimaps/projections'
+import { useThemedColormap } from '@carbonplan/colormaps'
 import { usePlotsContext } from '../components_plotsPage/PlotsContext'
 import LeadTimesSlider from '../components_plotsPage/lead-times-slider'
 import zarr from 'zarr-js'
@@ -12,12 +12,6 @@ import ndarray from 'ndarray'
 import ops from 'ndarray-ops'
 import Legend from '../components_plotsPage/lead-times-legend'
 
-
-// plate carree projection zarr works: 
-// has float32 data and is in equirectangular projection BUT y axis NEEDS TO BE FLIPPED (is going from + to - instead of - to +)
-
-
-//const ZARR_SOURCE = 'https://dashboard-minimaps.s3.amazonaws.com/minimap_test_zlib_flipped_float32.zarr'
 
 //Global Extent sources
 const ZARR_SOURCE_gc_RMSE = 'https://dashboard-minimaps.s3.amazonaws.com/Global_gc_RMSE_MAP_leadtimes.zarr'
@@ -47,9 +41,6 @@ const AFRICA_ZARR_SOURCE_marsai_MBE = 'https://dashboard-minimaps.s3.amazonaws.c
 const AFRICA_ZARR_SOURCE_marsai_MAE = 'https://dashboard-minimaps.s3.amazonaws.com/Africa_marsai_MAE_MAP_leadtimes.zarr'
 
 
-
-
-//const VARIABLE = 't2m'
 const FILL_VALUE = 9.969209968386869e36
 
 
@@ -167,10 +158,7 @@ const LeadTimesMap = (props) => {
     else if (region === 'polar') LAT_MAX = 90;
 
 
-    // const africaGeoJSON = await fetch('/geo/africa.geojson').then(res => res.json());
-
     const { theme } = useThemeUI()
-    // const colormap = useThemedColormap('warm')
     const [loading, setLoading] = useState(false)
     const [time, setTime] = useState(4)
     const [chunks, setChunks] = useState(null)
@@ -190,8 +178,6 @@ const LeadTimesMap = (props) => {
 
     const [TemperateExtent, setTemperateExtent] = useState({ northtemperate: true, southtemperate: false })
 
-    // for the UI button of the region filter only
-    //const [regions, setRegion] = useState({ global: true, tropics: false, temperate: false, polar: false, africa: false })
 
 
     // to keep track of the actually selected variable, model, metric
@@ -225,21 +211,12 @@ const LeadTimesMap = (props) => {
         setTemperateExtent(newTemperateExtent);
         setSelectedTemperateExtent(activeKeys);
     };
-    /*
-        // for debugging only
-        useEffect(() => {
-            console.log('Selected extent changed:', selectedExtent)
-        }, [selectedExtent])
-    */
 
     // handle variable change
     const handleVariableChange = useCallback((e) => {
-        //  console.log('handleVariableChange', e.target.value)
         const selected = e.target.value
         setSelectedVariable(selected)
-        //  setClim([CLIM_RANGES[selected].min, CLIM_RANGES[selected].max])
     }, [setSelectedVariable])
-    // change clim values depending on variable
 
     const cacheKey = `${region}_${selectedModel}_${selectedMetric}_${selectedVariable}`
 
@@ -271,13 +248,6 @@ const LeadTimesMap = (props) => {
     }
 
 
-    //const [ZARR_SOURCE, setZarrSource] = useState('')
-
-
-
-    // Define the latitude range for the tropics/subtropics
-    // const LAT_MIN = -35
-    // const LAT_MAX = 35
 
     // State to hold the latitude values
     const [latitudes, setLatitudes] = useState(null)
@@ -297,41 +267,14 @@ const LeadTimesMap = (props) => {
 
 
 
-
-    // Load latitude values from Zarr on first load
-    /*
     useEffect(() => {
-        // Only load once
-        if (!latitudes && ZARR_SOURCE) {
-            zarr().load(`${ZARR_SOURCE}/y`, (err, arr) => {
-                if (err) {
-                    console.error('Error loading latitude array:', err)
-                    return
-                }
-                // Convert to plain JS array
-                setLatitudes(Array.from(arr.data))
-            })
-        }
-    }, [ZARR_SOURCE, latitudes])
-
-    */
-
-
-    useEffect(() => {
-
-        //   console.log('useEffect - Selected variable changed:', selectedVariable)
-        //   console.log('cacheKey:', cacheKey)
 
         // Load the selected variable only if not cached
         if (!variableCache.current[cacheKey]) {
             setLoading(true) // <--- Set loading to true 
-            //  console.log('useEffect - load new data:', selectedVariable)
-            //  console.log('URL:', `${ZARR_SOURCE}/${selectedVariable}`)
             zarr().load(`${ZARR_SOURCE}/${selectedVariable}`, (err, arr) => {
                 if (err) {
                     setLoading(false)
-                    //  console.error('Error loading array:', err)
-                    // add error message to the map as well
                     return
                 }
                 variableCache.current[cacheKey] = arr
@@ -342,10 +285,8 @@ const LeadTimesMap = (props) => {
                 const colormapConfig = COLORMAPS[selectedMetric]?.[selectedVariable] || { name: 'warm', reverse: false }
                 setColormapName(colormapConfig.name)
                 setColormapReverse(colormapConfig.reverse)
-                //    console.log('useEffect chunk updated with variable:', selectedVariable, 'with data:', arr)
             })
         } else {
-            //  console.log('useEffect - var:', selectedVariable, 'already cached, using cached data')
             setChunks(variableCache.current[cacheKey])
             setLoading(false)
             const climRange = CLIM_RANGES[selectedMetric]?.[selectedVariable] || { min: 0, max: 1 }
@@ -586,55 +527,6 @@ const LeadTimesMap = (props) => {
     }, [chunks, time, latitudes, LAT_MIN, LAT_MAX, region, selectedExtent, selectedTemperateExtent])
 
 
-    /*
-
-    const data = useMemo(() => {
-        if (chunks && latitudes) {
-            // Find indices for cropping
-            const latStart = latitudes.findIndex(lat => lat >= LAT_MIN)
-            // Find the first index greater than LAT_MAX, or use the end of the array
-            let latEnd = latitudes.findIndex(lat => lat > LAT_MAX)
-            if (latEnd === -1) latEnd = latitudes.length
-            // Pick the time slice, then crop latitude
-            const picked = chunks.pick(time, null, null)
-            const cropped = picked.lo(latStart, 0).hi(latEnd - latStart, picked.shape[1])
-            //    console.log('Cropped data shape:', cropped.shape)
-            return cropped
-
-        } else {
-            return {}
-        }
-    }, [chunks, time])
-
-    */
-
-
-    /*
-      const data = useMemo(() => {
-          if (chunks) {
-              return chunks.pick(time, null, null) // time, lat, lon
-          } else {
-              return null
-          }
-      }, [chunks, time])
-  
-  */
-
-    /*
-        // for debugging only
-        useEffect(() => {
-            console.log('Updated data:', data)
-        }, [data])
-    
-    
-        // for debugging only
-        useEffect(() => {
-            console.log('selected var changed:', selectedVariable)
-        }, [selectedVariable])
-    */
-
-
-
 
     return (
         <>
@@ -729,7 +621,7 @@ const LeadTimesMap = (props) => {
                                             ...sx.heading,
                                             textTransform: 'uppercase',
                                             fontSize: [2],
-                                            color: '#45DFB1', // color: 'blue'
+                                            color: '#45DFB1',
                                         }}
                                     >
                                         Lead Times Spatial Performance
@@ -794,7 +686,6 @@ const LeadTimesMap = (props) => {
                             <Box sx={{ transform: 'scale(0.90)', transformOrigin: 'top left', width: '111.11%' }}>
                                 <Filter
                                     values={models}
-                                    // labels={{ q: 'Specific humidity' }}
                                     setValues={(newModels) => {
                                         setModel(newModels)
                                         const selected = Object.keys(newModels).find(key => newModels[key])
@@ -851,8 +742,6 @@ const LeadTimesMap = (props) => {
                     <Box
                         sx={{
                             position: 'relative',
-
-                            //  color: 'primary',
 
                             pb: 30
                         }}
@@ -935,121 +824,3 @@ const LeadTimesMap = (props) => {
 
 export default LeadTimesMap
 
-
-/*
-
-const getCustomProjection = () => {
-    return {
-        ...naturalEarth1(),
-        glsl: {
-            func: `
-      vec2 naturalEarth1Invert(float x, float y)
-      {
-        const float pi = 3.14159265358979323846264;
-        const float halfPi = pi * 0.5;
-        float phi = y;
-        float delta;
-        float phi2 = phi * phi;
-        float phi4 = phi2 * phi2;
-        for (int i = 0; i < 25; i++) {
-          phi2 = phi * phi;
-          phi4 = phi2 * phi2;
-          delta = (phi * (1.007226 + phi2 * (0.015085 + phi4 * (-0.044475 + 0.028874 * phi2 - 0.005916 * phi4))) - y) / (1.007226 + phi2 * (0.015085 * 3.0 + phi4 * (-0.044475 * 7.0 + 0.028874 * 9.0 * phi2 - 0.005916 * 11.0 * phi4)));
-          phi = phi - delta;
-          if (abs(delta) < 1e-6) {
-            break;
-          }
-        }
-        phi2 = phi * phi;
-        float lambda = x / (0.8707 + phi2 * (-0.131979 + phi2 * (-0.013791 + phi2 * phi2 * phi2 * (0.003971 - 0.001529 * phi2))));
-        if (lambda <= -1.0 * pi + 1e-6 || lambda >= pi - 1e-6) {
-          return vec2(-1000.0, -1000.0);
-        } else {
-          return vec2(degrees(lambda), degrees(phi));
-        }
-      }
-    `,
-            name: 'naturalEarth1Invert',
-        },
-    }
-}
-    */
-
-
-
-/*
-if (props.region === 'africa') {
-                // Find latitude indices for Africa
-                const latStart = latitudes.findIndex(lat => lat >= -35)
-                let latEnd = latitudes.findIndex(lat => lat > 35)
-                if (latEnd === -1) latEnd = latitudes.length
-
-                // Generate longitude array (assuming regular grid)
-                const nLon = chunks.shape[2]
-                const nLat = chunks.shape[1]
-                const longitudes = Array.from({ length: nLon }, (_, i) => -180 + i * (360 / nLon))
-
-                // Find longitude indices for Africa
-                const lonStart = longitudes.findIndex(lon => lon >= -20)
-                let lonEnd = longitudes.findIndex(lon => lon > 55)
-                if (lonEnd === -1) lonEnd = nLon
-
-                // Pick the time slice
-                const picked = chunks.pick(time, null, null)
-
-                // Create a full array filled with FILL_VALUE
-                const full = ndarray(
-                    new picked.data.constructor(nLat * nLon),
-                    [nLat, nLon]
-                )
-                ops.assigns(full, FILL_VALUE)
-
-                // Copy Africa region data into the mask
-                for (let i = latStart; i < latEnd; ++i) {
-                    for (let j = lonStart; j < lonEnd; ++j) {
-                        full.set(i, j, picked.get(i, j))
-                    }
-                }
-
-                return full
-            }
-
-
-
-
-
-
-
-
-            <Row sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: 3, // optional spacing between boxes
-                    }}
-                    >
-                     <Box
-                            sx={{
-                                ...sx.heading,
-                                //   fontFamily: 'mono',
-                                textTransform: 'uppercase',
-                                color: 'blue',
-
-                            }}>
-                            Lead Times Spatial Performance
-
-                        </Box>
-
-                        <Box
-                            sx={{
-                                ...sx.heading,
-                                //   fontFamily: 'mono',
-                                textTransform: 'uppercase',
-                                color: 'blue',
-
-                            }}>
-                            Lead Times Spatial Performance
-
-                        </Box>
-                    </Row>
-
-            */

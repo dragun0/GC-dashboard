@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from 'react'
 const PlotsContext = createContext(null)
 
 export const PlotsContextProvider = ({ children }) => {
-    // for layer change
+    // for region change
     const [Column1Region, setColumn1Region] = useState('global')
     const [Column2Region, setColumn2Region] = useState('tropics')
 

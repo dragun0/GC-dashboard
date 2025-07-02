@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Box, Flex, useThemeUI, Divider, Spinner } from 'theme-ui'
-import { Dimmer, Toggle, Group, Link, Meta, Button, Expander } from '@carbonplan/components'
+import { Dimmer, Group } from '@carbonplan/components'
 import { Map, Raster, Fill, Line, RegionPicker } from '@carbonplan/maps'
 import { useThemedColormap } from '@carbonplan/colormaps'
 import { SidebarAttachment } from '@carbonplan/layouts'
@@ -27,20 +27,19 @@ const Index = () => {
   //Get shared context state
   const {
     basemap,
-    display, setDisplay,
-    debug, setDebug,
-    opacity, setOpacity,
-    clim, setClim,
-    colormapName, setColormapName,
+    display,
+    debug,
+    opacity,
+    clim,
+    colormapName,
     setRegionData, showRegionPicker,
     time, setTime,
-    band, setBand,
-    setRegionExtent,
+    band,
     forecastModel,
     evaluationMetric,
     year,
     month,
-    colormapReverse, setColormapReverse
+    colormapReverse,
   } = useRegionContext()
 
 
@@ -50,23 +49,10 @@ const Index = () => {
       : `${bucket_metrics}Annual_${evaluationMetric}_${forecastModel}.zarr`
   }, [year, month, evaluationMetric, forecastModel])
 
-  // `${bucket_metrics}Annual_${evaluationMetric}_${forecastModel}.zarr` 
 
-  //console.log('source url:', `${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`)
-  //console.log('raster source:', rasterSource)
-
-  /*
-  // for debuggin only
-  useEffect(() => {
-    console.log('Updated raster source URL:', rasterSource)
-  }, [rasterSource])
-*/
-
-  //const colormap = useThemedColormap(colormapName)
   const cm = useThemedColormap(colormapName)
   const colormap = colormapReverse ? [...cm].reverse() : cm
 
-  //const selector = {time: [1, 2, 3]}
 
   const selector = useMemo(() => {
 
@@ -86,11 +72,6 @@ const Index = () => {
 
   const [showMenu, setShowMenu] = useState(false)
 
-  //const [showMenu, setShowMenu] = useState(false)
-
-  //  useEffect(() => {
-  //  setLoading(true)
-  // }, [rasterSource])
 
   const sx = {
     heading: {
@@ -120,7 +101,6 @@ const Index = () => {
 
       >
         <Box
-          //className="custom-scrollbar"
           sx={{
             py: [1],
             pl: [3, 4, 5, 6],
@@ -145,8 +125,6 @@ const Index = () => {
               top: [5, 5, 6, 6],
               left: expanded ? ['38%'] : [5, 5, 6, 6],
               transition: 'left 0.3s ease',
-              //width: '24px',
-              //height: 'calc(100vh)',
               transform: 'translate(-50%, -50%)',
               zIndex: 1000,
               backgroundColor: 'transparent',
@@ -215,17 +193,9 @@ const Index = () => {
             mode={'dotgrid'}
             key={rasterSource}
             source={rasterSource}
-            // source={`${bucket_metrics}${year}${month}01_${evaluationMetric}_${forecastModel}.zarr`}
-            // `${bucket_metrics}${timeFrame}_${evaluationMetric}_${forecastModel}.zarr`
-            // bucket_metrics + '20240401_AE_gc.zarr'
-            //'Pyramids/20240501_AE_marsai.zarr'
-            //'Pyramids/20240401_AE_gc.zarr' contains t2m and q
-            //'Pyramids/20240301_AE_gc.zarr' contains t2m and tp (but tp is empty)
-            //'Pyramids/20240301_flat_subset_AE_fc_timestep0.zarr' contains t2m and u10
-
             variable={'climate'}
             version='v2'
-            selector={{ band, time }}
+            selector={{ time, band }}
             //dimensions={['time', 'y', 'x']}
             regionOptions={{ setData: setRegionData, selector }}
             //regionOptions={{ setData: debugSetRegionData }} // Use the debug function
@@ -260,7 +230,6 @@ const Index = () => {
                   'calc(2 * 100vw / 12 + 24px - 1px)',
                   'calc(2 * 100vw / 12 + 35px)',
                 ] : [13],
-              //   right: showMenu ? ['300px'] : [13], // <-- menu width
               bottom: [17, 17, 15, 15],
               transition: 'right 0.3s ease',
             }}
@@ -300,10 +269,6 @@ const Index = () => {
           </Box>
 
 
-
-
-
-
           {/* Control Panel */}
 
           <ControlPanel
@@ -317,7 +282,6 @@ const Index = () => {
                 (GraphCast and ECMWF-AIFS) and a traditional numerical weather prediction model (ECMWF-IFS HRES).
                 All models have been evaluated against ERA5 reanalysis data, and the results can be explored on this dashboard.
               </Box>
-              {/* rewrite this intro section -> make it more concise */}
 
               <Divider sx={{ my: 4 }} />
 
@@ -353,33 +317,9 @@ const Index = () => {
 
         </Map>
 
-
-
-
       </Box>
     </>
   )
 }
 
 export default Index
-
-
-/*
-      {/* Display Box 
-      <Flex
-        sx={{
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-          gap: 2,
-          position: 'absolute', // Position it absolute
-          top: '7%', // position it at the top
-          right: '20px', // Position it on the right side
-          transform: 'translateY(-50%)', // Adjust for vertical centering
-          zIndex: 10, // Ensure it appears above the map
-        }}
-      >
-          <Box sx={sx.label}>Display</Box>
-          <Toggle value={display} onClick={() => setDisplay((prev) => !prev)} />
-          </Flex>
-      
-      */

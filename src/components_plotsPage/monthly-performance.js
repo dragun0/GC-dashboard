@@ -52,15 +52,6 @@ const sx = {
     },
 }
 
-/*
-const MonthsData = Array.from({ length: 12 }, (_, x) => ({
-    x,
-    GraphCast: 10 + Math.sin(x / 4) * 5 + x * 0.2,
-    ecmwfIFS: 12 + Math.cos(x / 5) * 4 + x * 0.25,
-    ecmwfAIFS: 11 + Math.sin(x / 6) * 3 + x * 0.3,
-}));
-
-*/
 
 const MonthlyPerformance = (props) => {
 
@@ -91,21 +82,6 @@ const MonthlyPerformance = (props) => {
     const [extent, setExtent] = useState({ tropics: true, subtropics: false })
 
     const [TemperateExtent, setTemperateExtent] = useState({ northtemperate: true, southtemperate: false })
-
-    /*
-        const [allData, setAllData] = useState({})
-        // const [selectedVariable, setSelectedVariable] = useState('t2m')
-        const [selectedModels, setSelectedModels] = useState(['GraphCast', 'ecmwfIFS', 'ecmwfAIFS'])
-        const [chartData, setChartData] = useState([])
-        const [monthlyData, setMonthlyData] = useState([])
-    
-        useEffect(() => {
-            fetch('/plotsPageData/Global/RMSE_monthly_allmodels.json')
-                .then((res) => res.json())
-                .then((json) => setMonthlyData(json))
-            console.log("Monthly data:", monthlyData)
-        }, [])
-        */
 
     //  for structuring the json data
     const MODELS = ['gc', 'marsai', 'marsfc'];
@@ -160,7 +136,6 @@ const MonthlyPerformance = (props) => {
                         entry.metric === selectedMetric &&
                         entry[selectedVariable] !== null
                 );
-                //  console.log("Filtered data:", filtered)
 
                 const grouped = Array.from({ length: 12 }, (_, i) => {
                     const month = i + 1;
@@ -277,7 +252,7 @@ const MonthlyPerformance = (props) => {
                                 setValues={(newExtent) => {
                                     // highlight the selected extent
                                     setExtent(newExtent)
-                                    //Call handleVariableChange when the filter changes
+                                    // Call handleVariableChange when the filter changes
                                     const selExtent = Object.keys(newExtent).find(key => newExtent[key]);
                                     if (selExtent) {
                                         handleExtentChange({ target: { value: selExtent } })
@@ -301,7 +276,7 @@ const MonthlyPerformance = (props) => {
                                 setValues={(newTemperateExtent) => {
                                     // highlight the selected extent
                                     setTemperateExtent(newTemperateExtent)
-                                    //Call handleVariableChange when the filter changes
+                                    // Call handleVariableChange when the filter changes
                                     const selExtent = Object.keys(newTemperateExtent).find(key => newTemperateExtent[key]);
                                     if (selExtent) {
                                         handleTemperateExtentChange({ target: { value: selExtent } })
@@ -334,7 +309,7 @@ const MonthlyPerformance = (props) => {
                                     setValues={(newVariable) => {
                                         // highlight the selected variable
                                         setVariables(newVariable)
-                                        //Call handleVariableChange when the filter changes
+                                        // Call handleVariableChange when the filter changes
                                         const selectedVariable = Object.keys(newVariable).find(key => newVariable[key]);
                                         if (selectedVariable) {
                                             handleVariableChange({ target: { value: selectedVariable } })
@@ -465,135 +440,3 @@ const MonthlyPerformance = (props) => {
 
 export default MonthlyPerformance
 
-/*
-
-                      <Line type="monotone" dataKey="ecmwfAIFS" strokeOpacity={opacity.ecmwfAIFS} stroke="#FF746C" />
-                        <Line type="monotone" dataKey="GraphCast" strokeOpacity={opacity.GraphCast} stroke="#8884d8" />
-                        <Line type="monotone" dataKey="ecmwfIFS" strokeOpacity={opacity.ecmwfIFS} stroke="#82ca9d" />
-
-
-// months time series plot (mock data)
-const MonthsData = Array.from({ length: 12 }, (_, x) => ({
-    x,
-    GraphCast: 10 + Math.sin(x / 4) * 5 + x * 0.2,
-    ecmwfIFS: 12 + Math.cos(x / 5) * 4 + x * 0.25,
-    ecmwfAIFS: 11 + Math.sin(x / 6) * 3 + x * 0.3,
-}));
-*/
-
-/*
- useEffect(() => {
-     fetch('/plotsPageData/Global/RMSE_monthly_allmodels.json')
-         .then((res) => res.json())
-         .then((json) => setMonthlyData(json))
-     console.log("Monthly data:", monthlyData)
- }, [])
- 
-
- useEffect(() => {
-     fetch('/plotsPageData/Global/RMSE_monthly_allmodels.json')
-         .then((res) => res.json())
-         .then((json) => {
-             // Filter out NaN t2m entries
-             const filtered = json.filter((entry) => !isNaN(entry.t2m))
-
-             // Group by month and pivot model names into keys
-             const reshaped = []
-
-             for (let i = 1; i <= 13; i++) {
-                 const row = { month: i }
-                 filtered.forEach((entry) => {
-                     if (entry.month === i) {
-                         if (entry.model === 'gc') row['GraphCast'] = entry.t2m
-                         if (entry.model === 'marsfc') row['ecmwfIFS'] = entry.t2m
-                         if (entry.model === 'marsai') row['ecmwfAIFS'] = entry.t2m
-                     }
-                 })
-                 reshaped.push(row)
-             }
-
-             console.log("Reshaped data:", reshaped)
-             setMonthlyData(reshaped)
-         })
- }, [])
- */
-
-
-
-/*
-// Model key mapping
-const modelMap = {
-   'gc': 'GraphCast',
-   'marsfc': 'ecmwfIFS',
-   'marsai': 'ecmwfAIFS'
-}
-
-useEffect(() => {
-   fetch('/plotsPageData/Global/RMSE_monthly_allmodels.json')
-       .then((res) => res.json())
-       .then((json) => {
-           const structuredData = {}
-
-           json.forEach((entry) => {
-               const modelKey = modelMap[entry.model]
-               const { month, variable, value } = entry
-
-               console.log("Inspecting entry:", entry)
-               console.log("value:", value)
-               console.log("Mapped model:", modelKey)
-
-               // Skip invalid entries and 13th month aka annual average
-               if (isNaN(value) || month < 1 || month > 12) {
-                   console.log("Skipping due to failed check")
-                   return
-               }
-
-               if (!structuredData[variable]) {
-                   structuredData[variable] = {}
-               }
-
-               if (!structuredData[variable][modelKey]) {
-                   structuredData[variable][modelKey] = []
-               }
-
-               // Ensure each month is added once per model-variable
-               const existing = structuredData[variable][modelKey].find((d) => d.month === month)
-               if (!existing) {
-                   structuredData[variable][modelKey].push({ month, value })
-               }
-           })
-           console.log("Structured data:", structuredData)
-
-           setAllData(structuredData)
-       })
-}, [])
-
-// Update chart data based on selected variable and models
-useEffect(() => {
-   if (!allData[selectedVariable]) {
-       console.log("No data for selected variable")
-       return
-   }
-
-   const dataByMonth = {}
-
-   // Collect data from all selected models for each month
-   selectedModels.forEach((model) => {
-       const modelData = allData[selectedVariable][model] || []
-       modelData.forEach(({ month, value }) => {
-           if (!dataByMonth[month]) dataByMonth[month] = { month }
-           dataByMonth[month][model] = value
-       })
-   })
-
-   // Convert to array sorted by month
-   const finalData = Object.values(dataByMonth).sort((a, b) => a.month - b.month)
-   console.log("Chart data:", finalData)
-   console.log("Selected variable:", selectedVariable)
-   console.log("Selected models:", selectedModels)
-   console.log("All data:", allData)
-   setChartData(finalData)
-
-   // use effect runs if one of these dependencies changes
-}, [allData, selectedVariable, selectedModels])
-*/

@@ -1,6 +1,5 @@
-import { Box, Container, Link, Text } from 'theme-ui'
-import { default as NextLink } from 'next/link'
-import { Row, Column, Arrow } from '@carbonplan/components'
+import { Box, Link } from 'theme-ui'
+import { Row, Column } from '@carbonplan/components'
 import { useRouter } from 'next/router'
 
 
@@ -78,7 +77,6 @@ function Menu({ visible, setExpanded, setShowMenu }) {
               borderTopWidth: '1px',
             }}
             onClick={handleMapClick}
-          //  onClick={() => setExpanded(true)}
 
           >
             Map

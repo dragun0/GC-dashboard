@@ -93,18 +93,3 @@ const Title = ({ expanded, setExpanded }) => {
 
 export default Title
 
-/*
-Read the{' '}
-            <Link
-              href='https://doi.org/10.1038/s41477-022-01305-9'
-              sx={{ pointerEvents: expanded ? 'none' : 'all' }}
-            >
-              blog
-            </Link>{' '}
-            and{' '}
-            <Link
-              href='/research/seaweed-farming-explainer'
-              sx={{ pointerEvents: expanded ? 'none' : 'all' }}
-            >
-              explainer
-*/

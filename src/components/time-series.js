@@ -61,9 +61,9 @@ const TimeSeries = () => {
   const data = regionData?.value?.climate?.[band] // access the band data from regionData
 
 
-  const { lineData, range, domain } = useMemo(() => {
+  const { lineData, domain, range } = useMemo(() => {
     if (!data || !band) {
-      return { lineData: undefined, range: undefined, domain: undefined }
+      return { lineData: undefined, domain: undefined, range: undefined }
     }
 
     let domain = [Infinity, -Infinity] // initialise x-axis range
@@ -79,24 +79,32 @@ const TimeSeries = () => {
       domain = [Math.min(domain[0], key), Math.max(domain[1], key)]   // x-axis
       return [Number(key), value]
     })
-
-    return { lineData, range, domain }
+    // console.log('lineData:', lineData)
+    return { lineData, domain, range }
   }, [data])
-  // console.log('lineData:', lineData)
 
-  useEffect(() => {
-    console.log('Selected data changed:', data)
-    console.log('regionData:', regionData)
-  }, [data, region])
 
-  useEffect(() => {
-    console.log('Selected region changed:', region)
-  }, [region])
+  /*
+    useEffect(() => {
+      console.log('data changed:', data)
+      console.log('regionData changed:', regionData)
+    }, [data, regionData])
+  
+    useEffect(() => {
+      console.log('region changed:', region)
+    }, [region])
+  
+  */
 
   const timeData = lineData && lineData.find((d) => d[0] === Number(time))
   const validtimeData = timeData && !Number.isNaN(timeData[1])
 
-  //console.log('validtimeData:', validtimeData)
+  /*
+  useEffect(() => {
+    console.log('timeData changed:', timeData)
+  }, [timeData])
+*/
+
 
   // Download CSV
   const handleDownloadCSV = () => {
@@ -238,6 +246,8 @@ const TimeSeries = () => {
             transform: 'translateY(10px)'
           }}
         >
+
+
           {regionData?.value && domain && timeData && (
 
             <Chart
@@ -280,9 +290,11 @@ const TimeSeries = () => {
                     {evaluationMetric === 'MAE' && 'Average MAE:'}
                     {evaluationMetric === 'MBE' && 'Average MBE:'}
                   </Box>
+
                   <Box as='span' >
                     {timeData[1].toFixed(2)}
                   </Box>
+
                   <Box as='span' sx={{ textTransform: 'none' }}>
                     {band === 'q' ? ' g/kg' : ' °C'}
                   </Box>

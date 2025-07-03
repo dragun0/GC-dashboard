@@ -196,15 +196,13 @@ const Index = () => {
             variable={'climate'}
             version='v2'
             selector={{ time, band }}
-            //dimensions={['time', 'y', 'x']}
+            // dimensions={['time', 'y', 'x']}
             regionOptions={{ setData: setRegionData, selector }}
             //regionOptions={{ setData: debugSetRegionData }} // Use the debug function
             //regionOptions= {{ setData: setRegionData, time: [1, 2] }}
             //regionOptions= {{ setData: setRegionData, selector: { time: [1, 2]} }}
             //regionOptions= {{ setData: setRegionData, selector:{time: 1} }}
             setLoading={(val) => setLoading(val)} // <- handles loading complete
-
-
           />
           {showRegionPicker && (
             <RegionPicker
